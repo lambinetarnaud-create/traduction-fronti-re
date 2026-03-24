@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+  <meta name="color-scheme" content="light only"/>
+  <meta name="theme-color" content="#1C2B4A"/>
+  <title>Traduction Contrôle Frontière</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+<div id="app">
+
+  <!-- ══ TOP BAR ══ -->
+  <header class="topbar">
+
+    <div class="topbar-state" id="topbar-home">
+      <div class="topbar-logo">🛂</div>
+      <div class="topbar-title">
+        <span class="topbar-main">Contrôle Frontière</span>
+        <span class="topbar-sub">Guide de traduction</span>
+      </div>
+    </div>
+
+    <div class="topbar-state hidden" id="topbar-phrases">
+      <button class="topbar-back" id="btn-back">←</button>
+      <div class="topbar-title">
+        <span class="topbar-main" id="topbar-lang-name"></span>
+        <span class="topbar-sub"  id="topbar-lang-native"></span>
+      </div>
+      <span class="topbar-flag" id="topbar-lang-flag"></span>
+    </div>
+
+    <div class="topbar-state hidden" id="topbar-links">
+      <button class="topbar-back" id="btn-back-links">←</button>
+      <div class="topbar-title">
+        <span class="topbar-main">Liens utiles</span>
+        <span class="topbar-sub">Ressources en ligne</span>
+      </div>
+      <span style="font-size:1.4rem">🔗</span>
+    </div>
+
+  </header>
+
+  <!-- ══ ÉCRAN 1 — ACCUEIL ══ -->
+  <main id="screen-home" class="screen active">
+
+    <section class="hero">
+      <h1>Traduction pour le<br/><span class="accent">contrôle aux frontières</span></h1>
+      <p>Sélectionnez la langue du voyageur pour afficher et lire les phrases clés.</p>
+      <div class="hero-stats">
+        <div class="stat"><span class="stat-n">20</span><span class="stat-l">Langues</span></div>
+        <div class="stat"><span class="stat-n">5</span><span class="stat-l">Catégories</span></div>
+        <div class="stat"><span class="stat-n">100+</span><span class="stat-l">Phrases</span></div>
+      </div>
+    </section>
+
+    <svg class="wave" viewBox="0 0 390 26" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+      <path d="M0,26 C130,0 260,0 390,26 L390,26 L0,26 Z" fill="#F7F4EE"/>
+    </svg>
+
+    <div class="search-wrap">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="search" id="search-input" placeholder="Rechercher une langue…"
+               autocomplete="off" autocorrect="off" spellcheck="false"/>
+        <button class="search-clear hidden" id="search-clear">✕</button>
+      </div>
+    </div>
+
+    <nav class="filter-bar" id="filter-bar"></nav>
+    <div class="lang-grid" id="lang-grid" role="list"></div>
+
+    <div class="links-btn-wrap">
+      <button class="links-btn" id="btn-open-links">🔗 &nbsp;Liens utiles</button>
+    </div>
+
+  </main>
+
+  <!-- ══ ÉCRAN 2 — PHRASES ══ -->
+  <section id="screen-phrases" class="screen hidden">
+    <nav class="cat-tabs" id="cat-tabs"></nav>
+    <div class="phrase-list" id="phrase-list" aria-live="polite"></div>
+  </section>
+
+  <!-- ══ ÉCRAN 3 — LIENS ══ -->
+  <section id="screen-links" class="screen hidden">
+    <div class="links-page" id="links-page"></div>
+  </section>
+
+  <!-- ══ OVERLAY PLEIN ÉCRAN ══ -->
+  <div id="fs-overlay" class="fs-overlay hidden" role="dialog" aria-modal="true">
+    <button class="fs-close" id="fs-close">✕</button>
+    <div class="fs-body">
+      <div class="fs-fr" id="fs-fr"></div>
+      <div class="fs-tr" id="fs-tr"></div>
+    </div>
+    <div class="fs-actions">
+      <button class="fs-speak" id="fs-speak"><span class="spk-icon">🔊</span> Écouter</button>
+    </div>
+  </div>
+
+</div>
+<script src="app.js"></script>
+</body>
+</html>
