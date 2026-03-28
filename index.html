@@ -52,7 +52,7 @@
 /* ── 2. RESET ── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { height: 100%; background: var(--cream) !important; color: var(--text) !important; }
-body { font-family: var(--font-body); font-size: 16px; line-height: 1.5; overflow: visible; overscroll-behavior: none; }
+body { font-family: var(--font-body); font-size: 16px; line-height: 1.5; overflow: hidden; overscroll-behavior: none; }
 button { font-family: var(--font-body); cursor: pointer; border: none; background: none; -webkit-tap-highlight-color: transparent; }
 input  { font-family: var(--font-body); color: var(--text); background: transparent; border: none; outline: none; }
 
@@ -146,7 +146,7 @@ input  { font-family: var(--font-body); color: var(--text); background: transpar
 .phrase-list::-webkit-scrollbar-thumb { background:var(--sage-l); border-radius:2px; }
 
 /* Phrase card */
-.pcard { background:var(--white); border:1px solid var(--border); border-radius:var(--r-xl); overflow:hidden; box-shadow:var(--sh-sm); }
+.pcard { background:var(--white); border:1px solid var(--border); border-radius:var(--r-xl); overflow:visible; box-shadow:var(--sh-sm); }
 .pcard-fr { display:flex; align-items:flex-start; gap:7px; padding:10px 14px 8px; border-bottom:1px dashed var(--border-2); }
 .pcard-fr-flag { font-size:.95rem; flex-shrink:0; margin-top:1px; }
 .pcard-fr-text { font-size:.78rem; color:var(--muted); font-style:italic; line-height:1.55; flex:1; }
