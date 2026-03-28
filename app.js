@@ -934,11 +934,17 @@ function escAttr(s) {
    15. ÉVÉNEMENTS
 ───────────────────────────────────────────────────────── */
 
-// Retour
-DOM.btnBack.addEventListener("click", goHome);
-DOM.btnBackLinks.addEventListener("click", goHome);
+// Helper sécurisé — évite les crashs si un élément est absent
+function on(el, evt, fn) { if (el) el.addEventListener(evt, fn); }
 
-// Onglets liens/codes (délégué sur document pour éviter le blocage display:none)
+// Retour
+on(DOM.btnBack,      "click", goHome);
+on($("btn-back-links"), "click", goHome);
+
+// Ouvrir liens
+on(DOM.btnOpenLinks, "click", goToLinks);
+
+// Onglets liens/codes — sur document pour éviter blocage display:none
 document.addEventListener("click", e => {
   const tab = e.target.closest(".itab");
   if (!tab) return;
@@ -946,27 +952,24 @@ document.addEventListener("click", e => {
   document.querySelectorAll(".itab").forEach(t => {
     t.classList.toggle("active", t.dataset.tab === currentInfoTab);
   });
-  DOM.linksPage.scrollTop = 0;
+  if (DOM.linksPage) DOM.linksPage.scrollTop = 0;
   renderLinks();
 });
 
-// Ouvrir liens
-DOM.btnOpenLinks.addEventListener("click", goToLinks);
-
 // Recherche
-DOM.searchInput.addEventListener("input", () => {
+on(DOM.searchInput, "input", () => {
   const v = DOM.searchInput.value.length > 0;
   DOM.searchClear.classList.toggle("hidden", !v);
   renderGrid();
 });
-DOM.searchClear.addEventListener("click", () => {
+on(DOM.searchClear, "click", () => {
   DOM.searchInput.value = "";
   DOM.searchClear.classList.add("hidden");
   renderGrid();
 });
 
 // Filtres (délégué)
-DOM.filterBar.addEventListener("click", e => {
+on(DOM.filterBar, "click", e => {
   const c = e.target.closest(".chip");
   if (!c) return;
   state.region = c.dataset.region;
@@ -975,7 +978,7 @@ DOM.filterBar.addEventListener("click", e => {
 });
 
 // Cartes langues (délégué)
-DOM.langGrid.addEventListener("click", e => {
+on(DOM.langGrid, "click", e => {
   const card = e.target.closest(".lang-card");
   if (!card) return;
   const lang = LANGUAGES.find(l => l.id === card.dataset.id);
@@ -983,7 +986,7 @@ DOM.langGrid.addEventListener("click", e => {
 });
 
 // Onglets catégories (délégué)
-DOM.catTabs.addEventListener("click", e => {
+on(DOM.catTabs, "click", e => {
   const tab = e.target.closest(".ctab");
   if (!tab) return;
   stopAudio();
@@ -994,31 +997,23 @@ DOM.catTabs.addEventListener("click", e => {
 });
 
 // Phrase list — speak / expand (délégué)
-DOM.phraseList.addEventListener("click", e => {
+on(DOM.phraseList, "click", e => {
   const speak  = e.target.closest(".btn-speak");
   if (speak)  { playAudio(parseInt(speak.dataset.idx, 10), false); return; }
   const expand = e.target.closest(".btn-expand");
   if (expand) { openFullscreen(parseInt(expand.dataset.idx, 10)); }
 });
 
-// Fullscreen — fermer
-DOM.fsClose.addEventListener("click", closeFullscreen);
-DOM.fsOverlay.addEventListener("click", e => { if (e.target === DOM.fsOverlay) closeFullscreen(); });
+// Fullscreen
+on(DOM.fsClose,   "click", closeFullscreen);
+on(DOM.fsOverlay, "click", e => { if (e.target === DOM.fsOverlay) closeFullscreen(); });
+on(DOM.fsSpeak,   "click", () => { if (state.fsIdx !== null) playAudio(state.fsIdx, true); });
 
-// Fullscreen — écouter
-DOM.fsSpeak.addEventListener("click", () => {
-  if (state.fsIdx !== null) playAudio(state.fsIdx, true);
-});
+// Clavier
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeFullscreen(); });
 
-// Echap
-document.addEventListener("keydown", e => {
-  if (e.key === "Escape") closeFullscreen();
-});
-
-// Stop si onglet caché
-document.addEventListener("visibilitychange", () => {
-  if (document.hidden) stopAudio();
-});
+// Stop audio si onglet caché
+document.addEventListener("visibilitychange", () => { if (document.hidden) stopAudio(); });
 
 /* ─────────────────────────────────────────────────────────
    16. INIT
