@@ -1,647 +1,1027 @@
 /* ═══════════════════════════════════════════════════════════
    app.js — Traduction Contrôle Frontière
-   Handles: data, rendering, navigation, TTS, copy
+   Données issues du Google Sheet Arnaud
 ═══════════════════════════════════════════════════════════ */
-
 "use strict";
 
 /* ─────────────────────────────────────────────────────────
-   1. DATA
+   1. DONNÉES — CATÉGORIES
 ───────────────────────────────────────────────────────── */
-
 const CATEGORIES = [
-  { key: "motif",       label: "Motif de voyage",  icon: "✈️",  color: "#2E6A58" },
-  { key: "duree",       label: "Durée de séjour",  icon: "📅",  color: "#B07D20" },
-  { key: "lieux",       label: "Lieux de séjour",  icon: "📍",  color: "#2A5A88" },
-  { key: "subsistance", label: "Subsistance",       icon: "💳",  color: "#8B3A2A" },
-  { key: "autre",       label: "Autre",             icon: "📋",  color: "#5A3A8B" },
-];
-
-/** French source phrases — same for every language */
-const FR_PHRASES = {
-  motif: [
-    "Pourquoi venez-vous en Belgique ?",
-    "Pour rendre visite à de la famille ?",
-    "Pour faire du tourisme ?",
-    "Pour le travail ?",
-    "Montrez-moi votre contrat de travail ou votre invitation.",
-    "Quel est le but de votre visite ?",
-  ],
-  duree: [
-    "Combien de temps restez-vous en Europe ?",
-    "Jours ?",
-    "Semaines ?",
-    "Mois ?",
-    "Avez-vous un billet retour ?",
-    "Montrez-moi votre billet retour.",
-  ],
-  lieux: [
-    "Où allez-vous loger ?",
-    "Avez-vous une réservation d'hôtel ?",
-    "Montrez-moi votre réservation.",
-    "Quelle est votre adresse en Belgique ?",
-    "Chez qui allez-vous loger ?",
-    "Dans quelle ville allez-vous ?",
-  ],
-  subsistance: [
-    "Combien d'argent avez-vous sur vous ?",
-    "Avez-vous de l'argent liquide ?",
-    "Avez-vous une carte bancaire ?",
-    "Qui finance votre séjour ?",
-    "Montrez-moi vos moyens financiers.",
-  ],
-  autre: [
-    "Montrez-moi votre passeport.",
-    "Avez-vous un visa ?",
-    "Avez-vous déjà été refoulé à la frontière ?",
-    "Avez-vous des bagages à déclarer ?",
-    "Veuillez me suivre.",
-    "Attendez ici.",
-  ],
-};
-
-/**
- * Language list.
- * Each entry: { slug, name, native, flag, region, ttsLang, rtl?, t:{...} }
- * t = translations map, keys matching FR_PHRASES keys.
- */
-const LANGUAGES = [
-  {
-    slug: "anglais", name: "Anglais", native: "English", flag: "🇬🇧",
-    region: "europe", ttsLang: "en-GB",
-    t: {
-      motif:       ["Why are you coming to Belgium?", "To visit your family?", "For tourism?", "For work?", "Show me your employment contract or invitation.", "What is the purpose of your visit?"],
-      duree:       ["How long are you staying in Europe?", "Days?", "Weeks?", "Months?", "Do you have a return ticket?", "Show me your return ticket."],
-      lieux:       ["Where are you going to stay?", "Do you have a hotel reservation?", "Show me your reservation.", "What is your address in Belgium?", "Who are you going to stay with?", "Which city are you going to?"],
-      subsistance: ["How much money do you have on you?", "Do you have cash?", "Do you have a bank card?", "Who is financing your stay?", "Show me your financial means."],
-      autre:       ["Show me your passport.", "Do you have a visa?", "Have you ever been turned back at the border?", "Do you have any luggage to declare?", "Please follow me.", "Wait here."],
-    },
-  },
-  {
-    slug: "allemand", name: "Allemand", native: "Deutsch", flag: "🇩🇪",
-    region: "europe", ttsLang: "de-DE",
-    t: {
-      motif:       ["Warum kommen Sie nach Belgien?", "Um Ihre Familie zu besuchen?", "Für den Tourismus?", "Für die Arbeit?", "Zeigen Sie mir Ihren Arbeitsvertrag oder Ihre Einladung.", "Was ist der Zweck Ihres Besuchs?"],
-      duree:       ["Wie lange bleiben Sie in Europa?", "Tage?", "Wochen?", "Monate?", "Haben Sie ein Rückflugticket?", "Zeigen Sie mir Ihr Rückflugticket."],
-      lieux:       ["Wo werden Sie übernachten?", "Haben Sie eine Hotelreservierung?", "Zeigen Sie mir Ihre Reservierung.", "Was ist Ihre Adresse in Belgien?", "Bei wem werden Sie wohnen?", "In welche Stadt fahren Sie?"],
-      subsistance: ["Wie viel Geld haben Sie bei sich?", "Haben Sie Bargeld?", "Haben Sie eine Bankkarte?", "Wer finanziert Ihren Aufenthalt?", "Zeigen Sie mir Ihre finanziellen Mittel."],
-      autre:       ["Zeigen Sie mir Ihren Reisepass.", "Haben Sie ein Visum?", "Wurden Sie schon einmal an der Grenze zurückgewiesen?", "Haben Sie Gepäck zu verzollen?", "Bitte folgen Sie mir.", "Warten Sie hier."],
-    },
-  },
-  {
-    slug: "albanais", name: "Albanais", native: "Shqip", flag: "🇦🇱",
-    region: "europe", ttsLang: "sq-AL",
-    t: {
-      motif:       ["Pse vini në Belgjikë?", "Të vizitoni familjen tuaj?", "Për turizëm?", "Për punë?", "Tregomëni kontratën tuaj të punës ose ftesën.", "Cili është qëllimi i vizitës suaj?"],
-      duree:       ["Sa kohë qëndroni në Europë?", "Ditë?", "Javë?", "Muaj?", "A keni biletë kthimi?", "Tregomëni biletën tuaj të kthimit."],
-      lieux:       ["Ku do të qëndroni?", "A keni rezervim hoteli?", "Tregomëni rezervimin tuaj.", "Cila është adresa juaj në Belgjikë?", "Tek kush do të qëndroni?", "Në cilin qytet po shkoni?"],
-      subsistance: ["Sa para keni me vete?", "A keni para në dorë?", "A keni kartë bankare?", "Kush financon qëndrimin tuaj?", "Tregomëni mjetet tuaja financiare."],
-      autre:       ["Tregomëni pasaportën tuaj.", "A keni vizë?", "A jeni kthyer ndonjëherë në kufi?", "A keni bagazhe për të deklaruar?", "Ju lutem ndiqmëni.", "Prisni këtu."],
-    },
-  },
-  {
-    slug: "arabe", name: "Arabe", native: "العربية", flag: "🇸🇦",
-    region: "moyen-orient", ttsLang: "ar-SA", rtl: true,
-    t: {
-      motif:       ["لماذا تأتي إلى بلجيكا؟", "لزيارة عائلتك؟", "للسياحة؟", "للعمل؟", "أرني عقد عملك أو دعوتك.", "ما هو الغرض من زيارتك؟"],
-      duree:       ["كم من الوقت ستبقى في أوروبا؟", "أيام؟", "أسابيع؟", "أشهر؟", "هل معك تذكرة عودة؟", "أرني تذكرة عودتك."],
-      lieux:       ["أين ستقيم؟", "هل لديك حجز فندقي؟", "أرني حجزك.", "ما هو عنوانك في بلجيكا؟", "عند من ستقيم؟", "أي مدينة ستذهب إليها؟"],
-      subsistance: ["كم من المال معك؟", "هل معك نقود سائلة؟", "هل معك بطاقة مصرفية؟", "من يموّل إقامتك؟", "أرني وسائلك المالية."],
-      autre:       ["أرني جواز سفرك.", "هل لديك تأشيرة؟", "هل سبق أن رُدِدت على الحدود؟", "هل لديك أمتعة للإعلان عنها؟", "من فضلك اتبعني.", "انتظر هنا."],
-    },
-  },
-  {
-    slug: "bosniaque", name: "Bosniaque", native: "Bosanski", flag: "🇧🇦",
-    region: "europe", ttsLang: "bs-BA",
-    t: {
-      motif:       ["Zašto dolazite u Belgiju?", "Da posjetite svoju porodicu?", "Za turizam?", "Za posao?", "Pokažite mi ugovor o radu ili pozivnicu.", "Koja je svrha vaše posjete?"],
-      duree:       ["Koliko dugo ostajete u Evropi?", "Dani?", "Sedmice?", "Mjeseci?", "Imate li povratnu kartu?", "Pokažite mi povratnu kartu."],
-      lieux:       ["Gdje ćete odsjesti?", "Imate li rezervaciju hotela?", "Pokažite mi rezervaciju.", "Koja je vaša adresa u Belgiji?", "Kod koga ćete boraviti?", "U koji grad idete?"],
-      subsistance: ["Koliko novca imate sa sobom?", "Imate li gotovinu?", "Imate li bankovnu karticu?", "Ko finansira vaš boravak?", "Pokažite mi finansijska sredstva."],
-      autre:       ["Pokažite mi putovnicu.", "Imate li vizu?", "Jeste li ikad vraćeni na granici?", "Imate li prtljag za carinjenje?", "Molim vas pratite me.", "Čekajte ovdje."],
-    },
-  },
-  {
-    slug: "chinois", name: "Chinois", native: "中文", flag: "🇨🇳",
-    region: "asie", ttsLang: "zh-CN",
-    t: {
-      motif:       ["您为什么来比利时？", "是来探亲的吗？", "是来旅游的吗？", "是来工作的吗？", "请出示您的劳动合同或邀请函。", "您此行的目的是什么？"],
-      duree:       ["您在欧洲停留多长时间？", "天？", "周？", "月？", "您有返程票吗？", "请出示您的返程票。"],
-      lieux:       ["您打算住在哪里？", "您有酒店预订吗？", "请出示您的预订记录。", "您在比利时的地址是什么？", "您将住在谁那里？", "您要去哪个城市？"],
-      subsistance: ["您随身携带多少钱？", "您有现金吗？", "您有银行卡吗？", "谁资助您的旅行？", "请出示您的财务证明。"],
-      autre:       ["请出示您的护照。", "您有签证吗？", "您以前被遣返过吗？", "您有需要申报的行李吗？", "请跟我来。", "请在这里等候。"],
-    },
-  },
-  {
-    slug: "espagnol", name: "Espagnol", native: "Español", flag: "🇪🇸",
-    region: "amerique", ttsLang: "es-ES",
-    t: {
-      motif:       ["¿Por qué viene a Bélgica?", "¿Para visitar a su familia?", "¿Por turismo?", "¿Por trabajo?", "Muéstreme su contrato de trabajo o invitación.", "¿Cuál es el motivo de su visita?"],
-      duree:       ["¿Cuánto tiempo se queda en Europa?", "¿Días?", "¿Semanas?", "¿Meses?", "¿Tiene billete de vuelta?", "Muéstreme su billete de vuelta."],
-      lieux:       ["¿Dónde va a alojarse?", "¿Tiene reserva de hotel?", "Muéstreme su reserva.", "¿Cuál es su dirección en Bélgica?", "¿Con quién va a alojarse?", "¿A qué ciudad va?"],
-      subsistance: ["¿Cuánto dinero lleva encima?", "¿Lleva dinero en efectivo?", "¿Tiene tarjeta bancaria?", "¿Quién financia su estancia?", "Muéstreme sus medios económicos."],
-      autre:       ["Muéstreme su pasaporte.", "¿Tiene visado?", "¿Ha sido rechazado en la frontera alguna vez?", "¿Tiene equipaje que declarar?", "Por favor sígame.", "Espere aquí."],
-    },
-  },
-  {
-    slug: "georgien", name: "Géorgien", native: "ქართული", flag: "🇬🇪",
-    region: "europe", ttsLang: "ka-GE",
-    t: {
-      motif:       ["რატომ მოდიხართ ბელგიაში?", "ოჯახის სანახავად?", "ტურიზმისთვის?", "სამუშაოდ?", "მაჩვენეთ შრომის ხელშეკრულება ან მოწვევა.", "რა მიზნით სტუმრობთ?"],
-      duree:       ["რამდენ ხანს დარჩებით ევროპაში?", "დღე?", "კვირა?", "თვე?", "გაქვთ დაბრუნების ბილეთი?", "მაჩვენეთ დაბრუნების ბილეთი."],
-      lieux:       ["სად დარჩებით?", "გაქვთ სასტუმროს დაჯავშნა?", "მაჩვენეთ დაჯავშნა.", "რა არის თქვენი მისამართი ბელგიაში?", "ვისთან დარჩებით?", "რომელ ქალაქში მიდიხართ?"],
-      subsistance: ["რამდენი ფული გაქვთ თან?", "გაქვთ ნაღდი ფული?", "გაქვთ საბანკო ბარათი?", "ვინ აფინანსებს თქვენს ყოფნას?", "მაჩვენეთ ფინანსური საშუალებები."],
-      autre:       ["მაჩვენეთ პასპორტი.", "გაქვთ ვიზა?", "ოდესმე გაბრუნეს საზღვარზე?", "გაქვთ ბარგი სადეკლარაციო?", "გთხოვთ გამომყვეთ.", "დაელოდეთ აქ."],
-    },
-  },
-  {
-    slug: "grec", name: "Grec", native: "Ελληνικά", flag: "🇬🇷",
-    region: "europe", ttsLang: "el-GR",
-    t: {
-      motif:       ["Γιατί έρχεστε στο Βέλγιο;", "Για να επισκεφθείτε την οικογένειά σας;", "Για τουρισμό;", "Για εργασία;", "Δείξτε μου το συμβόλαιο εργασίας ή την πρόσκλησή σας.", "Ποιος είναι ο σκοπός της επίσκεψής σας;"],
-      duree:       ["Πόσο καιρό θα μείνετε στην Ευρώπη;", "Μέρες;", "Εβδομάδες;", "Μήνες;", "Έχετε εισιτήριο επιστροφής;", "Δείξτε μου το εισιτήριο επιστροφής."],
-      lieux:       ["Πού θα μείνετε;", "Έχετε κράτηση ξενοδοχείου;", "Δείξτε μου την κράτησή σας.", "Ποια είναι η διεύθυνσή σας στο Βέλγιο;", "Σε ποιον θα μείνετε;", "Σε ποια πόλη πηγαίνετε;"],
-      subsistance: ["Πόσα χρήματα έχετε μαζί σας;", "Έχετε μετρητά;", "Έχετε τραπεζική κάρτα;", "Ποιος χρηματοδοτεί τη διαμονή σας;", "Δείξτε μου τα οικονομικά σας μέσα."],
-      autre:       ["Δείξτε μου το διαβατήριό σας.", "Έχετε βίζα;", "Σας έχουν επιστρέψει ποτέ στα σύνορα;", "Έχετε αποσκευές να δηλώσετε;", "Παρακαλώ ακολουθήστε με.", "Περιμένετε εδώ."],
-    },
-  },
-  {
-    slug: "hebreux", name: "Hébreux", native: "עברית", flag: "🇮🇱",
-    region: "moyen-orient", ttsLang: "he-IL", rtl: true,
-    t: {
-      motif:       ["למה אתה בא לבלגיה?", "לבקר את משפחתך?", "לתיירות?", "לעבודה?", "הראה לי את חוזה העבודה או ההזמנה שלך.", "מה מטרת ביקורך?"],
-      duree:       ["כמה זמן אתה נשאר באירופה?", "ימים?", "שבועות?", "חודשים?", "יש לך כרטיס חזרה?", "הראה לי את כרטיס החזרה."],
-      lieux:       ["איפה תשהה?", "יש לך הזמנת מלון?", "הראה לי את ההזמנה.", "מה כתובתך בבלגיה?", "אצל מי תשהה?", "לאיזו עיר אתה נוסע?"],
-      subsistance: ["כמה כסף יש לך איתך?", "יש לך מזומן?", "יש לך כרטיס אשראי?", "מי מממן את שהייתך?", "הראה לי את האמצעים הכספיים שלך."],
-      autre:       ["הראה לי את הדרכון שלך.", "יש לך ויזה?", "האם נדחית אי פעם בגבול?", "יש לך כבודה להצהיר עליה?", "בבקשה ללכת איתי.", "חכה כאן."],
-    },
-  },
-  {
-    slug: "italien", name: "Italien", native: "Italiano", flag: "🇮🇹",
-    region: "europe", ttsLang: "it-IT",
-    t: {
-      motif:       ["Perché viene in Belgio?", "Per visitare la famiglia?", "Per turismo?", "Per lavoro?", "Mi mostri il contratto di lavoro o l'invito.", "Qual è lo scopo della sua visita?"],
-      duree:       ["Quanto tempo resta in Europa?", "Giorni?", "Settimane?", "Mesi?", "Ha un biglietto di ritorno?", "Mi mostri il biglietto di ritorno."],
-      lieux:       ["Dove alloggerà?", "Ha una prenotazione alberghiera?", "Mi mostri la prenotazione.", "Qual è il suo indirizzo in Belgio?", "Da chi alloggerà?", "In quale città va?"],
-      subsistance: ["Quanti soldi ha con sé?", "Ha contanti?", "Ha una carta bancaria?", "Chi finanzia il suo soggiorno?", "Mi mostri i suoi mezzi finanziari."],
-      autre:       ["Mi mostri il passaporto.", "Ha un visto?", "È mai stato respinto alla frontiera?", "Ha bagagli da dichiarare?", "Per favore mi segua.", "Aspetti qui."],
-    },
-  },
-  {
-    slug: "macedonien", name: "Macédonien", native: "Македонски", flag: "🇲🇰",
-    region: "europe", ttsLang: "mk-MK",
-    t: {
-      motif:       ["Зошто доаѓате во Белгија?", "Да ја посетите вашата фамилија?", "За туризам?", "За работа?", "Покажете ми го вашиот договор за работа или покана.", "Која е целта на вашата посета?"],
-      duree:       ["Колку долго останувате во Европа?", "Денови?", "Недели?", "Месеци?", "Имате ли повратна карта?", "Покажете ми ја повратната карта."],
-      lieux:       ["Каде ќе престојувате?", "Имате ли резервација во хотел?", "Покажете ми ја резервацијата.", "Каква е вашата адреса во Белгија?", "Кај кого ќе престојувате?", "Во кој град одите?"],
-      subsistance: ["Колку пари имате со себе?", "Имате ли готовина?", "Имате ли банкарска картичка?", "Кој го финансира вашиот престој?", "Покажете ми ги финансиските средства."],
-      autre:       ["Покажете ми го пасошот.", "Имате ли виза?", "Дали некогаш сте биле вратени на границата?", "Имате ли багаж за пријавување?", "Ве молам следете ме.", "Почекајте тука."],
-    },
-  },
-  {
-    slug: "neerlandais", name: "Néerlandais", native: "Nederlands", flag: "🇳🇱",
-    region: "europe", ttsLang: "nl-NL",
-    t: {
-      motif:       ["Waarom komt u naar België?", "Om uw familie te bezoeken?", "Voor toerisme?", "Voor werk?", "Toon mij uw arbeidscontract of uitnodiging.", "Wat is het doel van uw bezoek?"],
-      duree:       ["Hoe lang blijft u in Europa?", "Dagen?", "Weken?", "Maanden?", "Heeft u een retourticket?", "Toon mij uw retourticket."],
-      lieux:       ["Waar gaat u verblijven?", "Heeft u een hotelreservering?", "Toon mij uw reservering.", "Wat is uw adres in België?", "Bij wie gaat u verblijven?", "Naar welke stad gaat u?"],
-      subsistance: ["Hoeveel geld heeft u bij u?", "Heeft u contant geld?", "Heeft u een bankpas?", "Wie financiert uw verblijf?", "Toon mij uw financiële middelen."],
-      autre:       ["Toon mij uw paspoort.", "Heeft u een visum?", "Bent u ooit teruggestuurd aan de grens?", "Heeft u bagage om aan te geven?", "Volgt u mij alstublieft.", "Wacht hier."],
-    },
-  },
-  {
-    slug: "persan", name: "Persan (Farsi)", native: "فارسی", flag: "🇮🇷",
-    region: "moyen-orient", ttsLang: "fa-IR", rtl: true,
-    t: {
-      motif:       ["چرا به بلژیک می‌آیید؟", "برای دیدار با خانواده‌تان؟", "برای گردشگری؟", "برای کار؟", "قرارداد کار یا دعوتنامه‌تان را نشان دهید.", "هدف از سفر شما چیست؟"],
-      duree:       ["چه مدت در اروپا می‌مانید؟", "روز؟", "هفته؟", "ماه؟", "بلیت برگشت دارید؟", "بلیت برگشتتان را نشان دهید."],
-      lieux:       ["کجا اقامت خواهید داشت؟", "رزرو هتل دارید؟", "رزروتان را نشان دهید.", "آدرس شما در بلژیک چیست؟", "پیش چه کسی اقامت خواهید داشت؟", "به کدام شهر می‌روید؟"],
-      subsistance: ["چه مقدار پول همراه دارید؟", "پول نقد دارید؟", "کارت بانکی دارید؟", "چه کسی هزینه اقامت شما را می‌پردازد؟", "مدارک مالی‌تان را نشان دهید."],
-      autre:       ["پاسپورت‌تان را نشان دهید.", "ویزا دارید؟", "آیا تا به حال از مرز برگردانده شده‌اید؟", "بار یا کالایی برای اظهار دارید؟", "لطفاً همراه من بیایید.", "اینجا منتظر بمانید."],
-    },
-  },
-  {
-    slug: "portugais", name: "Portugais", native: "Português", flag: "🇵🇹",
-    region: "amerique", ttsLang: "pt-PT",
-    t: {
-      motif:       ["Por que vem à Bélgica?", "Para visitar a sua família?", "Para fazer turismo?", "Para trabalhar?", "Mostre-me o seu contrato de trabalho ou convite.", "Qual é o motivo da sua visita?"],
-      duree:       ["Quanto tempo vai ficar na Europa?", "Dias?", "Semanas?", "Meses?", "Tem bilhete de regresso?", "Mostre-me o seu bilhete de regresso."],
-      lieux:       ["Onde vai ficar alojado?", "Tem reserva de hotel?", "Mostre-me a sua reserva.", "Qual é a sua morada na Bélgica?", "Em casa de quem vai ficar?", "A que cidade vai?"],
-      subsistance: ["Quanto dinheiro tem consigo?", "Tem dinheiro em espécie?", "Tem um cartão bancário?", "Quem financia a sua estadia?", "Mostre-me os seus meios financeiros."],
-      autre:       ["Mostre-me o seu passaporte.", "Tem visto?", "Alguma vez foi recusado na fronteira?", "Tem bagagem a declarar?", "Por favor siga-me.", "Aguarde aqui."],
-    },
-  },
-  {
-    slug: "roumain", name: "Roumain", native: "Română", flag: "🇷🇴",
-    region: "europe", ttsLang: "ro-RO",
-    t: {
-      motif:       ["De ce veniți în Belgia?", "Să vă vizitați familia?", "Pentru turism?", "Pentru muncă?", "Arătați-mi contractul de muncă sau invitația.", "Care este scopul vizitei dvs.?"],
-      duree:       ["Cât timp rămâneți în Europa?", "Zile?", "Săptămâni?", "Luni?", "Aveți bilet de retur?", "Arătați-mi biletul de retur."],
-      lieux:       ["Unde veți fi cazat?", "Aveți o rezervare la hotel?", "Arătați-mi rezervarea.", "Care este adresa dvs. în Belgia?", "La cine veți sta?", "În ce oraș mergeți?"],
-      subsistance: ["Câți bani aveți la dvs.?", "Aveți bani lichizi?", "Aveți un card bancar?", "Cine vă finanțează șederea?", "Arătați-mi mijloacele financiare."],
-      autre:       ["Arătați-mi pașaportul.", "Aveți viză?", "Ați fost vreodată întors la frontieră?", "Aveți bagaje de declarat?", "Vă rog urmați-mă.", "Așteptați aici."],
-    },
-  },
-  {
-    slug: "russe", name: "Russe", native: "Русский", flag: "🇷🇺",
-    region: "europe", ttsLang: "ru-RU",
-    t: {
-      motif:       ["Почему вы приезжаете в Бельгию?", "Навестить семью?", "Для туризма?", "По работе?", "Покажите мне трудовой договор или приглашение.", "Какова цель вашего визита?"],
-      duree:       ["Как долго вы остаётесь в Европе?", "Дней?", "Недель?", "Месяцев?", "У вас есть обратный билет?", "Покажите мне обратный билет."],
-      lieux:       ["Где вы будете жить?", "У вас есть бронирование отеля?", "Покажите мне бронирование.", "Какой у вас адрес в Бельгии?", "У кого вы будете жить?", "В какой город вы едете?"],
-      subsistance: ["Сколько денег у вас с собой?", "У вас есть наличные?", "У вас есть банковская карта?", "Кто финансирует ваше пребывание?", "Покажите мне ваши финансовые средства."],
-      autre:       ["Покажите мне паспорт.", "У вас есть виза?", "Вас когда-нибудь разворачивали на границе?", "У вас есть багаж для декларирования?", "Пожалуйста следуйте за мной.", "Подождите здесь."],
-    },
-  },
-  {
-    slug: "serbe", name: "Serbe", native: "Српски", flag: "🇷🇸",
-    region: "europe", ttsLang: "sr-RS",
-    t: {
-      motif:       ["Зашто долазите у Белгију?", "Да посетите своју породицу?", "За туризам?", "За посао?", "Покажите ми уговор о раду или позивницу.", "Која је сврха ваше посете?"],
-      duree:       ["Колико дуго остајете у Европи?", "Дана?", "Недеља?", "Месеци?", "Имате ли повратну карту?", "Покажите ми повратну карту."],
-      lieux:       ["Где ћете одсести?", "Имате ли резервацију хотела?", "Покажите ми резервацију.", "Која је ваша адреса у Белгији?", "Код кога ћете боравити?", "У ком граду идете?"],
-      subsistance: ["Колико новца имате са собом?", "Имате ли готовину?", "Имате ли банковну картицу?", "Ко финансира ваш боравак?", "Покажите ми финансијска средства."],
-      autre:       ["Покажите ми пасош.", "Имате ли визу?", "Јесте ли икад враћени на граници?", "Имате ли пртљаг за царињење?", "Молим вас пратите ме.", "Чекајте овде."],
-    },
-  },
-  {
-    slug: "turc", name: "Turc", native: "Türkçe", flag: "🇹🇷",
-    region: "europe", ttsLang: "tr-TR",
-    t: {
-      motif:       ["Belçika'ya neden geliyorsunuz?", "Ailenizi ziyaret etmek için mi?", "Turizm için mi?", "İş için mi?", "İş sözleşmenizi veya davetiyenizi gösterin.", "Ziyaretinizin amacı nedir?"],
-      duree:       ["Avrupa'da ne kadar kalacaksınız?", "Gün mü?", "Hafta mı?", "Ay mı?", "Dönüş biletiniz var mı?", "Dönüş biletinizi gösterin."],
-      lieux:       ["Nerede kalacaksınız?", "Otel rezervasyonunuz var mı?", "Rezervasyonunuzu gösterin.", "Belçika'daki adresiniz nedir?", "Kimin yanında kalacaksınız?", "Hangi şehre gidiyorsunuz?"],
-      subsistance: ["Yanınızda ne kadar para var?", "Nakit paranız var mı?", "Banka kartınız var mı?", "Konaklamanızı kim finanse ediyor?", "Mali imkânlarınızı gösterin."],
-      autre:       ["Pasaportunuzu gösterin.", "Vizeniz var mı?", "Daha önce hiç sınırdan geri çevrildiyiniz mi?", "Beyan edecek bagajınız var mı?", "Lütfen beni takip edin.", "Burada bekleyin."],
-    },
-  },
-  {
-    slug: "ukrainien", name: "Ukrainien", native: "Українська", flag: "🇺🇦",
-    region: "europe", ttsLang: "uk-UA",
-    t: {
-      motif:       ["Чому ви приїжджаєте до Бельгії?", "Відвідати сім'ю?", "Для туризму?", "По роботі?", "Покажіть мені трудовий договір або запрошення.", "Яка мета вашого візиту?"],
-      duree:       ["Як довго ви залишаєтесь в Європі?", "Днів?", "Тижнів?", "Місяців?", "У вас є зворотній квиток?", "Покажіть мені зворотній квиток."],
-      lieux:       ["Де ви будете жити?", "У вас є бронювання готелю?", "Покажіть мені бронювання.", "Яка ваша адреса в Бельгії?", "У кого ви будете жити?", "В яке місто ви їдете?"],
-      subsistance: ["Скільки грошей у вас із собою?", "У вас є готівка?", "У вас є банківська картка?", "Хто фінансує ваше перебування?", "Покажіть мені фінансові засоби."],
-      autre:       ["Покажіть мені паспорт.", "У вас є віза?", "Вас коли-небудь розвертали на кордоні?", "У вас є багаж для декларування?", "Будь ласка слідуйте за мною.", "Зачекайте тут."],
-    },
-  },
+  { key: "motif",   label: "Motif de voyage", icon: "✈️",  color: "#2E6A58", offset: 0  },
+  { key: "duree",   label: "Durée du voyage",  icon: "📅",  color: "#B07D20", offset: 5  },
+  { key: "lieux",   label: "Lieux du séjour",  icon: "📍",  color: "#2A5A88", offset: 11 },
+  { key: "argent",  label: "Argent",            icon: "💳",  color: "#8B3A2A", offset: 15 },
+  { key: "autres",  label: "Autres",            icon: "📋",  color: "#5A3A8B", offset: 18 },
 ];
 
 /* ─────────────────────────────────────────────────────────
-   2. STATE
+   2. DONNÉES — LIENS UTILES
+───────────────────────────────────────────────────────── */
+const LINKS = [
+  { id:1, titre:"Vols départs",           url:"https://www.brussels-charleroi-airport.com/d_jour.html",                                              icon:"✈️" },
+  { id:2, titre:"Vols arrivées",           url:"https://www.brussels-charleroi-airport.com/a_jours.html",                                             icon:"🛬" },
+  { id:3, titre:"Calculateur de séjour",  url:"https://ec.europa.eu/assets/home/visa-calculator/calculator.htm?lang=fr",                             icon:"🗓️" },
+  { id:4, titre:"Vérification Booking",   url:"https://secure.booking.com/help/confirmation_pin_auth?origin=home_bnpinauth_start",                    icon:"🏨" },
+  { id:5, titre:"Vérification Pégasus",   url:"https://www.flypgs.com/fr",                                                                           icon:"🛩️" },
+  { id:6, titre:"Vérification Wizzair",   url:"https://www.wizzair.com/en-gb/travel-agency-booking",                                                  icon:"🟣" },
+];
+
+/* ─────────────────────────────────────────────────────────
+   3. DONNÉES — LANGUES + QUESTIONS
+   Structure : { slug, id, name, native, flag, region, rtl, audioFolder, questions }
+   questions : tableau de 20 objets { fr, tr, cat }
+   Les questions sont dans l'ordre Q001→Q020 tel que le CSV.
+   Catégorie déduite de la colonne "catégorie" du CSV.
 ───────────────────────────────────────────────────────── */
 
+// Map LangueID → { slug, native, region, rtl, audioFolder }
+const LANG_META = {
+  SQ: { slug:"albanais",    native:"Shqip",       region:"europe",        rtl:false, audioFolder:"Albanais"    },
+  DE: { slug:"allemand",    native:"Deutsch",      region:"europe",        rtl:false, audioFolder:"Allemand"    },
+  EN: { slug:"anglais",     native:"English",      region:"europe",        rtl:false, audioFolder:"Anglais"     },
+  AR: { slug:"arabe",       native:"العربية",       region:"moyen-orient",  rtl:true,  audioFolder:"Arabe"       },
+  BS: { slug:"bosniaque",   native:"Bosanski",     region:"europe",        rtl:false, audioFolder:"Bosniaque"   },
+  ZH: { slug:"chinois",     native:"中文",          region:"asie",          rtl:false, audioFolder:"Chinois"     },
+  ES: { slug:"espagnol",    native:"Español",      region:"amerique",      rtl:false, audioFolder:"Espagnol"    },
+  KA: { slug:"georgien",    native:"ქართული",      region:"europe",        rtl:false, audioFolder:"Georgien"    },
+  EL: { slug:"grec",        native:"Ελληνικά",     region:"europe",        rtl:false, audioFolder:"Grec"        },
+  HE: { slug:"hebreu",      native:"עברית",         region:"moyen-orient",  rtl:true,  audioFolder:"Hebreu"      },
+  IT: { slug:"italien",     native:"Italiano",     region:"europe",        rtl:false, audioFolder:"Italien"     },
+  MK: { slug:"macedonien",  native:"Македонски",   region:"europe",        rtl:false, audioFolder:"Macedonien"  },
+  NL: { slug:"neerlandais", native:"Nederlands",   region:"europe",        rtl:false, audioFolder:"Neerlandais" },
+  FA: { slug:"persan",      native:"فارسی",         region:"moyen-orient",  rtl:true,  audioFolder:"Persan"      },
+  PT: { slug:"portugais",   native:"Português",    region:"amerique",      rtl:false, audioFolder:"Portugais"   },
+  RO: { slug:"roumain",     native:"Română",       region:"europe",        rtl:false, audioFolder:"Roumain"     },
+  RU: { slug:"russe",       native:"Русский",      region:"europe",        rtl:false, audioFolder:"Russe"       },
+  SR: { slug:"serbe",       native:"Srpski",       region:"europe",        rtl:false, audioFolder:"Serbe"       },
+  TR: { slug:"turc",        native:"Türkçe",       region:"europe",        rtl:false, audioFolder:"Turc"        },
+  UK: { slug:"ukrainien",   native:"Українська",   region:"europe",        rtl:false, audioFolder:"Ukrainien"   },
+};
+
+// Map catégorie CSV → clé interne
+const CAT_MAP = {
+  "Motif de voyage": "motif",
+  "Durée du voyage": "duree",
+  "Lieux du séjour": "lieux",
+  "Argent":          "argent",
+  "Autres":          "autres",
+};
+
+// Toutes les questions issues du CSV (ordre identique)
+const RAW_QUESTIONS = [
+  // ── ALBANAIS (SQ)
+  {id:"Q001",lang:"SQ",fr:"Pourquoi venir en Belgique ?",tr:"Pse të vini në Belgjikë ?",cat:"Motif de voyage"},
+  {id:"Q002",lang:"SQ",fr:"Pour rendre visite à de la famille ?",tr:"Për të vizituar familjen?",cat:"Motif de voyage"},
+  {id:"Q003",lang:"SQ",fr:"Pour faire du tourisme ?",tr:"Për turizëm?",cat:"Motif de voyage"},
+  {id:"Q004",lang:"SQ",fr:"Pour le travail ?",tr:"Për punë?",cat:"Motif de voyage"},
+  {id:"Q005",lang:"SQ",fr:"Montrez-moi votre contrat de travail ou votre invitation.",tr:"Më trego kontratën tënde të punës ose ftesën.",cat:"Motif de voyage"},
+  {id:"Q006",lang:"SQ",fr:"Combien de temps restez vous en Europe ?",tr:"Sa gjatë do të qëndrosh në Evropë?",cat:"Durée du voyage"},
+  {id:"Q007",lang:"SQ",fr:"Jours",tr:"Ditë",cat:"Durée du voyage"},
+  {id:"Q008",lang:"SQ",fr:"Semaines",tr:"Javë",cat:"Durée du voyage"},
+  {id:"Q009",lang:"SQ",fr:"Mois",tr:"Muaj",cat:"Durée du voyage"},
+  {id:"Q010",lang:"SQ",fr:"Avez-vous un billet retour ?",tr:"Ke biletë kthimi?",cat:"Durée du voyage"},
+  {id:"Q011",lang:"SQ",fr:"Montrez moi votre billet retour",tr:"Më trego biletën tënde të kthimit.",cat:"Durée du voyage"},
+  {id:"Q012",lang:"SQ",fr:"Où allez vous dormir ?",tr:"Ku do të qëndrosh?",cat:"Lieux du séjour"},
+  {id:"Q013",lang:"SQ",fr:"Chez de la famille ou des amis ?",tr:"Me familje apo me miq?",cat:"Lieux du séjour"},
+  {id:"Q014",lang:"SQ",fr:"A l'hôtel ?",tr:"Në një hotel?",cat:"Lieux du séjour"},
+  {id:"Q015",lang:"SQ",fr:"Montrez-moi la réservation d'hôtel",tr:"Më trego rezervimin e hotelit.",cat:"Lieux du séjour"},
+  {id:"Q016",lang:"SQ",fr:"Avez-vous de l'argent liquide ou une carte de crédit ?",tr:"A ke para në dorë apo kartë krediti?",cat:"Argent"},
+  {id:"Q017",lang:"SQ",fr:"Montrez-moi l'argent",tr:"Më trego paratë në dorë.",cat:"Argent"},
+  {id:"Q018",lang:"SQ",fr:"Montrez-moi la carte de crédit",tr:"Më trego kartën e kreditit.",cat:"Argent"},
+  {id:"Q019",lang:"SQ",fr:"Mettez les 4 doigts de la main droite sur la lumière verte",tr:"Vendosni katër gishtat e dorës së djathtë mbi dritën jeshile.",cat:"Autres"},
+  {id:"Q020",lang:"SQ",fr:"Placez-vous devant la caméra",tr:"Qëndroni përpara kamerës.",cat:"Autres"},
+  // ── ALLEMAND (DE)
+  {id:"Q001",lang:"DE",fr:"Pourquoi venir en Belgique ?",tr:"Warum nach Belgien kommen.",cat:"Motif de voyage"},
+  {id:"Q002",lang:"DE",fr:"Pour rendre visite à de la famille ?",tr:"Um Ihre Familie zu besuchen?",cat:"Motif de voyage"},
+  {id:"Q003",lang:"DE",fr:"Pour faire du tourisme ?",tr:"Um Urlaub zu machen?",cat:"Motif de voyage"},
+  {id:"Q004",lang:"DE",fr:"Pour le travail ?",tr:"Um zu arbeiten?",cat:"Motif de voyage"},
+  {id:"Q005",lang:"DE",fr:"Montrez-moi votre contrat de travail ou votre invitation.",tr:"Zeigen Sie mir Ihren Arbeitsvertrag oder Ihre Einladung.",cat:"Motif de voyage"},
+  {id:"Q006",lang:"DE",fr:"Combien de temps restez vous en Europe ?",tr:"Wie lange bleiben Sie in Europa?",cat:"Durée du voyage"},
+  {id:"Q007",lang:"DE",fr:"Jours",tr:"Tage",cat:"Durée du voyage"},
+  {id:"Q008",lang:"DE",fr:"Semaines",tr:"Wochen",cat:"Durée du voyage"},
+  {id:"Q009",lang:"DE",fr:"Mois",tr:"Monate",cat:"Durée du voyage"},
+  {id:"Q010",lang:"DE",fr:"Avez-vous un billet retour ?",tr:"Haben Sie ein Rückflugticket?",cat:"Durée du voyage"},
+  {id:"Q011",lang:"DE",fr:"Montrez moi votre billet retour",tr:"Zeigen Sie mir Ihr Rückflugticket.",cat:"Durée du voyage"},
+  {id:"Q012",lang:"DE",fr:"Où allez vous dormir ?",tr:"Wo werden Sie übernachten?",cat:"Lieux du séjour"},
+  {id:"Q013",lang:"DE",fr:"Chez de la famille ou des amis ?",tr:"Bei Familie oder Freunden?",cat:"Lieux du séjour"},
+  {id:"Q014",lang:"DE",fr:"A l'hôtel ?",tr:"Im Hotel?",cat:"Lieux du séjour"},
+  {id:"Q015",lang:"DE",fr:"Montrez-moi la réservation d'hôtel",tr:"Zeigen Sie mir die Hotelreservierung",cat:"Lieux du séjour"},
+  {id:"Q016",lang:"DE",fr:"Avez-vous de l'argent liquide ou une carte de crédit ?",tr:"Haben Sie Bargeld oder eine Kreditkarte?",cat:"Argent"},
+  {id:"Q017",lang:"DE",fr:"Montrez-moi l'argent",tr:"Zeigen Sie mir das Geld",cat:"Argent"},
+  {id:"Q018",lang:"DE",fr:"Montrez-moi la carte de crédit",tr:"Zeigen Sie mir die Kreditkarte",cat:"Argent"},
+  {id:"Q019",lang:"DE",fr:"Mettez les 4 doigts de la main droite sur la lumière verte",tr:"Legen Sie die vier Finger Ihrer rechten Hand auf das grüne Licht.",cat:"Autres"},
+  {id:"Q020",lang:"DE",fr:"Placez-vous devant la caméra",tr:"Stellen Sie sich vor die Kamera.",cat:"Autres"},
+  // ── ANGLAIS (EN)
+  {id:"Q001",lang:"EN",fr:"Pourquoi venir en Belgique ?",tr:"Why do you come in Belgium ?",cat:"Motif de voyage"},
+  {id:"Q002",lang:"EN",fr:"Pour rendre visite à de la famille ?",tr:"To visit your family?",cat:"Motif de voyage"},
+  {id:"Q003",lang:"EN",fr:"Pour faire du tourisme ?",tr:"For tourism?",cat:"Motif de voyage"},
+  {id:"Q004",lang:"EN",fr:"Pour le travail ?",tr:"For work?",cat:"Motif de voyage"},
+  {id:"Q005",lang:"EN",fr:"Montrez-moi votre contrat de travail ou votre invitation.",tr:"Show me your employment contract or invitation.",cat:"Motif de voyage"},
+  {id:"Q006",lang:"EN",fr:"Combien de temps restez vous en Europe ?",tr:"How long are you staying in Europe?",cat:"Durée du voyage"},
+  {id:"Q007",lang:"EN",fr:"Jours",tr:"Days",cat:"Durée du voyage"},
+  {id:"Q008",lang:"EN",fr:"Semaines",tr:"Weeks",cat:"Durée du voyage"},
+  {id:"Q009",lang:"EN",fr:"Mois",tr:"Months",cat:"Durée du voyage"},
+  {id:"Q010",lang:"EN",fr:"Avez-vous un billet retour ?",tr:"Do you have a return ticket?",cat:"Durée du voyage"},
+  {id:"Q011",lang:"EN",fr:"Montrez moi votre billet retour",tr:"Show me your return ticket.",cat:"Durée du voyage"},
+  {id:"Q012",lang:"EN",fr:"Où allez vous dormir ?",tr:"Where are you staying?",cat:"Lieux du séjour"},
+  {id:"Q013",lang:"EN",fr:"Chez de la famille ou des amis ?",tr:"With family or friends?",cat:"Lieux du séjour"},
+  {id:"Q014",lang:"EN",fr:"A l'hôtel ?",tr:"At a hotel?",cat:"Lieux du séjour"},
+  {id:"Q015",lang:"EN",fr:"Montrez-moi la réservation d'hôtel",tr:"Show me the hotel reservation.",cat:"Lieux du séjour"},
+  {id:"Q016",lang:"EN",fr:"Avez-vous de l'argent liquide ou une carte de crédit ?",tr:"Do you have cash or a credit card?",cat:"Argent"},
+  {id:"Q017",lang:"EN",fr:"Montrez-moi l'argent",tr:"Show me the cash.",cat:"Argent"},
+  {id:"Q018",lang:"EN",fr:"Montrez-moi la carte de crédit",tr:"Show me the credit card.",cat:"Argent"},
+  {id:"Q019",lang:"EN",fr:"Mettez les 4 doigts de la main droite sur la lumière verte",tr:"Place the four fingers of your right hand on the green light.",cat:"Autres"},
+  {id:"Q020",lang:"EN",fr:"Placez-vous devant la caméra",tr:"Stand in front of the camera.",cat:"Autres"},
+  // ── ARABE (AR)
+  {id:"Q001",lang:"AR",fr:"Pourquoi venir en Belgique ?",tr:"لماذا المجيء إلى بلجيكا؟",cat:"Motif de voyage"},
+  {id:"Q002",lang:"AR",fr:"Pour rendre visite à de la famille ?",tr:"لزيارة عائلتك؟",cat:"Motif de voyage"},
+  {id:"Q003",lang:"AR",fr:"Pour faire du tourisme ?",tr:"للسياحة؟",cat:"Motif de voyage"},
+  {id:"Q004",lang:"AR",fr:"Pour le travail ?",tr:"للعمل؟",cat:"Motif de voyage"},
+  {id:"Q005",lang:"AR",fr:"Montrez-moi votre contrat de travail ou votre invitation.",tr:"أرني عقد عملك أو دعوتك.",cat:"Motif de voyage"},
+  {id:"Q006",lang:"AR",fr:"Combien de temps restez vous en Europe ?",tr:"كم من الوقت ستبقى في أوروبا؟",cat:"Durée du voyage"},
+  {id:"Q007",lang:"AR",fr:"Jours",tr:"أيام",cat:"Durée du voyage"},
+  {id:"Q008",lang:"AR",fr:"Semaines",tr:"أسابيع",cat:"Durée du voyage"},
+  {id:"Q009",lang:"AR",fr:"Mois",tr:"أشهر",cat:"Durée du voyage"},
+  {id:"Q010",lang:"AR",fr:"Avez-vous un billet retour ?",tr:"هل لديك تذكرة عودة؟",cat:"Durée du voyage"},
+  {id:"Q011",lang:"AR",fr:"Montrez moi votre billet retour",tr:"أرني تذكرة عودتك.",cat:"Durée du voyage"},
+  {id:"Q012",lang:"AR",fr:"Où allez vous dormir ?",tr:"أين ستنام؟",cat:"Lieux du séjour"},
+  {id:"Q013",lang:"AR",fr:"Chez de la famille ou des amis ?",tr:"عند العائلة أو الأصدقاء؟",cat:"Lieux du séjour"},
+  {id:"Q014",lang:"AR",fr:"A l'hôtel ?",tr:"في الفندق؟",cat:"Lieux du séjour"},
+  {id:"Q015",lang:"AR",fr:"Montrez-moi la réservation d'hôtel",tr:"أرني حجز الفندق",cat:"Lieux du séjour"},
+  {id:"Q016",lang:"AR",fr:"Avez-vous de l'argent liquide ou une carte de crédit ?",tr:"هل لديك نقود أو بطاقة ائتمان؟",cat:"Argent"},
+  {id:"Q017",lang:"AR",fr:"Montrez-moi l'argent",tr:"أرني النقود",cat:"Argent"},
+  {id:"Q018",lang:"AR",fr:"Montrez-moi la carte de crédit",tr:"أرني بطاقة الائتمان",cat:"Argent"},
+  {id:"Q019",lang:"AR",fr:"Mettez les 4 doigts de la main droite sur la lumière verte",tr:"ضع أصابع يدك اليمنى الأربعة على الضوء الأخضر.",cat:"Autres"},
+  {id:"Q020",lang:"AR",fr:"Placez-vous devant la caméra",tr:"قف أمام الكاميرا.",cat:"Autres"},
+  // ── BOSNIAQUE (BS)
+  {id:"Q001",lang:"BS",fr:"Pourquoi venir en Belgique ?",tr:"Zašto doći u Belgiju?",cat:"Motif de voyage"},
+  {id:"Q002",lang:"BS",fr:"Pour rendre visite à de la famille ?",tr:"Da posjetite svoju porodicu?",cat:"Motif de voyage"},
+  {id:"Q003",lang:"BS",fr:"Pour faire du tourisme ?",tr:"Za turizam?",cat:"Motif de voyage"},
+  {id:"Q004",lang:"BS",fr:"Pour le travail ?",tr:"Za posao?",cat:"Motif de voyage"},
+  {id:"Q005",lang:"BS",fr:"Montrez-moi votre contrat de travail ou votre invitation.",tr:"Pokazite mi vaš ugovor o radu ili pozivnicu.",cat:"Motif de voyage"},
+  {id:"Q006",lang:"BS",fr:"Combien de temps restez vous en Europe ?",tr:"Koliko dugo boravite u Evropi?",cat:"Durée du voyage"},
+  {id:"Q007",lang:"BS",fr:"Jours",tr:"Dani",cat:"Durée du voyage"},
+  {id:"Q008",lang:"BS",fr:"Semaines",tr:"Sedmice",cat:"Durée du voyage"},
+  {id:"Q009",lang:"BS",fr:"Mois",tr:"Mjeseci",cat:"Durée du voyage"},
+  {id:"Q010",lang:"BS",fr:"Avez-vous un billet retour ?",tr:"Imate li povratnu kartu?",cat:"Durée du voyage"},
+  {id:"Q011",lang:"BS",fr:"Montrez moi votre billet retour",tr:"Pokazite mi vašu povratnu kartu.",cat:"Durée du voyage"},
+  {id:"Q012",lang:"BS",fr:"Où allez vous dormir ?",tr:"Gdje ćete boraviti?",cat:"Lieux du séjour"},
+  {id:"Q013",lang:"BS",fr:"Chez de la famille ou des amis ?",tr:"Sa porodicom ili prijateljima?",cat:"Lieux du séjour"},
+  {id:"Q014",lang:"BS",fr:"A l'hôtel ?",tr:"U hotelu?",cat:"Lieux du séjour"},
+  {id:"Q015",lang:"BS",fr:"Montrez-moi la réservation d'hôtel",tr:"Pokažite mi rezervaciju hotela.",cat:"Lieux du séjour"},
+  {id:"Q016",lang:"BS",fr:"Avez-vous de l'argent liquide ou une carte de crédit ?",tr:"Imate li gotovinu ili kreditnu karticu?",cat:"Argent"},
+  {id:"Q017",lang:"BS",fr:"Montrez-moi l'argent",tr:"Pokažite mi gotovinu.",cat:"Argent"},
+  {id:"Q018",lang:"BS",fr:"Montrez-moi la carte de crédit",tr:"Pokažite mi kreditnu karticu.",cat:"Argent"},
+  {id:"Q019",lang:"BS",fr:"Mettez les 4 doigts de la main droite sur la lumière verte",tr:"Stavite četiri prsta desne ruke na zeleno svjetlo.",cat:"Autres"},
+  {id:"Q020",lang:"BS",fr:"Placez-vous devant la caméra",tr:"Stajte ispred kamere.",cat:"Autres"},
+  // ── CHINOIS (ZH)
+  {id:"Q001",lang:"ZH",fr:"Pourquoi venir en Belgique ?",tr:"为什么来比利时？",cat:"Motif de voyage"},
+  {id:"Q002",lang:"ZH",fr:"Pour rendre visite à de la famille ?",tr:"探亲？",cat:"Motif de voyage"},
+  {id:"Q003",lang:"ZH",fr:"Pour faire du tourisme ?",tr:"旅游？",cat:"Motif de voyage"},
+  {id:"Q004",lang:"ZH",fr:"Pour le travail ?",tr:"工作？",cat:"Motif de voyage"},
+  {id:"Q005",lang:"ZH",fr:"Montrez-moi votre contrat de travail ou votre invitation.",tr:"请出示您的工作合同或邀请函。",cat:"Motif de voyage"},
+  {id:"Q006",lang:"ZH",fr:"Combien de temps restez vous en Europe ?",tr:"您将在欧洲停留多久？",cat:"Durée du voyage"},
+  {id:"Q007",lang:"ZH",fr:"Jours",tr:"几天",cat:"Durée du voyage"},
+  {id:"Q008",lang:"ZH",fr:"Semaines",tr:"几周",cat:"Durée du voyage"},
+  {id:"Q009",lang:"ZH",fr:"Mois",tr:"几个月",cat:"Durée du voyage"},
+  {id:"Q010",lang:"ZH",fr:"Avez-vous un billet retour ?",tr:"您有返程机票吗？",cat:"Durée du voyage"},
+  {id:"Q011",lang:"ZH",fr:"Montrez moi votre billet retour",tr:"请出示您的返程机票。",cat:"Durée du voyage"},
+  {id:"Q012",lang:"ZH",fr:"Où allez vous dormir ?",tr:"你们打算住哪里？",cat:"Lieux du séjour"},
+  {id:"Q013",lang:"ZH",fr:"Chez de la famille ou des amis ?",tr:"在亲戚或朋友家吗？",cat:"Lieux du séjour"},
+  {id:"Q014",lang:"ZH",fr:"A l'hôtel ?",tr:"酒店？",cat:"Lieux du séjour"},
+  {id:"Q015",lang:"ZH",fr:"Montrez-moi la réservation d'hôtel",tr:"给我看看酒店预订单",cat:"Lieux du séjour"},
+  {id:"Q016",lang:"ZH",fr:"Avez-vous de l'argent liquide ou une carte de crédit ?",tr:"你们带现金还是信用卡？",cat:"Argent"},
+  {id:"Q017",lang:"ZH",fr:"Montrez-moi l'argent",tr:"给我看看现金",cat:"Argent"},
+  {id:"Q018",lang:"ZH",fr:"Montrez-moi la carte de crédit",tr:"给我看看信用卡",cat:"Argent"},
+  {id:"Q019",lang:"ZH",fr:"Mettez les 4 doigts de la main droite sur la lumière verte",tr:"将右手的四根手指放在绿灯上。",cat:"Autres"},
+  {id:"Q020",lang:"ZH",fr:"Placez-vous devant la caméra",tr:"站在摄像头前。",cat:"Autres"},
+  // ── ESPAGNOL (ES)
+  {id:"Q001",lang:"ES",fr:"Pourquoi venir en Belgique ?",tr:"¿Por qué viene a Bélgica?",cat:"Motif de voyage"},
+  {id:"Q002",lang:"ES",fr:"Pour rendre visite à de la famille ?",tr:"¿Para visitar a tu familia?",cat:"Motif de voyage"},
+  {id:"Q003",lang:"ES",fr:"Pour faire du tourisme ?",tr:"¿Para hacer turismo?",cat:"Motif de voyage"},
+  {id:"Q004",lang:"ES",fr:"Pour le travail ?",tr:"¿Por trabajo?",cat:"Motif de voyage"},
+  {id:"Q005",lang:"ES",fr:"Montrez-moi votre contrat de travail ou votre invitation.",tr:"Muéstrame tu contrato de trabajo o tu invitación.",cat:"Motif de voyage"},
+  {id:"Q006",lang:"ES",fr:"Combien de temps restez vous en Europe ?",tr:"¿Cuánto tiempo te vas a quedar en Europa?",cat:"Durée du voyage"},
+  {id:"Q007",lang:"ES",fr:"Jours",tr:"Días.",cat:"Durée du voyage"},
+  {id:"Q008",lang:"ES",fr:"Semaines",tr:"Semanas.",cat:"Durée du voyage"},
+  {id:"Q009",lang:"ES",fr:"Mois",tr:"Meses.",cat:"Durée du voyage"},
+  {id:"Q010",lang:"ES",fr:"Avez-vous un billet retour ?",tr:"¿Tienes billete de vuelta?",cat:"Durée du voyage"},
+  {id:"Q011",lang:"ES",fr:"Montrez moi votre billet retour",tr:"Muéstrame tu billete de vuelta.",cat:"Durée du voyage"},
+  {id:"Q012",lang:"ES",fr:"Où allez vous dormir ?",tr:"¿Dónde vas a dormir?",cat:"Lieux du séjour"},
+  {id:"Q013",lang:"ES",fr:"Chez de la famille ou des amis ?",tr:"¿En casa de familiares o amigos?",cat:"Lieux du séjour"},
+  {id:"Q014",lang:"ES",fr:"A l'hôtel ?",tr:"¿En un hotel?",cat:"Lieux du séjour"},
+  {id:"Q015",lang:"ES",fr:"Montrez-moi la réservation d'hôtel",tr:"Enséñame la reserva del hotel",cat:"Lieux du séjour"},
+  {id:"Q016",lang:"ES",fr:"Avez-vous de l'argent liquide ou une carte de crédit ?",tr:"¿Tienes dinero en efectivo o una tarjeta de crédito?",cat:"Argent"},
+  {id:"Q017",lang:"ES",fr:"Montrez-moi l'argent",tr:"Enséñame el dinero",cat:"Argent"},
+  {id:"Q018",lang:"ES",fr:"Montrez-moi la carte de crédit",tr:"Enséñame la tarjeta de crédito",cat:"Argent"},
+  {id:"Q019",lang:"ES",fr:"Mettez les 4 doigts de la main droite sur la lumière verte",tr:"Coloque los cuatro dedos de su mano derecha sobre la luz verde.",cat:"Autres"},
+  {id:"Q020",lang:"ES",fr:"Placez-vous devant la caméra",tr:"Póngase delante de la cámara.",cat:"Autres"},
+  // ── GÉORGIEN (KA)
+  {id:"Q001",lang:"KA",fr:"Pourquoi venir en Belgique ?",tr:"რატომ ჩამოდი ბელგიაში ?",cat:"Motif de voyage"},
+  {id:"Q002",lang:"KA",fr:"Pour rendre visite à de la famille ?",tr:"ოჯახის მოსანახულებლად?",cat:"Motif de voyage"},
+  {id:"Q003",lang:"KA",fr:"Pour faire du tourisme ?",tr:"ტურიზმისთვის?",cat:"Motif de voyage"},
+  {id:"Q004",lang:"KA",fr:"Pour le travail ?",tr:"სამუშაოდ?",cat:"Motif de voyage"},
+  {id:"Q005",lang:"KA",fr:"Montrez-moi votre contrat de travail ou votre invitation.",tr:"მაჩვენეთ თქვენი შრომითი ხელშეკრულება ან მოსაწვევი.",cat:"Motif de voyage"},
+  {id:"Q006",lang:"KA",fr:"Combien de temps restez vous en Europe ?",tr:"რამდენ ხანს რჩებით ევროპაში?",cat:"Durée du voyage"},
+  {id:"Q007",lang:"KA",fr:"Jours",tr:"დღეები",cat:"Durée du voyage"},
+  {id:"Q008",lang:"KA",fr:"Semaines",tr:"კვირები",cat:"Durée du voyage"},
+  {id:"Q009",lang:"KA",fr:"Mois",tr:"თვეები",cat:"Durée du voyage"},
+  {id:"Q010",lang:"KA",fr:"Avez-vous un billet retour ?",tr:"გაქვთ დასაბრუნებელი ბილეთი?",cat:"Durée du voyage"},
+  {id:"Q011",lang:"KA",fr:"Montrez moi votre billet retour",tr:"მაჩვენეთ თქვენი დასაბრუნებელი ბილეთი.",cat:"Durée du voyage"},
+  {id:"Q012",lang:"KA",fr:"Où allez vous dormir ?",tr:"სად დარჩებით?",cat:"Lieux du séjour"},
+  {id:"Q013",lang:"KA",fr:"Chez de la famille ou des amis ?",tr:"ოჯახთან ერთად თუ მეგობრებთან?",cat:"Lieux du séjour"},
+  {id:"Q014",lang:"KA",fr:"A l'hôtel ?",tr:"სასტუმროში?",cat:"Lieux du séjour"},
+  {id:"Q015",lang:"KA",fr:"Montrez-moi la réservation d'hôtel",tr:"მაჩვენეთ სასტუმროს დაჯავშნის დამადასტურებელი დოკუმენტი.",cat:"Lieux du séjour"},
+  {id:"Q016",lang:"KA",fr:"Avez-vous de l'argent liquide ou une carte de crédit ?",tr:"გაქვთ ნაღდი ფული ან საკრედიტო ბარათი?",cat:"Argent"},
+  {id:"Q017",lang:"KA",fr:"Montrez-moi l'argent",tr:"მაჩვენეთ ნაღდი ფული.",cat:"Argent"},
+  {id:"Q018",lang:"KA",fr:"Montrez-moi la carte de crédit",tr:"მაჩვენეთ საკრედიტო ბარათი.",cat:"Argent"},
+  {id:"Q019",lang:"KA",fr:"Mettez les 4 doigts de la main droite sur la lumière verte",tr:"დადეთ თქვენი მარჯვენა ხელის ოთხი თითი მწვანე შუქზე.",cat:"Autres"},
+  {id:"Q020",lang:"KA",fr:"Placez-vous devant la caméra",tr:"დადექით კამერის წინ.",cat:"Autres"},
+  // ── GREC (EL)
+  {id:"Q001",lang:"EL",fr:"Pourquoi venir en Belgique ?",tr:"Γιατί να έρθετε στο Βέλγιο;",cat:"Motif de voyage"},
+  {id:"Q002",lang:"EL",fr:"Pour rendre visite à de la famille ?",tr:"Για να επισκεφθείτε την οικογένειά σας;",cat:"Motif de voyage"},
+  {id:"Q003",lang:"EL",fr:"Pour faire du tourisme ?",tr:"Για τουρισμό;",cat:"Motif de voyage"},
+  {id:"Q004",lang:"EL",fr:"Pour le travail ?",tr:"Για δουλειά;",cat:"Motif de voyage"},
+  {id:"Q005",lang:"EL",fr:"Montrez-moi votre contrat de travail ou votre invitation.",tr:"Δείξτε μου τη σύμβαση εργασίας σας ή την πρόσκλησή σας.",cat:"Motif de voyage"},
+  {id:"Q006",lang:"EL",fr:"Combien de temps restez vous en Europe ?",tr:"Πόσο καιρό θα μείνετε στην Ευρώπη;",cat:"Durée du voyage"},
+  {id:"Q007",lang:"EL",fr:"Jours",tr:"Ημέρες",cat:"Durée du voyage"},
+  {id:"Q008",lang:"EL",fr:"Semaines",tr:"Εβδομάδες",cat:"Durée du voyage"},
+  {id:"Q009",lang:"EL",fr:"Mois",tr:"Μήνες",cat:"Durée du voyage"},
+  {id:"Q010",lang:"EL",fr:"Avez-vous un billet retour ?",tr:"Έχετε εισιτήριο επιστροφής;",cat:"Durée du voyage"},
+  {id:"Q011",lang:"EL",fr:"Montrez moi votre billet retour",tr:"Δείξτε μου το εισιτήριο επιστροφής σας.",cat:"Durée du voyage"},
+  {id:"Q012",lang:"EL",fr:"Où allez vous dormir ?",tr:"Πού θα μείνετε;",cat:"Lieux du séjour"},
+  {id:"Q013",lang:"EL",fr:"Chez de la famille ou des amis ?",tr:"Σε συγγενείς ή φίλους;",cat:"Lieux du séjour"},
+  {id:"Q014",lang:"EL",fr:"A l'hôtel ?",tr:"Σε ξενοδοχείο;",cat:"Lieux du séjour"},
+  {id:"Q015",lang:"EL",fr:"Montrez-moi la réservation d'hôtel",tr:"Δείξτε μου την κράτηση του ξενοδοχείου",cat:"Lieux du séjour"},
+  {id:"Q016",lang:"EL",fr:"Avez-vous de l'argent liquide ou une carte de crédit ?",tr:"Έχετε μετρητά ή πιστωτική κάρτα;",cat:"Argent"},
+  {id:"Q017",lang:"EL",fr:"Montrez-moi l'argent",tr:"Δείξτε μου τα χρήματα",cat:"Argent"},
+  {id:"Q018",lang:"EL",fr:"Montrez-moi la carte de crédit",tr:"Δείξτε μου την πιστωτική κάρτα",cat:"Argent"},
+  {id:"Q019",lang:"EL",fr:"Mettez les 4 doigts de la main droite sur la lumière verte",tr:"Τοποθετήστε τα τέσσερα δάχτυλα του δεξιού σας χεριού πάνω στο πράσινο φως.",cat:"Autres"},
+  {id:"Q020",lang:"EL",fr:"Placez-vous devant la caméra",tr:"Σταθείτε μπροστά από την κάμερα.",cat:"Autres"},
+  // ── HÉBREU (HE)
+  {id:"Q001",lang:"HE",fr:"Pourquoi venir en Belgique ?",tr:"למה לבוא לבלגיה?",cat:"Motif de voyage"},
+  {id:"Q002",lang:"HE",fr:"Pour rendre visite à de la famille ?",tr:"לבקר את המשפחה?",cat:"Motif de voyage"},
+  {id:"Q003",lang:"HE",fr:"Pour faire du tourisme ?",tr:"לטייל?",cat:"Motif de voyage"},
+  {id:"Q004",lang:"HE",fr:"Pour le travail ?",tr:"לעבודה?",cat:"Motif de voyage"},
+  {id:"Q005",lang:"HE",fr:"Montrez-moi votre contrat de travail ou votre invitation.",tr:"הראו לי את חוזה העבודה או ההזמנה שלכם",cat:"Motif de voyage"},
+  {id:"Q006",lang:"HE",fr:"Combien de temps restez vous en Europe ?",tr:"כמה זמן אתם מתכוונים להישאר באירופה?",cat:"Durée du voyage"},
+  {id:"Q007",lang:"HE",fr:"Jours",tr:"ימים",cat:"Durée du voyage"},
+  {id:"Q008",lang:"HE",fr:"Semaines",tr:"שבועות",cat:"Durée du voyage"},
+  {id:"Q009",lang:"HE",fr:"Mois",tr:"חודשים",cat:"Durée du voyage"},
+  {id:"Q010",lang:"HE",fr:"Avez-vous un billet retour ?",tr:"יש לכם כרטיס חזרה?",cat:"Durée du voyage"},
+  {id:"Q011",lang:"HE",fr:"Montrez moi votre billet retour",tr:"הראו לי את כרטיס החזרה שלכם",cat:"Durée du voyage"},
+  {id:"Q012",lang:"HE",fr:"Où allez vous dormir ?",tr:"איפה אתם מתכוונים לישון?",cat:"Lieux du séjour"},
+  {id:"Q013",lang:"HE",fr:"Chez de la famille ou des amis ?",tr:"אצל משפחה או חברים?",cat:"Lieux du séjour"},
+  {id:"Q014",lang:"HE",fr:"A l'hôtel ?",tr:"במלון?",cat:"Lieux du séjour"},
+  {id:"Q015",lang:"HE",fr:"Montrez-moi la réservation d'hôtel",tr:"הראו לי את הזמנת המלון",cat:"Lieux du séjour"},
+  {id:"Q016",lang:"HE",fr:"Avez-vous de l'argent liquide ou une carte de crédit ?",tr:"יש לכם מזומן או כרטיס אשראי?",cat:"Argent"},
+  {id:"Q017",lang:"HE",fr:"Montrez-moi l'argent",tr:"הראו לי את הכסף",cat:"Argent"},
+  {id:"Q018",lang:"HE",fr:"Montrez-moi la carte de crédit",tr:"הראו לי את כרטיס האשראי",cat:"Argent"},
+  {id:"Q019",lang:"HE",fr:"Mettez les 4 doigts de la main droite sur la lumière verte",tr:"הניחו את ארבע אצבעות יד ימין על הנורית הירוקה.",cat:"Autres"},
+  {id:"Q020",lang:"HE",fr:"Placez-vous devant la caméra",tr:"עמדו מול המצלמה.",cat:"Autres"},
+  // ── ITALIEN (IT)
+  {id:"Q001",lang:"IT",fr:"Pourquoi venir en Belgique ?",tr:"Perché venire in Belgio?",cat:"Motif de voyage"},
+  {id:"Q002",lang:"IT",fr:"Pour rendre visite à de la famille ?",tr:"Per andare a trovare la tua famiglia?",cat:"Motif de voyage"},
+  {id:"Q003",lang:"IT",fr:"Pour faire du tourisme ?",tr:"Per fare turismo?",cat:"Motif de voyage"},
+  {id:"Q004",lang:"IT",fr:"Pour le travail ?",tr:"Per lavoro?",cat:"Motif de voyage"},
+  {id:"Q005",lang:"IT",fr:"Montrez-moi votre contrat de travail ou votre invitation.",tr:"Mi mostri il suo contratto di lavoro o il suo invito.",cat:"Motif de voyage"},
+  {id:"Q006",lang:"IT",fr:"Combien de temps restez vous en Europe ?",tr:"Quanto tempo rimarrà in Europa?",cat:"Durée du voyage"},
+  {id:"Q007",lang:"IT",fr:"Jours",tr:"Giorni",cat:"Durée du voyage"},
+  {id:"Q008",lang:"IT",fr:"Semaines",tr:"Settimane",cat:"Durée du voyage"},
+  {id:"Q009",lang:"IT",fr:"Mois",tr:"Mesi",cat:"Durée du voyage"},
+  {id:"Q010",lang:"IT",fr:"Avez-vous un billet retour ?",tr:"Ha un biglietto di ritorno?",cat:"Durée du voyage"},
+  {id:"Q011",lang:"IT",fr:"Montrez moi votre billet retour",tr:"Mi mostri il suo biglietto di ritorno.",cat:"Durée du voyage"},
+  {id:"Q012",lang:"IT",fr:"Où allez vous dormir ?",tr:"Dove dormirai?",cat:"Lieux du séjour"},
+  {id:"Q013",lang:"IT",fr:"Chez de la famille ou des amis ?",tr:"Da familiari o amici?",cat:"Lieux du séjour"},
+  {id:"Q014",lang:"IT",fr:"A l'hôtel ?",tr:"In hotel?",cat:"Lieux du séjour"},
+  {id:"Q015",lang:"IT",fr:"Montrez-moi la réservation d'hôtel",tr:"Mostrami la prenotazione dell'hotel",cat:"Lieux du séjour"},
+  {id:"Q016",lang:"IT",fr:"Avez-vous de l'argent liquide ou une carte de crédit ?",tr:"Hai contanti o una carta di credito?",cat:"Argent"},
+  {id:"Q017",lang:"IT",fr:"Montrez-moi l'argent",tr:"Mostrami i contanti",cat:"Argent"},
+  {id:"Q018",lang:"IT",fr:"Montrez-moi la carte de crédit",tr:"Mostrami la carta di credito",cat:"Argent"},
+  {id:"Q019",lang:"IT",fr:"Mettez les 4 doigts de la main droite sur la lumière verte",tr:"Posizionate le quattro dita della mano destra sulla luce verde.",cat:"Autres"},
+  {id:"Q020",lang:"IT",fr:"Placez-vous devant la caméra",tr:"Posizionatevi davanti alla telecamera.",cat:"Autres"},
+  // ── MACÉDONIEN (MK)
+  {id:"Q001",lang:"MK",fr:"Pourquoi venir en Belgique ?",tr:"Зошто да дојдете во Белгија?",cat:"Motif de voyage"},
+  {id:"Q002",lang:"MK",fr:"Pour rendre visite à de la famille ?",tr:"Да го посетите вашето семејство?",cat:"Motif de voyage"},
+  {id:"Q003",lang:"MK",fr:"Pour faire du tourisme ?",tr:"За туризам?",cat:"Motif de voyage"},
+  {id:"Q004",lang:"MK",fr:"Pour le travail ?",tr:"За работа?",cat:"Motif de voyage"},
+  {id:"Q005",lang:"MK",fr:"Montrez-moi votre contrat de travail ou votre invitation.",tr:"Покажете ми го вашиот договор за вработување или покана.",cat:"Motif de voyage"},
+  {id:"Q006",lang:"MK",fr:"Combien de temps restez vous en Europe ?",tr:"Колку долго ќе престојувате во Европа?",cat:"Durée du voyage"},
+  {id:"Q007",lang:"MK",fr:"Jours",tr:"Денови",cat:"Durée du voyage"},
+  {id:"Q008",lang:"MK",fr:"Semaines",tr:"Недели",cat:"Durée du voyage"},
+  {id:"Q009",lang:"MK",fr:"Mois",tr:"Месеци",cat:"Durée du voyage"},
+  {id:"Q010",lang:"MK",fr:"Avez-vous un billet retour ?",tr:"Дали имате билет за повратна карта?",cat:"Durée du voyage"},
+  {id:"Q011",lang:"MK",fr:"Montrez moi votre billet retour",tr:"Покажете ми ја вашата повратна карта.",cat:"Durée du voyage"},
+  {id:"Q012",lang:"MK",fr:"Où allez vous dormir ?",tr:"Каде ќе престојувате?",cat:"Lieux du séjour"},
+  {id:"Q013",lang:"MK",fr:"Chez de la famille ou des amis ?",tr:"Со семејство или со пријатели?",cat:"Lieux du séjour"},
+  {id:"Q014",lang:"MK",fr:"A l'hôtel ?",tr:"Во хотел?",cat:"Lieux du séjour"},
+  {id:"Q015",lang:"MK",fr:"Montrez-moi la réservation d'hôtel",tr:"Покажете ми ја хотелската резервација.",cat:"Lieux du séjour"},
+  {id:"Q016",lang:"MK",fr:"Avez-vous de l'argent liquide ou une carte de crédit ?",tr:"Дали имате готовина или кредитна картичка?",cat:"Argent"},
+  {id:"Q017",lang:"MK",fr:"Montrez-moi l'argent",tr:"Покажете ми ја готовината.",cat:"Argent"},
+  {id:"Q018",lang:"MK",fr:"Montrez-moi la carte de crédit",tr:"Покажете ми ја кредитната картичка.",cat:"Argent"},
+  {id:"Q019",lang:"MK",fr:"Mettez les 4 doigts de la main droite sur la lumière verte",tr:"Ставете ги четирите прста на вашата десна рака на зеленото светло.",cat:"Autres"},
+  {id:"Q020",lang:"MK",fr:"Placez-vous devant la caméra",tr:"Стојте пред камерата.",cat:"Autres"},
+  // ── NÉERLANDAIS (NL)
+  {id:"Q001",lang:"NL",fr:"Pourquoi venir en Belgique ?",tr:"Waarom komt u naar België ?",cat:"Motif de voyage"},
+  {id:"Q002",lang:"NL",fr:"Pour rendre visite à de la famille ?",tr:"Om uw familie te bezoeken?",cat:"Motif de voyage"},
+  {id:"Q003",lang:"NL",fr:"Pour faire du tourisme ?",tr:"Om toerisme te bedrijven?",cat:"Motif de voyage"},
+  {id:"Q004",lang:"NL",fr:"Pour le travail ?",tr:"Voor uw werk?",cat:"Motif de voyage"},
+  {id:"Q005",lang:"NL",fr:"Montrez-moi votre contrat de travail ou votre invitation.",tr:"Laat me uw arbeidscontract of uw uitnodiging zien.",cat:"Motif de voyage"},
+  {id:"Q006",lang:"NL",fr:"Combien de temps restez vous en Europe ?",tr:"Hoe lang blijft u in Europa?",cat:"Durée du voyage"},
+  {id:"Q007",lang:"NL",fr:"Jours",tr:"Dagen",cat:"Durée du voyage"},
+  {id:"Q008",lang:"NL",fr:"Semaines",tr:"Weken",cat:"Durée du voyage"},
+  {id:"Q009",lang:"NL",fr:"Mois",tr:"Maanden",cat:"Durée du voyage"},
+  {id:"Q010",lang:"NL",fr:"Avez-vous un billet retour ?",tr:"Heeft u een retourticket?",cat:"Durée du voyage"},
+  {id:"Q011",lang:"NL",fr:"Montrez moi votre billet retour",tr:"Laat me uw retourticket zien.",cat:"Durée du voyage"},
+  {id:"Q012",lang:"NL",fr:"Où allez vous dormir ?",tr:"Waar gaat u slapen?",cat:"Lieux du séjour"},
+  {id:"Q013",lang:"NL",fr:"Chez de la famille ou des amis ?",tr:"Bij familie of vrienden?",cat:"Lieux du séjour"},
+  {id:"Q014",lang:"NL",fr:"A l'hôtel ?",tr:"In een hotel?",cat:"Lieux du séjour"},
+  {id:"Q015",lang:"NL",fr:"Montrez-moi la réservation d'hôtel",tr:"Laat me de hotelreservering zien",cat:"Lieux du séjour"},
+  {id:"Q016",lang:"NL",fr:"Avez-vous de l'argent liquide ou une carte de crédit ?",tr:"Heeft u contant geld of een creditcard?",cat:"Argent"},
+  {id:"Q017",lang:"NL",fr:"Montrez-moi l'argent",tr:"Laat me het geld zien",cat:"Argent"},
+  {id:"Q018",lang:"NL",fr:"Montrez-moi la carte de crédit",tr:"Laat me de creditcard zien",cat:"Argent"},
+  {id:"Q019",lang:"NL",fr:"Mettez les 4 doigts de la main droite sur la lumière verte",tr:"Plaats de vier vingers van uw rechterhand op het groene lampje.",cat:"Autres"},
+  {id:"Q020",lang:"NL",fr:"Placez-vous devant la caméra",tr:"Ga voor de camera staan.",cat:"Autres"},
+  // ── PERSAN (FA)
+  {id:"Q001",lang:"FA",fr:"Pourquoi venir en Belgique ?",tr:"چرا به بلژیک بیایید؟",cat:"Motif de voyage"},
+  {id:"Q002",lang:"FA",fr:"Pour rendre visite à de la famille ?",tr:"برای دیدار خانواده؟",cat:"Motif de voyage"},
+  {id:"Q003",lang:"FA",fr:"Pour faire du tourisme ?",tr:"برای گردشگری؟",cat:"Motif de voyage"},
+  {id:"Q004",lang:"FA",fr:"Pour le travail ?",tr:"برای کار؟",cat:"Motif de voyage"},
+  {id:"Q005",lang:"FA",fr:"Montrez-moi votre contrat de travail ou votre invitation.",tr:"قرارداد استخدام یا دعوت‌نامه‌تان را به من نشان دهید.",cat:"Motif de voyage"},
+  {id:"Q006",lang:"FA",fr:"Combien de temps restez vous en Europe ?",tr:"تا چه مدت در اروپا اقامت دارید؟",cat:"Durée du voyage"},
+  {id:"Q007",lang:"FA",fr:"Jours",tr:"روزها",cat:"Durée du voyage"},
+  {id:"Q008",lang:"FA",fr:"Semaines",tr:"هفته‌ها",cat:"Durée du voyage"},
+  {id:"Q009",lang:"FA",fr:"Mois",tr:"ماهها",cat:"Durée du voyage"},
+  {id:"Q010",lang:"FA",fr:"Avez-vous un billet retour ?",tr:"بلیط برگشت دارید؟",cat:"Durée du voyage"},
+  {id:"Q011",lang:"FA",fr:"Montrez moi votre billet retour",tr:"بلیط برگشت خود را به من نشان دهید.",cat:"Durée du voyage"},
+  {id:"Q012",lang:"FA",fr:"Où allez vous dormir ?",tr:"کجا اقامت خواهید داشت؟",cat:"Lieux du séjour"},
+  {id:"Q013",lang:"FA",fr:"Chez de la famille ou des amis ?",tr:"با خانواده یا دوستان؟",cat:"Lieux du séjour"},
+  {id:"Q014",lang:"FA",fr:"A l'hôtel ?",tr:"در هتل؟",cat:"Lieux du séjour"},
+  {id:"Q015",lang:"FA",fr:"Montrez-moi la réservation d'hôtel",tr:"رزرو هتل را به من نشان دهید.",cat:"Lieux du séjour"},
+  {id:"Q016",lang:"FA",fr:"Avez-vous de l'argent liquide ou une carte de crédit ?",tr:"آیا پول نقد یا کارت اعتباری دارید؟",cat:"Argent"},
+  {id:"Q017",lang:"FA",fr:"Montrez-moi l'argent",tr:"پول نقد را به من نشان دهید.",cat:"Argent"},
+  {id:"Q018",lang:"FA",fr:"Montrez-moi la carte de crédit",tr:"کارت اعتباری را به من نشان دهید.",cat:"Argent"},
+  {id:"Q019",lang:"FA",fr:"Mettez les 4 doigts de la main droite sur la lumière verte",tr:"چهار انگشت دست راست خود را روی چراغ سبز قرار دهید.",cat:"Autres"},
+  {id:"Q020",lang:"FA",fr:"Placez-vous devant la caméra",tr:"در مقابل دوربین بایستید.",cat:"Autres"},
+  // ── PORTUGAIS (PT)
+  {id:"Q001",lang:"PT",fr:"Pourquoi venir en Belgique ?",tr:"Porquê vir para a Bélgica ?",cat:"Motif de voyage"},
+  {id:"Q002",lang:"PT",fr:"Pour rendre visite à de la famille ?",tr:"Para visitar a sua família?",cat:"Motif de voyage"},
+  {id:"Q003",lang:"PT",fr:"Pour faire du tourisme ?",tr:"Para fazer turismo?",cat:"Motif de voyage"},
+  {id:"Q004",lang:"PT",fr:"Pour le travail ?",tr:"Para trabalhar?",cat:"Motif de voyage"},
+  {id:"Q005",lang:"PT",fr:"Montrez-moi votre contrat de travail ou votre invitation.",tr:"Mostre-me o seu contrato de trabalho ou o seu convite.",cat:"Motif de voyage"},
+  {id:"Q006",lang:"PT",fr:"Combien de temps restez vous en Europe ?",tr:"Quanto tempo vai ficar na Europa?",cat:"Durée du voyage"},
+  {id:"Q007",lang:"PT",fr:"Jours",tr:"Dias",cat:"Durée du voyage"},
+  {id:"Q008",lang:"PT",fr:"Semaines",tr:"Semanas",cat:"Durée du voyage"},
+  {id:"Q009",lang:"PT",fr:"Mois",tr:"Meses",cat:"Durée du voyage"},
+  {id:"Q010",lang:"PT",fr:"Avez-vous un billet retour ?",tr:"Tem um bilhete de regresso?",cat:"Durée du voyage"},
+  {id:"Q011",lang:"PT",fr:"Montrez moi votre billet retour",tr:"Mostre-me o seu bilhete de regresso.",cat:"Durée du voyage"},
+  {id:"Q012",lang:"PT",fr:"Où allez vous dormir ?",tr:"Onde vai dormir?",cat:"Lieux du séjour"},
+  {id:"Q013",lang:"PT",fr:"Chez de la famille ou des amis ?",tr:"Na casa de familiares ou amigos?",cat:"Lieux du séjour"},
+  {id:"Q014",lang:"PT",fr:"A l'hôtel ?",tr:"Num hotel?",cat:"Lieux du séjour"},
+  {id:"Q015",lang:"PT",fr:"Montrez-moi la réservation d'hôtel",tr:"Mostre-me a reserva do hotel",cat:"Lieux du séjour"},
+  {id:"Q016",lang:"PT",fr:"Avez-vous de l'argent liquide ou une carte de crédit ?",tr:"Tem dinheiro em espécie ou cartão de crédito?",cat:"Argent"},
+  {id:"Q017",lang:"PT",fr:"Montrez-moi l'argent",tr:"Mostre-me o dinheiro",cat:"Argent"},
+  {id:"Q018",lang:"PT",fr:"Montrez-moi la carte de crédit",tr:"Mostre-me o cartão de crédito",cat:"Argent"},
+  {id:"Q019",lang:"PT",fr:"Mettez les 4 doigts de la main droite sur la lumière verte",tr:"Coloque os quatro dedos da sua mão direita sobre a luz verde.",cat:"Autres"},
+  {id:"Q020",lang:"PT",fr:"Placez-vous devant la caméra",tr:"Posicione-se em frente à câmara.",cat:"Autres"},
+  // ── ROUMAIN (RO)
+  {id:"Q001",lang:"RO",fr:"Pourquoi venir en Belgique ?",tr:"De ce să veniți în Belgia?",cat:"Motif de voyage"},
+  {id:"Q002",lang:"RO",fr:"Pour rendre visite à de la famille ?",tr:"Pentru a vă vizita familia?",cat:"Motif de voyage"},
+  {id:"Q003",lang:"RO",fr:"Pour faire du tourisme ?",tr:"Pentru turism?",cat:"Motif de voyage"},
+  {id:"Q004",lang:"RO",fr:"Pour le travail ?",tr:"Pentru muncă?",cat:"Motif de voyage"},
+  {id:"Q005",lang:"RO",fr:"Montrez-moi votre contrat de travail ou votre invitation.",tr:"Arată-mi contractul de muncă sau invitația.",cat:"Motif de voyage"},
+  {id:"Q006",lang:"RO",fr:"Combien de temps restez vous en Europe ?",tr:"Cât timp rămâi în Europa?",cat:"Durée du voyage"},
+  {id:"Q007",lang:"RO",fr:"Jours",tr:"Zile",cat:"Durée du voyage"},
+  {id:"Q008",lang:"RO",fr:"Semaines",tr:"Săptămâni",cat:"Durée du voyage"},
+  {id:"Q009",lang:"RO",fr:"Mois",tr:"Luni",cat:"Durée du voyage"},
+  {id:"Q010",lang:"RO",fr:"Avez-vous un billet retour ?",tr:"Ai bilet de întoarcere?",cat:"Durée du voyage"},
+  {id:"Q011",lang:"RO",fr:"Montrez moi votre billet retour",tr:"Arată-mi biletul de întoarcere.",cat:"Durée du voyage"},
+  {id:"Q012",lang:"RO",fr:"Où allez vous dormir ?",tr:"Unde veți dormi?",cat:"Lieux du séjour"},
+  {id:"Q013",lang:"RO",fr:"Chez de la famille ou des amis ?",tr:"La familie sau prieteni?",cat:"Lieux du séjour"},
+  {id:"Q014",lang:"RO",fr:"A l'hôtel ?",tr:"La hotel?",cat:"Lieux du séjour"},
+  {id:"Q015",lang:"RO",fr:"Montrez-moi la réservation d'hôtel",tr:"Arată-mi rezervarea de hotel",cat:"Lieux du séjour"},
+  {id:"Q016",lang:"RO",fr:"Avez-vous de l'argent liquide ou une carte de crédit ?",tr:"Aveți bani cash sau card de credit?",cat:"Argent"},
+  {id:"Q017",lang:"RO",fr:"Montrez-moi l'argent",tr:"Arată-mi banii",cat:"Argent"},
+  {id:"Q018",lang:"RO",fr:"Montrez-moi la carte de crédit",tr:"Arată-mi cardul de credit",cat:"Argent"},
+  {id:"Q019",lang:"RO",fr:"Mettez les 4 doigts de la main droite sur la lumière verte",tr:"Puneți cele patru degete ale mâinii drepte pe lumina verde.",cat:"Autres"},
+  {id:"Q020",lang:"RO",fr:"Placez-vous devant la caméra",tr:"Așezați-vă în fața camerei.",cat:"Autres"},
+  // ── RUSSE (RU)
+  {id:"Q001",lang:"RU",fr:"Pourquoi venir en Belgique ?",tr:"Почему стоит приехать в Бельгию ?",cat:"Motif de voyage"},
+  {id:"Q002",lang:"RU",fr:"Pour rendre visite à de la famille ?",tr:"Чтобы навестить семью?",cat:"Motif de voyage"},
+  {id:"Q003",lang:"RU",fr:"Pour faire du tourisme ?",tr:"Для туризма?",cat:"Motif de voyage"},
+  {id:"Q004",lang:"RU",fr:"Pour le travail ?",tr:"Для работы?",cat:"Motif de voyage"},
+  {id:"Q005",lang:"RU",fr:"Montrez-moi votre contrat de travail ou votre invitation.",tr:"Покажите мне ваш трудовой договор или приглашение.",cat:"Motif de voyage"},
+  {id:"Q006",lang:"RU",fr:"Combien de temps restez vous en Europe ?",tr:"Как долго вы останетесь в Европе?",cat:"Durée du voyage"},
+  {id:"Q007",lang:"RU",fr:"Jours",tr:"Дни",cat:"Durée du voyage"},
+  {id:"Q008",lang:"RU",fr:"Semaines",tr:"Недели",cat:"Durée du voyage"},
+  {id:"Q009",lang:"RU",fr:"Mois",tr:"Месяцы",cat:"Durée du voyage"},
+  {id:"Q010",lang:"RU",fr:"Avez-vous un billet retour ?",tr:"У вас есть обратный билет?",cat:"Durée du voyage"},
+  {id:"Q011",lang:"RU",fr:"Montrez moi votre billet retour",tr:"Покажите мне ваш обратный билет.",cat:"Durée du voyage"},
+  {id:"Q012",lang:"RU",fr:"Où allez vous dormir ?",tr:"Где вы будете ночевать?",cat:"Lieux du séjour"},
+  {id:"Q013",lang:"RU",fr:"Chez de la famille ou des amis ?",tr:"У родственников или друзей?",cat:"Lieux du séjour"},
+  {id:"Q014",lang:"RU",fr:"A l'hôtel ?",tr:"В отеле?",cat:"Lieux du séjour"},
+  {id:"Q015",lang:"RU",fr:"Montrez-moi la réservation d'hôtel",tr:"Покажите мне бронирование отеля",cat:"Lieux du séjour"},
+  {id:"Q016",lang:"RU",fr:"Avez-vous de l'argent liquide ou une carte de crédit ?",tr:"У вас есть наличные деньги или кредитная карта?",cat:"Argent"},
+  {id:"Q017",lang:"RU",fr:"Montrez-moi l'argent",tr:"Покажите мне деньги",cat:"Argent"},
+  {id:"Q018",lang:"RU",fr:"Montrez-moi la carte de crédit",tr:"Покажите мне кредитную карту",cat:"Argent"},
+  {id:"Q019",lang:"RU",fr:"Mettez les 4 doigts de la main droite sur la lumière verte",tr:"Поместите четыре пальца правой руки на зеленый индикатор.",cat:"Autres"},
+  {id:"Q020",lang:"RU",fr:"Placez-vous devant la caméra",tr:"Встаньте перед камерой.",cat:"Autres"},
+  // ── SERBE (SR)
+  {id:"Q001",lang:"SR",fr:"Pourquoi venir en Belgique ?",tr:"Зашто доћи у Белгију?",cat:"Motif de voyage"},
+  {id:"Q002",lang:"SR",fr:"Pour rendre visite à de la famille ?",tr:"Да посетите своју породицу?",cat:"Motif de voyage"},
+  {id:"Q003",lang:"SR",fr:"Pour faire du tourisme ?",tr:"За туризам?",cat:"Motif de voyage"},
+  {id:"Q004",lang:"SR",fr:"Pour le travail ?",tr:"За посао?",cat:"Motif de voyage"},
+  {id:"Q005",lang:"SR",fr:"Montrez-moi votre contrat de travail ou votre invitation.",tr:"Покажите ми ваш уговор о раду или позив.",cat:"Motif de voyage"},
+  {id:"Q006",lang:"SR",fr:"Combien de temps restez vous en Europe ?",tr:"Колико дуго боравите у Европи?",cat:"Durée du voyage"},
+  {id:"Q007",lang:"SR",fr:"Jours",tr:"Дани",cat:"Durée du voyage"},
+  {id:"Q008",lang:"SR",fr:"Semaines",tr:"Недеље",cat:"Durée du voyage"},
+  {id:"Q009",lang:"SR",fr:"Mois",tr:"Месеци",cat:"Durée du voyage"},
+  {id:"Q010",lang:"SR",fr:"Avez-vous un billet retour ?",tr:"Имате ли повратну карту?",cat:"Durée du voyage"},
+  {id:"Q011",lang:"SR",fr:"Montrez moi votre billet retour",tr:"Покажите ми вашу повратну карту.",cat:"Durée du voyage"},
+  {id:"Q012",lang:"SR",fr:"Où allez vous dormir ?",tr:"Где ћете боравити?",cat:"Lieux du séjour"},
+  {id:"Q013",lang:"SR",fr:"Chez de la famille ou des amis ?",tr:"Са породицом или пријатељима?",cat:"Lieux du séjour"},
+  {id:"Q014",lang:"SR",fr:"A l'hôtel ?",tr:"У хотелу?",cat:"Lieux du séjour"},
+  {id:"Q015",lang:"SR",fr:"Montrez-moi la réservation d'hôtel",tr:"Покажите ми резервацију хотела.",cat:"Lieux du séjour"},
+  {id:"Q016",lang:"SR",fr:"Avez-vous de l'argent liquide ou une carte de crédit ?",tr:"Имате ли готовину или кредитну картицу?",cat:"Argent"},
+  {id:"Q017",lang:"SR",fr:"Montrez-moi l'argent",tr:"Покажите ми готовину.",cat:"Argent"},
+  {id:"Q018",lang:"SR",fr:"Montrez-moi la carte de crédit",tr:"Покажите ми кредитну картицу.",cat:"Argent"},
+  {id:"Q019",lang:"SR",fr:"Mettez les 4 doigts de la main droite sur la lumière verte",tr:"Ставите четири прста десне руке на зелено светло.",cat:"Autres"},
+  {id:"Q020",lang:"SR",fr:"Placez-vous devant la caméra",tr:"Станите испред камере.",cat:"Autres"},
+  // ── TURC (TR)
+  {id:"Q001",lang:"TR",fr:"Pourquoi venir en Belgique ?",tr:"Neden Belçika'ya geldiniz?",cat:"Motif de voyage"},
+  {id:"Q002",lang:"TR",fr:"Pour rendre visite à de la famille ?",tr:"Ailenizi ziyaret etmek için mi?",cat:"Motif de voyage"},
+  {id:"Q003",lang:"TR",fr:"Pour faire du tourisme ?",tr:"Turizm için mi?",cat:"Motif de voyage"},
+  {id:"Q004",lang:"TR",fr:"Pour le travail ?",tr:"İş için mi?",cat:"Motif de voyage"},
+  {id:"Q005",lang:"TR",fr:"Montrez-moi votre contrat de travail ou votre invitation.",tr:"İş sözleşmenizi veya davetiyenizi gösterin.",cat:"Motif de voyage"},
+  {id:"Q006",lang:"TR",fr:"Combien de temps restez vous en Europe ?",tr:"Avrupa'da ne kadar kalacaksınız?",cat:"Durée du voyage"},
+  {id:"Q007",lang:"TR",fr:"Jours",tr:"Gün",cat:"Durée du voyage"},
+  {id:"Q008",lang:"TR",fr:"Semaines",tr:"Hafta",cat:"Durée du voyage"},
+  {id:"Q009",lang:"TR",fr:"Mois",tr:"Ay",cat:"Durée du voyage"},
+  {id:"Q010",lang:"TR",fr:"Avez-vous un billet retour ?",tr:"Gidiş-dönüş biletiniz var mı?",cat:"Durée du voyage"},
+  {id:"Q011",lang:"TR",fr:"Montrez moi votre billet retour",tr:"Dönüş biletinizi gösterin.",cat:"Durée du voyage"},
+  {id:"Q012",lang:"TR",fr:"Où allez vous dormir ?",tr:"Nerede kalacaksınız?",cat:"Lieux du séjour"},
+  {id:"Q013",lang:"TR",fr:"Chez de la famille ou des amis ?",tr:"Ailenin veya arkadaşlarının yanında mı?",cat:"Lieux du séjour"},
+  {id:"Q014",lang:"TR",fr:"A l'hôtel ?",tr:"Otelde mi?",cat:"Lieux du séjour"},
+  {id:"Q015",lang:"TR",fr:"Montrez-moi la réservation d'hôtel",tr:"Otel rezervasyonunuzu gösterin",cat:"Lieux du séjour"},
+  {id:"Q016",lang:"TR",fr:"Avez-vous de l'argent liquide ou une carte de crédit ?",tr:"Nakit paranız veya kredi kartınız var mı?",cat:"Argent"},
+  {id:"Q017",lang:"TR",fr:"Montrez-moi l'argent",tr:"Paranızı gösterin",cat:"Argent"},
+  {id:"Q018",lang:"TR",fr:"Montrez-moi la carte de crédit",tr:"Kredi kartınızı gösterin",cat:"Argent"},
+  {id:"Q019",lang:"TR",fr:"Mettez les 4 doigts de la main droite sur la lumière verte",tr:"Sağ elinizin dört parmağını yeşil ışığın üzerine koyun.",cat:"Autres"},
+  {id:"Q020",lang:"TR",fr:"Placez-vous devant la caméra",tr:"Kameranın önüne geçin.",cat:"Autres"},
+  // ── UKRAINIEN (UK)
+  {id:"Q001",lang:"UK",fr:"Pourquoi venir en Belgique ?",tr:"Навіщо приїжджати до Бельгії?",cat:"Motif de voyage"},
+  {id:"Q002",lang:"UK",fr:"Pour rendre visite à de la famille ?",tr:"Щоб відвідати свою родину?",cat:"Motif de voyage"},
+  {id:"Q003",lang:"UK",fr:"Pour faire du tourisme ?",tr:"Для туризму?",cat:"Motif de voyage"},
+  {id:"Q004",lang:"UK",fr:"Pour le travail ?",tr:"Для роботи?",cat:"Motif de voyage"},
+  {id:"Q005",lang:"UK",fr:"Montrez-moi votre contrat de travail ou votre invitation.",tr:"Покажіть мені ваш трудовий договір або запрошення.",cat:"Motif de voyage"},
+  {id:"Q006",lang:"UK",fr:"Combien de temps restez vous en Europe ?",tr:"Як довго ви залишаєтеся в Європі?",cat:"Durée du voyage"},
+  {id:"Q007",lang:"UK",fr:"Jours",tr:"Дні",cat:"Durée du voyage"},
+  {id:"Q008",lang:"UK",fr:"Semaines",tr:"Тижні",cat:"Durée du voyage"},
+  {id:"Q009",lang:"UK",fr:"Mois",tr:"Місяці",cat:"Durée du voyage"},
+  {id:"Q010",lang:"UK",fr:"Avez-vous un billet retour ?",tr:"У вас є зворотний квиток?",cat:"Durée du voyage"},
+  {id:"Q011",lang:"UK",fr:"Montrez moi votre billet retour",tr:"Покажіть мені ваш зворотний квиток.",cat:"Durée du voyage"},
+  {id:"Q012",lang:"UK",fr:"Où allez vous dormir ?",tr:"Де ви будете ночувати?",cat:"Lieux du séjour"},
+  {id:"Q013",lang:"UK",fr:"Chez de la famille ou des amis ?",tr:"У родичів чи друзів?",cat:"Lieux du séjour"},
+  {id:"Q014",lang:"UK",fr:"A l'hôtel ?",tr:"В готелі?",cat:"Lieux du séjour"},
+  {id:"Q015",lang:"UK",fr:"Montrez-moi la réservation d'hôtel",tr:"Покажіть мені бронювання готелю",cat:"Lieux du séjour"},
+  {id:"Q016",lang:"UK",fr:"Avez-vous de l'argent liquide ou une carte de crédit ?",tr:"У вас є готівка або кредитна картка?",cat:"Argent"},
+  {id:"Q017",lang:"UK",fr:"Montrez-moi l'argent",tr:"Покажіть мені гроші",cat:"Argent"},
+  {id:"Q018",lang:"UK",fr:"Montrez-moi la carte de crédit",tr:"Покажіть мені кредитну картку",cat:"Argent"},
+  {id:"Q019",lang:"UK",fr:"Mettez les 4 doigts de la main droite sur la lumière verte",tr:"Покладіть чотири пальці правої руки на зелене світло.",cat:"Autres"},
+  {id:"Q020",lang:"UK",fr:"Placez-vous devant la caméra",tr:"Встаньте перед камерою.",cat:"Autres"},
+];
+
+/* ─────────────────────────────────────────────────────────
+   4. CONSTRUCTION DES LANGUES
+   Regroupe les questions par langue et catégorie
+───────────────────────────────────────────────────────── */
+
+// Liste ordonnée des LangueID (ordre du CSV Langues)
+const LANG_ORDER = ["SQ","DE","EN","AR","BS","ZH","ES","KA","EL","HE","IT","MK","NL","FA","PT","RO","RU","SR","TR","UK"];
+
+// Noms affichés (du CSV Langues)
+const LANG_NAMES = {
+  SQ:"Albanais", DE:"Allemand", EN:"Anglais", AR:"Arabe", BS:"Bosniaque",
+  ZH:"Chinois",  ES:"Espagnol", KA:"Géorgien", EL:"Grec", HE:"Hébreu",
+  IT:"Italien",  MK:"Macédonien", NL:"Néerlandais", FA:"Persan (Farsi)",
+  PT:"Portugais", RO:"Roumain", RU:"Russe", SR:"Serbe", TR:"Turc", UK:"Ukrainien",
+};
+
+// Flags (du CSV Langues)
+const LANG_FLAGS = {
+  SQ:"🇦🇱", DE:"🇩🇪", EN:"🇬🇧", AR:"🇸🇦", BS:"🇧🇦",
+  ZH:"🇨🇳", ES:"🇪🇸", KA:"🇬🇪", EL:"🇬🇷", HE:"🇮🇱",
+  IT:"🇮🇹", MK:"🇲🇰", NL:"🇳🇱", FA:"🇮🇷", PT:"🇵🇹",
+  RO:"🇷🇴", RU:"🇷🇺", SR:"🇷🇸", TR:"🇹🇷", UK:"🇺🇦",
+};
+
+// Construit l'objet LANGUAGES utilisé par l'UI
+const LANGUAGES = LANG_ORDER.map(id => {
+  const meta = LANG_META[id];
+  const qs   = RAW_QUESTIONS.filter(q => q.lang === id);
+  // Regroupe par catégorie
+  const bycat = {};
+  CATEGORIES.forEach(c => { bycat[c.key] = []; });
+  qs.forEach(q => {
+    const key = CAT_MAP[q.cat];
+    if (key && bycat[key]) bycat[key].push({ fr: q.fr.trim(), tr: q.tr.trim(), qid: q.id });
+  });
+  return {
+    id,
+    slug:        meta.slug,
+    name:        LANG_NAMES[id],
+    native:      meta.native,
+    flag:        LANG_FLAGS[id],
+    region:      meta.region,
+    rtl:         meta.rtl,
+    audioFolder: meta.audioFolder,
+    questions:   bycat,
+  };
+});
+
+/* ─────────────────────────────────────────────────────────
+   5. ÉTAT
+───────────────────────────────────────────────────────── */
 const state = {
-  currentLang:   null,   // language object or null
-  currentCat:    "motif",
-  currentRegion: "all",
-  playingIdx:    null,   // index of the phrase being spoken
+  screen:      "home",   // "home" | "phrases" | "links"
+  lang:        null,
+  cat:         "motif",
+  region:      "all",
+  playingKey:  null,     // "idx-catkey" ou null
+  fsIdx:       null,     // index dans la liste filtrée courante
 };
 
 /* ─────────────────────────────────────────────────────────
-   3. DOM REFERENCES
+   6. DOM
 ───────────────────────────────────────────────────────── */
-
 const $ = id => document.getElementById(id);
-
 const DOM = {
-  screenHome:       $("screen-home"),
-  screenPhrases:    $("screen-phrases"),
-  topbarHome:       $("topbar-home"),
-  topbarPhrases:    $("topbar-phrases"),
-  btnBack:          $("btn-back"),
-  langName:         $("topbar-lang-name"),
-  langNative:       $("topbar-lang-native"),
-  langFlag:         $("topbar-lang-flag"),
-  searchInput:      $("search-input"),
-  searchClear:      $("search-clear"),
-  filterBar:        $("filter-bar"),
-  langGrid:         $("lang-grid"),
-  catTabs:          $("cat-tabs"),
-  phraseList:       $("phrase-list"),
+  topbarHome:     $("topbar-home"),
+  topbarPhrases:  $("topbar-phrases"),
+  topbarLinks:    $("topbar-links"),
+  langName:       $("topbar-lang-name"),
+  langNative:     $("topbar-lang-native"),
+  langFlag:       $("topbar-lang-flag"),
+  btnBack:        $("btn-back"),
+  btnBackLinks:   $("btn-back-links"),
+  screenHome:     $("screen-home"),
+  screenPhrases:  $("screen-phrases"),
+  screenLinks:    $("screen-links"),
+  searchInput:    $("search-input"),
+  searchClear:    $("search-clear"),
+  filterBar:      $("filter-bar"),
+  langGrid:       $("lang-grid"),
+  catTabs:        $("cat-tabs"),
+  phraseList:     $("phrase-list"),
+  linksPage:      $("links-page"),
+  btnOpenLinks:   $("btn-open-links"),
+  fsOverlay:      $("fs-overlay"),
+  fsClose:        $("fs-close"),
+  fsFr:           $("fs-fr"),
+  fsTr:           $("fs-tr"),
+  fsSpeak:        $("fs-speak"),
 };
 
 /* ─────────────────────────────────────────────────────────
-   4. NAVIGATION
+   7. NAVIGATION
 ───────────────────────────────────────────────────────── */
-
-function goHome() {
-  stopSpeech();
-  state.currentLang = null;
-  state.playingIdx  = null;
-
-  DOM.screenHome.classList.add("active");
-  DOM.screenHome.classList.remove("hidden");
-  DOM.screenPhrases.classList.add("hidden");
-  DOM.screenPhrases.classList.remove("active");
-
-  DOM.topbarHome.classList.remove("hidden");
-  DOM.topbarPhrases.classList.add("hidden");
+function showScreen(name) {
+  stopAudio();
+  state.screen = name;
+  // topbars
+  DOM.topbarHome.classList.toggle   ("hidden", name !== "home");
+  DOM.topbarPhrases.classList.toggle("hidden", name !== "phrases");
+  DOM.topbarLinks.classList.toggle  ("hidden", name !== "links");
+  // screens
+  DOM.screenHome.classList.toggle   ("active",  name === "home");
+  DOM.screenHome.classList.toggle   ("hidden",  name !== "home");
+  DOM.screenPhrases.classList.toggle("active",  name === "phrases");
+  DOM.screenPhrases.classList.toggle("hidden",  name !== "phrases");
+  DOM.screenLinks.classList.toggle  ("active",  name === "links");
+  DOM.screenLinks.classList.toggle  ("hidden",  name !== "links");
 }
 
-function goToPhrases(lang) {
-  state.currentLang = lang;
-  state.currentCat  = "motif";
-  state.playingIdx  = null;
+function goHome() { showScreen("home"); state.lang = null; }
 
-  // Update topbar
+function goToPhrases(lang) {
+  state.lang = lang;
+  state.cat  = "motif";
   DOM.langName.textContent   = lang.name;
   DOM.langNative.textContent = lang.native;
   DOM.langFlag.textContent   = lang.flag;
-
-  DOM.topbarHome.classList.add("hidden");
-  DOM.topbarPhrases.classList.remove("hidden");
-
-  DOM.screenHome.classList.remove("active");
-  DOM.screenHome.classList.add("hidden");
-  DOM.screenPhrases.classList.remove("hidden");
-  DOM.screenPhrases.classList.add("active");
-
+  showScreen("phrases");
   renderCatTabs();
   renderPhrases();
   DOM.phraseList.scrollTop = 0;
 }
 
-/* ─────────────────────────────────────────────────────────
-   5. RENDER — HOME
-───────────────────────────────────────────────────────── */
+function goToLinks() {
+  currentInfoTab = "liens";
+  showScreen("links");
+  // Reset onglets visuels
+  document.querySelectorAll(".itab").forEach(t => {
+    t.classList.toggle("active", t.dataset.tab === "liens");
+  });
+  renderLinks();
+}
 
+/* ─────────────────────────────────────────────────────────
+   8. RENDER — HOME
+───────────────────────────────────────────────────────── */
 function renderFilters() {
   const regions = [
-    ["all",          "Toutes"],
-    ["europe",       "Europe"],
-    ["moyen-orient", "Moyen-Orient"],
-    ["asie",         "Asie"],
-    ["amerique",     "Amériques"],
+    ["all","Toutes"],["europe","Europe"],["moyen-orient","Moyen-Orient"],
+    ["asie","Asie"],["amerique","Amériques"],
   ];
-
-  DOM.filterBar.innerHTML = regions
-    .map(([key, label]) => `
-      <button
-        class="chip${state.currentRegion === key ? " active" : ""}"
-        data-region="${key}">
-        ${label}
-      </button>`)
-    .join("");
+  DOM.filterBar.innerHTML = regions.map(([k,l]) =>
+    `<button class="chip${state.region===k?" active":""}" data-region="${k}">${l}</button>`
+  ).join("");
 }
 
 function renderGrid() {
-  const query = DOM.searchInput.value.trim().toLowerCase();
-
-  const filtered = LANGUAGES.filter(lang => {
-    const matchRegion = state.currentRegion === "all" || lang.region === state.currentRegion;
-    const matchSearch = lang.name.toLowerCase().includes(query)
-                     || lang.native.toLowerCase().includes(query);
-    return matchRegion && matchSearch;
+  const q = DOM.searchInput.value.trim().toLowerCase();
+  const filtered = LANGUAGES.filter(l => {
+    const mr = state.region === "all" || l.region === state.region;
+    const ms = l.name.toLowerCase().includes(q) || l.native.toLowerCase().includes(q);
+    return mr && ms;
   });
-
-  if (filtered.length === 0) {
-    DOM.langGrid.innerHTML = `
-      <div class="empty-state">
-        <div class="empty-icon">🔍</div>
-        <p>Aucune langue trouvée</p>
-      </div>`;
+  if (!filtered.length) {
+    DOM.langGrid.innerHTML = `<div class="empty-state"><div class="empty-icon">🔍</div><p>Aucune langue trouvée</p></div>`;
     return;
   }
-
-  DOM.langGrid.innerHTML = filtered
-    .map(lang => `
-      <div class="lang-card" role="listitem" data-slug="${lang.slug}">
-        <span class="lc-flag" aria-hidden="true">${lang.flag}</span>
-        <div class="lc-info">
-          <div class="lc-name">${lang.name}</div>
-          <div class="lc-native">${lang.native}</div>
-        </div>
-        <span class="lc-arrow" aria-hidden="true">›</span>
-      </div>`)
-    .join("");
+  DOM.langGrid.innerHTML = filtered.map(l => `
+    <div class="lang-card" role="listitem" data-id="${l.id}">
+      <span class="lc-flag">${l.flag}</span>
+      <div class="lc-info">
+        <div class="lc-name">${l.name}</div>
+        <div class="lc-native">${l.native}</div>
+      </div>
+      <span class="lc-arrow">›</span>
+    </div>`).join("");
 }
 
 /* ─────────────────────────────────────────────────────────
-   6. RENDER — PHRASES
+   9. RENDER — PHRASES
 ───────────────────────────────────────────────────────── */
-
 function renderCatTabs() {
-  DOM.catTabs.innerHTML = CATEGORIES
-    .map(cat => {
-      const isActive = cat.key === state.currentCat;
-      const borderStyle = isActive ? `border-bottom-color:${cat.color}` : "";
-      return `
-        <button
-          class="ctab${isActive ? " active" : ""}"
-          style="${borderStyle}"
-          data-cat="${cat.key}"
-          data-color="${cat.color}">
-          ${cat.icon} ${cat.label}
-        </button>`;
-    })
-    .join("");
+  DOM.catTabs.innerHTML = CATEGORIES.map(c => `
+    <button class="ctab${state.cat===c.key?" active":""}"
+      style="${state.cat===c.key?`border-bottom-color:${c.color}`:""}"
+      data-cat="${c.key}" data-color="${c.color}">
+      ${c.icon} ${c.label}
+    </button>`).join("");
 }
 
 function renderPhrases() {
-  const lang     = state.currentLang;
-  const catKey   = state.currentCat;
-  const frList   = FR_PHRASES[catKey];
-  const trList   = lang.t[catKey] || [];
-  const isRtl    = !!lang.rtl;
-
-  DOM.phraseList.innerHTML = frList
-    .map((frText, idx) => {
-      const trText   = trList[idx] || "—";
-      const rtlClass = isRtl ? " rtl" : "";
-
-      return `
-        <div class="pcard">
-          <div class="pcard-fr">
-            <span class="pcard-fr-flag" aria-hidden="true">🇫🇷</span>
-            <span class="pcard-fr-text">${frText}</span>
-          </div>
-          <div class="pcard-tr">
-            <div class="pcard-tr-text${rtlClass}">${trText}</div>
-          </div>
-          <div class="pcard-actions">
-            <button
-              class="btn-speak idle"
-              data-idx="${idx}"
-              data-text="${escapeAttr(trText)}"
-              aria-label="Lire la phrase">
-              <span class="spk-icon" aria-hidden="true">🔊</span>
-              Écouter
-            </button>
-            <button
-              class="btn-copy"
-              id="btn-copy-${idx}"
-              data-text="${escapeAttr(trText)}"
-              data-idx="${idx}"
-              aria-label="Copier la phrase">
-              📋
-            </button>
-          </div>
-        </div>`;
-    })
-    .join("");
+  const qs    = state.lang.questions[state.cat] || [];
+  const isRtl = state.lang.rtl;
+  if (!qs.length) {
+    DOM.phraseList.innerHTML = `<div class="empty-state"><p>Aucune phrase dans cette catégorie.</p></div>`;
+    return;
+  }
+  DOM.phraseList.innerHTML = qs.map((q, idx) => `
+    <div class="pcard">
+      <div class="pcard-fr">
+        <span class="pcard-fr-flag">🇧🇪</span>
+        <span class="pcard-fr-text">${q.fr}</span>
+      </div>
+      <div class="pcard-tr">
+        <div class="pcard-tr-text${isRtl?" rtl":""}">${q.tr}</div>
+      </div>
+      <div class="pcard-actions">
+        <button class="btn-speak idle" data-idx="${idx}" aria-label="Écouter">
+          <span class="spk-icon">🔊</span> Écouter
+        </button>
+        <button class="btn-expand" data-idx="${idx}" aria-label="Agrandir">⛶</button>
+      </div>
+    </div>`).join("");
 }
 
 /* ─────────────────────────────────────────────────────────
-   7. TEXT-TO-SPEECH
+   10. RENDER — LIENS & CODES VISA
 ───────────────────────────────────────────────────────── */
 
-function stopSpeech() {
-  if (window.speechSynthesis) {
-    window.speechSynthesis.cancel();
+/* Codes B et BNL issus du PDF */
+const CODES_B = [
+  { code:"B1",  desc:"Autorisation de séjour provisoire, séjour limité à la durée des études + article 58 de la loi du 15 décembre 1980" },
+  { code:"B2",  desc:"Inscription à (dénomination de l'établissement d'enseignement)" },
+  { code:"B3",  desc:"Admis aux études à (+ dénomination de l'établissement d'enseignement)" },
+  { code:"B4",  desc:"Demande d'équivalence de diplôme" },
+  { code:"B5",  desc:"Inscription à un examen d'admission" },
+  { code:"B6",  desc:"Autorisation de séjour provisoire, séjour limité à la durée de la bourse" },
+  { code:"B7",  desc:"Autorisation de séjour provisoire, séjour limité à la durée de l'échange" },
+  { code:"B8",  desc:"École privée — séjour temporaire limité à la durée de la formation" },
+  { code:"B9",  desc:"Études secondaires — séjour limité à la durée de l'année scolaire" },
+  { code:"B10", desc:"Regroupement familial étudiant — séjour limité à la durée des études du conjoint, père, mère ou partenaire enregistré" },
+  { code:"B11", desc:"Regroupement familial — article 10, §1, points 4°-7° de la loi du 15 décembre 1980" },
+  { code:"B12", desc:"Séjour limité à la durée de l'activité pour laquelle il y a dispense de permis de travail ou carte professionnelle" },
+  { code:"B13", desc:"Chercheur — séjour limité à la durée de la convention d'accueil" },
+  { code:"B14", desc:"Séjour limité à la durée du permis de travail + un mois" },
+  { code:"B15", desc:"Séjour limité à la durée de la carte professionnelle" },
+  { code:"B16", desc:"Séjour limité à huit mois" },
+  { code:"B17", desc:"Séjour temporaire limité à un an" },
+  { code:"B18", desc:"Séjour limité à six mois" },
+  { code:"B19", desc:"Séjour temporaire — résident de longue durée" },
+  { code:"B20", desc:"Regroupement familial — article 40 bis ou 40 ter de la loi du 15 décembre 1980" },
+  { code:"B21", desc:"Regroupement familial — séjour limité à la durée du séjour du conjoint, partenaire, père, mère, fils ou fille" },
+  { code:"B22", desc:"Regroupement familial — visa de retour" },
+  { code:"B23", desc:"Séjour temporaire limité à six mois en vue d'une adoption" },
+  { code:"B24", desc:"Séjour temporaire limité à un an — travail de vacances" },
+  { code:"B25", desc:"Arrêté royal du 20 octobre 1991 — étrangers envoyés en poste auprès d'une ambassade, consulat ou organisation internationale" },
+  { code:"B26", desc:"Droit de retour — autorisation de séjour provisoire — article 19 de la loi du 15 décembre 1980" },
+  { code:"B27", desc:"Autorisation de retour après un an — autorisation de séjour provisoire" },
+  { code:"B28", desc:"Regroupement familial — séjour limité au séjour du conjoint, partenaire, père ou mère — article 10 bis §2 ou 3" },
+];
+
+const CODES_BNL = [
+  { code:"BNL 1",  desc:"Visa délivré après autorisation des autorités centrales" },
+  { code:"BNL 2",  desc:"Visa délivré d'office" },
+  { code:"BNL 3",  desc:"+ Dénomination du poste frontière d'entrée et/ou date d'entrée (raisons de sécurité, cas exceptionnels)" },
+  { code:"BNL 4",  desc:"Visa délivré en représentation après avoir consulté l'État représenté" },
+  { code:"BNL 5",  desc:"+ X jours : le titulaire du visa doit se présenter à la police dans les «x jours»" },
+  { code:"BNL 8",  desc:"Visa délivré pour soins médicaux (le nom de l'hôpital peut être ajouté)" },
+  { code:"BNL 9",  desc:"ASSURANCE NON REQUISE" },
+  { code:"BNL 10", desc:"Visa délivré pour études" },
+  { code:"BNL 11", desc:"Visa délivré en cas de regroupement familial" },
+  { code:"BNL 12", desc:"Visa délivré pour activité professionnelle" },
+  { code:"BNL 13", desc:"Visa délivré pour affaires" },
+  { code:"BNL 14", desc:"Visa délivré en vue d'une adoption" },
+  { code:"BNL 15", desc:"Visas C délivrés aux étrangers envoyés en poste auprès d'une ambassade, consulat ou organisation internationale" },
+  { code:"BNL 16", desc:"Visa délivré pour partenariat" },
+  { code:"BNL 17", desc:"Visa délivré pour mariage" },
+  { code:"BNL 18", desc:"+ Nom du parent ou tuteur accompagnateur : visas délivrés aux mineurs qui voyagent accompagnés" },
+  { code:"BNL 19", desc:"+ Nom de l'hôte : visas délivrés aux mineurs qui voyagent non accompagnés" },
+];
+
+let currentInfoTab = "liens"; // "liens" | "codes"
+
+function renderLinks() {
+  if (currentInfoTab === "liens") {
+    renderLiensList();
+  } else {
+    renderCodesList();
   }
-  state.playingIdx = null;
-  updateSpeakButtons();
 }
 
-function speakPhrase(text, idx) {
-  if (!window.speechSynthesis) return;
-
-  // Toggle off if already playing this one
-  if (state.playingIdx === idx) {
-    stopSpeech();
-    return;
-  }
-
-  window.speechSynthesis.cancel();
-
-  const utterance   = new SpeechSynthesisUtterance(text);
-  utterance.lang    = state.currentLang.ttsLang;
-  utterance.rate    = 0.88;
-  utterance.pitch   = 1;
-
-  utterance.onstart = () => {
-    state.playingIdx = idx;
-    updateSpeakButtons();
-  };
-
-  utterance.onend = utterance.onerror = () => {
-    state.playingIdx = null;
-    updateSpeakButtons();
-  };
-
-  window.speechSynthesis.speak(utterance);
+function renderLiensList() {
+  DOM.linksPage.innerHTML = `
+    <div class="links-header">
+      <h2>Liens utiles</h2>
+      <p>Ressources en ligne pour le contrôle aux frontières</p>
+    </div>
+    ${LINKS.map(l => `
+      <a class="link-card" href="${l.url}" target="_blank" rel="noopener noreferrer">
+        <div class="link-icon">${l.icon}</div>
+        <div class="link-info">
+          <div class="link-title">${l.titre}</div>
+          <div class="link-url">${l.url.replace(/^https?:\/\//,"")}</div>
+        </div>
+        <span class="link-arrow">›</span>
+      </a>`).join("")}`;
 }
 
-function updateSpeakButtons() {
+function renderCodesList() {
+  DOM.linksPage.innerHTML = `
+    <div class="links-header">
+      <h2>Codes Visa</h2>
+      <p>Codes B (Belgique) et BNL (Benelux) — Annexe 22 du manuel Schengen</p>
+    </div>
+
+    <div class="codes-section-title">🇧🇪 Codes B — Spécifiques Belgique</div>
+    ${CODES_B.map(c => `
+      <div class="code-card">
+        <div class="code-badge">${c.code}</div>
+        <div class="code-desc">${c.desc}</div>
+      </div>`).join("")}
+
+    <div class="codes-section-title" style="margin-top:20px">🇧🇪🇳🇱🇱🇺 Codes BNL — Benelux</div>
+    ${CODES_BNL.map(c => `
+      <div class="code-card">
+        <div class="code-badge bnl">${c.code}</div>
+        <div class="code-desc">${c.desc}</div>
+      </div>`).join("")}`;
+}
+
+/* ─────────────────────────────────────────────────────────
+   11. FULLSCREEN OVERLAY
+───────────────────────────────────────────────────────── */
+function openFullscreen(idx) {
+  const qs    = state.lang.questions[state.cat] || [];
+  const q     = qs[idx];
+  if (!q) return;
+  state.fsIdx = idx;
+  DOM.fsFr.textContent = q.fr;
+  DOM.fsTr.textContent = q.tr;
+  DOM.fsTr.className   = "fs-tr" + (state.lang.rtl ? " rtl" : "");
+  DOM.fsSpeak.className = "fs-speak idle";
+  DOM.fsSpeak.innerHTML = '<span class="spk-icon">🔊</span> Écouter';
+  DOM.fsOverlay.classList.remove("hidden");
+  document.body.style.overflow = "hidden";
+}
+
+function closeFullscreen() {
+  stopAudio();
+  DOM.fsOverlay.classList.add("hidden");
+  document.body.style.overflow = "";
+  state.fsIdx = null;
+}
+
+/* ─────────────────────────────────────────────────────────
+   12. AUDIO MP3
+───────────────────────────────────────────────────────── */
+let currentAudio = null;
+
+function audioPath(lang, catKey, idx) {
+  // Numérotation continue Q1→Q20 par langue, dans l'ordre du CSV :
+  // motif  5 questions → Q1  à Q5
+  // duree  6 questions → Q6  à Q11
+  // lieux  4 questions → Q12 à Q15
+  // argent 3 questions → Q16 à Q18
+  // autres 2 questions → Q19 à Q20
+  const offsets = { motif:0, duree:5, lieux:11, argent:15, autres:18 };
+  const n = (offsets[catKey] !== undefined ? offsets[catKey] : 0) + idx + 1;
+  return `Audio/${lang.audioFolder}/Q${n}.mp3`;
+}
+
+function stopAudio() {
+  if (currentAudio) {
+    currentAudio.pause();
+    currentAudio.currentTime = 0;
+    currentAudio = null;
+  }
+  state.playingKey = null;
+  updateSpeakBtns();
+  // aussi mettre à jour le bouton fullscreen
+  DOM.fsSpeak.className = "fs-speak idle";
+  DOM.fsSpeak.innerHTML = '<span class="spk-icon">🔊</span> Écouter';
+}
+
+function playAudio(idx, isFullscreen) {
+  const key  = `${state.cat}-${idx}`;
+  if (state.playingKey === key) { stopAudio(); return; }
+  stopAudio();
+  const path = audioPath(state.lang, state.cat, idx);
+
+  // ── DEBUG : affiche le chemin tenté dans la console du navigateur
+  console.log("🔊 Tentative audio :", path);
+
+  const audio = new Audio(path);
+  currentAudio = audio;
+  audio.addEventListener("play", () => {
+    state.playingKey = key;
+    updateSpeakBtns();
+    if (isFullscreen) {
+      DOM.fsSpeak.className = "fs-speak playing";
+      DOM.fsSpeak.innerHTML = '<span class="spk-icon">⏹</span> Lecture…';
+    }
+  });
+  audio.addEventListener("ended", stopAudio);
+  audio.addEventListener("error", e => {
+    // Affiche le chemin ET le code d'erreur dans la console
+    console.error("❌ Audio introuvable :", path, "| code:", e.target.error?.code, "| message:", e.target.error?.message);
+    stopAudio();
+    // Affiche brièvement le chemin sur le bouton pour diagnostic
+    const btn = document.querySelector(`.btn-speak[data-idx="${idx}"]`);
+    if (btn) {
+      btn.innerHTML = `<span style="font-size:.65rem;color:#fca">❌ ${path}</span>`;
+      setTimeout(() => {
+        btn.className = "btn-speak idle";
+        btn.innerHTML = '<span class="spk-icon">🔊</span> Écouter';
+      }, 4000);
+    }
+  });
+  audio.play().catch(err => {
+    console.error("❌ play() rejeté :", err, "| chemin :", path);
+    stopAudio();
+  });
+}
+
+function updateSpeakBtns() {
   document.querySelectorAll(".btn-speak").forEach(btn => {
-    const idx       = parseInt(btn.dataset.idx, 10);
-    const isPlaying = idx === state.playingIdx;
-
-    btn.className   = "btn-speak " + (isPlaying ? "playing" : "idle");
-    btn.innerHTML   = isPlaying
-      ? '<span class="spk-icon" aria-hidden="true">⏹</span> Lecture…'
-      : '<span class="spk-icon" aria-hidden="true">🔊</span> Écouter';
+    const idx = parseInt(btn.dataset.idx, 10);
+    const key = `${state.cat}-${idx}`;
+    const on  = key === state.playingKey;
+    btn.className = "btn-speak " + (on ? "playing" : "idle");
+    btn.innerHTML = on
+      ? '<span class="spk-icon">⏹</span> Lecture…'
+      : '<span class="spk-icon">🔊</span> Écouter';
   });
 }
 
 /* ─────────────────────────────────────────────────────────
-   8. COPY TO CLIPBOARD
+   13. COPIE
 ───────────────────────────────────────────────────────── */
-
-function copyPhrase(text, idx) {
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(text).catch(() => {});
-  }
-
-  const btn = document.getElementById("btn-copy-" + idx);
+function copyText(text, idx) {
+  navigator.clipboard && navigator.clipboard.writeText(text).catch(()=>{});
+  const btn = $(`cp-${idx}`);
   if (!btn) return;
-
   btn.textContent = "✓";
   btn.classList.add("copied");
-
-  setTimeout(() => {
-    btn.textContent = "📋";
-    btn.classList.remove("copied");
-  }, 1500);
+  setTimeout(() => { btn.textContent = "📋"; btn.classList.remove("copied"); }, 1500);
 }
 
 /* ─────────────────────────────────────────────────────────
-   9. HELPERS
+   14. HELPERS
 ───────────────────────────────────────────────────────── */
-
-/** Escape a string for use inside an HTML attribute */
-function escapeAttr(str) {
-  return str
-    .replace(/&/g, "&amp;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
+function escAttr(s) {
+  return String(s)
+    .replace(/&/g,"&amp;").replace(/"/g,"&quot;")
+    .replace(/'/g,"&#39;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 }
 
 /* ─────────────────────────────────────────────────────────
-   10. EVENT LISTENERS — delegated for performance
+   15. ÉVÉNEMENTS
 ───────────────────────────────────────────────────────── */
 
-// Back button
+// Retour
 DOM.btnBack.addEventListener("click", goHome);
+DOM.btnBackLinks.addEventListener("click", goHome);
 
-// Search input
-DOM.searchInput.addEventListener("input", () => {
-  const hasValue = DOM.searchInput.value.length > 0;
-  DOM.searchClear.classList.toggle("hidden", !hasValue);
-  renderGrid();
+// Onglets liens/codes (délégué sur document pour éviter le blocage display:none)
+document.addEventListener("click", e => {
+  const tab = e.target.closest(".itab");
+  if (!tab) return;
+  currentInfoTab = tab.dataset.tab;
+  document.querySelectorAll(".itab").forEach(t => {
+    t.classList.toggle("active", t.dataset.tab === currentInfoTab);
+  });
+  DOM.linksPage.scrollTop = 0;
+  renderLinks();
 });
 
-// Search clear
+// Ouvrir liens
+DOM.btnOpenLinks.addEventListener("click", goToLinks);
+
+// Recherche
+DOM.searchInput.addEventListener("input", () => {
+  const v = DOM.searchInput.value.length > 0;
+  DOM.searchClear.classList.toggle("hidden", !v);
+  renderGrid();
+});
 DOM.searchClear.addEventListener("click", () => {
   DOM.searchInput.value = "";
   DOM.searchClear.classList.add("hidden");
   renderGrid();
 });
 
-// Filter chips (delegated)
+// Filtres (délégué)
 DOM.filterBar.addEventListener("click", e => {
-  const chip = e.target.closest(".chip");
-  if (!chip) return;
-  state.currentRegion = chip.dataset.region;
+  const c = e.target.closest(".chip");
+  if (!c) return;
+  state.region = c.dataset.region;
   renderFilters();
   renderGrid();
 });
 
-// Language cards (delegated)
+// Cartes langues (délégué)
 DOM.langGrid.addEventListener("click", e => {
   const card = e.target.closest(".lang-card");
   if (!card) return;
-  const lang = LANGUAGES.find(l => l.slug === card.dataset.slug);
+  const lang = LANGUAGES.find(l => l.id === card.dataset.id);
   if (lang) goToPhrases(lang);
 });
 
-// Category tabs (delegated)
+// Onglets catégories (délégué)
 DOM.catTabs.addEventListener("click", e => {
   const tab = e.target.closest(".ctab");
   if (!tab) return;
-  stopSpeech();
-  state.currentCat = tab.dataset.cat;
+  stopAudio();
+  state.cat = tab.dataset.cat;
   renderCatTabs();
   renderPhrases();
   DOM.phraseList.scrollTop = 0;
 });
 
-// Phrase list — speak & copy (delegated)
+// Phrase list — speak / expand (délégué)
 DOM.phraseList.addEventListener("click", e => {
-  const speakBtn = e.target.closest(".btn-speak");
-  if (speakBtn) {
-    speakPhrase(speakBtn.dataset.text, parseInt(speakBtn.dataset.idx, 10));
-    return;
-  }
-
-  const copyBtn = e.target.closest(".btn-copy");
-  if (copyBtn) {
-    copyPhrase(copyBtn.dataset.text, parseInt(copyBtn.dataset.idx, 10));
-  }
+  const speak  = e.target.closest(".btn-speak");
+  if (speak)  { playAudio(parseInt(speak.dataset.idx, 10), false); return; }
+  const expand = e.target.closest(".btn-expand");
+  if (expand) { openFullscreen(parseInt(expand.dataset.idx, 10)); }
 });
 
-// Stop speech when app loses focus
+// Fullscreen — fermer
+DOM.fsClose.addEventListener("click", closeFullscreen);
+DOM.fsOverlay.addEventListener("click", e => { if (e.target === DOM.fsOverlay) closeFullscreen(); });
+
+// Fullscreen — écouter
+DOM.fsSpeak.addEventListener("click", () => {
+  if (state.fsIdx !== null) playAudio(state.fsIdx, true);
+});
+
+// Echap
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") closeFullscreen();
+});
+
+// Stop si onglet caché
 document.addEventListener("visibilitychange", () => {
-  if (document.hidden) stopSpeech();
+  if (document.hidden) stopAudio();
 });
 
 /* ─────────────────────────────────────────────────────────
-   11. INIT
+   16. INIT
 ───────────────────────────────────────────────────────── */
-
 renderFilters();
 renderGrid();
