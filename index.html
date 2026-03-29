@@ -1136,6 +1136,16 @@ function renderLiensList() {
       <h2>Liens utiles</h2>
       <p>Ressources en ligne pour le contrôle aux frontières</p>
     </div>
+
+    <a class="link-card" href="legislation.html" style="border-left:3px solid var(--gold);">
+      <div class="link-icon" style="background:linear-gradient(135deg,#8B3A2A,#c0392b);">⚖️</div>
+      <div class="link-info">
+        <div class="link-title">Législation</div>
+        <div class="link-url">Durée d'absence · Subsistance · Visa</div>
+      </div>
+      <span class="link-arrow">›</span>
+    </a>
+
     ${LINKS.map(l => `
       <a class="link-card" href="${l.url}" target="_blank" rel="noopener noreferrer">
         <div class="link-icon">${l.icon}</div>

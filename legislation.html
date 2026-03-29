@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="color-scheme" content="light only"/>
+<meta name="theme-color" content="#1C2B4A"/>
+<title>Législation — Contrôle Frontière</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+/* ── TOKENS ── */
+:root {
+  color-scheme: light only;
+  --navy:    #1C2B4A;
+  --navy-2:  #253660;
+  --navy-3:  #3a5a8a;
+  --gold:    #C5973A;
+  --gold-l:  #E8C97A;
+  --sage:    #7A9E8E;
+  --sage-l:  #B2CFC5;
+  --cream:   #F7F4EE;
+  --white:   #FFFFFF;
+  --border:  rgba(28,43,74,.10);
+  --text:    #1E2235;
+  --muted:   #7A7D90;
+  --sh-sm:   0 2px 8px rgba(28,43,74,.07);
+  --r-sm: 8px; --r-md: 12px; --r-lg: 16px; --r-xl: 20px;
+  --gap: 16px;
+  --font-body:   'DM Sans', sans-serif;
+  --font-display:'Playfair Display', serif;
+  --topbar-h: 52px;
+}
+@media (prefers-color-scheme: dark) { :root { color-scheme: light; } }
+
+/* ── RESET ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; background: var(--cream) !important; color: var(--text) !important; }
+body { font-family: var(--font-body); font-size: 16px; line-height: 1.5; overflow: hidden; overscroll-behavior: none; }
+button { font-family: var(--font-body); cursor: pointer; border: none; background: none; -webkit-tap-highlight-color: transparent; }
+
+/* ── SHELL ── */
+#app { display: flex; flex-direction: column; height: 100vh; height: 100dvh; overflow: hidden; background: var(--cream); }
+
+/* ── TOPBAR ── */
+.topbar {
+  flex-shrink: 0;
+  background: var(--navy);
+  height: calc(var(--topbar-h) + env(safe-area-inset-top));
+  padding-top: env(safe-area-inset-top);
+  padding-inline: var(--gap);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 2px 16px rgba(0,0,0,.22);
+  z-index: 10;
+}
+.topbar-back {
+  width: 36px; height: 36px;
+  border-radius: var(--r-sm);
+  background: rgba(255,255,255,.12);
+  color: #fff; font-size: 18px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  text-decoration: none;
+  transition: background .18s;
+}
+.topbar-back:active { background: rgba(255,255,255,.28); }
+.topbar-title { flex: 1; }
+.topbar-main { font-family: var(--font-display); font-size: 1rem; font-weight: 500; color: #fff; line-height: 1.2; display: block; }
+.topbar-sub  { font-size: .65rem; color: rgba(255,255,255,.45); letter-spacing: .07em; text-transform: uppercase; display: block; }
+.topbar-icon { font-size: 1.4rem; flex-shrink: 0; }
+
+/* ── ONGLETS ── */
+.tab-bar {
+  flex-shrink: 0;
+  display: flex;
+  overflow-x: auto;
+  background: var(--navy-2);
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+.tab-bar::-webkit-scrollbar { display: none; }
+.tab {
+  flex-shrink: 0;
+  padding: 12px 16px;
+  font-size: .8rem;
+  font-family: var(--font-body);
+  color: rgba(255,255,255,.45);
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+  transition: all .18s;
+  cursor: pointer;
+}
+.tab.active { color: #fff; border-bottom-color: var(--gold); }
+.tab:active { opacity: .7; }
+
+/* ── CONTENU ── */
+.tab-content { display: none; flex: 1; overflow-y: auto; padding: var(--gap); -webkit-overflow-scrolling: touch; }
+.tab-content.active { display: block; }
+.tab-content::-webkit-scrollbar { width: 3px; }
+.tab-content::-webkit-scrollbar-thumb { background: var(--sage-l); border-radius: 2px; }
+
+/* ── COMPOSANTS DE CONTENU ── */
+
+/* Titre de section */
+.section-title {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  color: var(--navy);
+  margin: 20px 0 10px;
+  padding-bottom: 6px;
+  border-bottom: 2px solid var(--gold);
+}
+.section-title:first-child { margin-top: 4px; }
+
+/* Sous-titre */
+.section-sub {
+  font-size: .82rem;
+  font-weight: 500;
+  color: var(--navy-2);
+  margin: 14px 0 6px;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+
+/* Texte courant */
+.text {
+  font-size: .9rem;
+  color: var(--text);
+  line-height: 1.65;
+  margin-bottom: 10px;
+}
+
+/* Carte info */
+.info-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  box-shadow: var(--sh-sm);
+}
+.info-card .label {
+  font-size: .72rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  margin-bottom: 4px;
+}
+.info-card .value {
+  font-size: .95rem;
+  font-weight: 500;
+  color: var(--navy);
+  line-height: 1.5;
+}
+.info-card .detail {
+  font-size: .8rem;
+  color: var(--muted);
+  margin-top: 4px;
+  line-height: 1.5;
+}
+
+/* Badge coloré */
+.badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 100px;
+  font-size: .75rem;
+  font-weight: 500;
+  margin-right: 6px;
+  margin-bottom: 4px;
+}
+.badge-green  { background: #d4edda; color: #1a6632; }
+.badge-red    { background: #fde8e8; color: #8b1a1a; }
+.badge-orange { background: #fff3cd; color: #856404; }
+.badge-blue   { background: #d0e8ff; color: #1a4a8a; }
+
+/* Tableau simple */
+.table-wrap { overflow-x: auto; margin-bottom: 12px; }
+table { width: 100%; border-collapse: collapse; font-size: .82rem; }
+th { background: var(--navy); color: #fff; padding: 8px 10px; text-align: left; font-weight: 500; }
+td { padding: 8px 10px; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: top; }
+tr:last-child td { border-bottom: none; }
+tr:nth-child(even) td { background: rgba(28,43,74,.03); }
+
+/* Liste à puces stylée */
+.list { list-style: none; margin-bottom: 12px; }
+.list li {
+  display: flex; align-items: flex-start; gap: 8px;
+  font-size: .88rem; color: var(--text);
+  line-height: 1.55; padding: 5px 0;
+  border-bottom: 1px dashed var(--border);
+}
+.list li:last-child { border-bottom: none; }
+.list li::before { content: "›"; color: var(--gold); font-weight: 700; flex-shrink: 0; }
+
+/* Note d'alerte */
+.alert {
+  border-radius: var(--r-md);
+  padding: 12px 14px;
+  font-size: .83rem;
+  line-height: 1.55;
+  margin-bottom: 12px;
+  display: flex; gap: 10px; align-items: flex-start;
+}
+.alert-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+.alert-info    { background: #e8f4ff; border-left: 3px solid #2A5A88; color: #1a3a5a; }
+.alert-warning { background: #fff8e8; border-left: 3px solid var(--gold); color: #5a3a00; }
+.alert-danger  { background: #fde8e8; border-left: 3px solid #c0392b; color: #6b1212; }
+
+/* Séparateur */
+.divider { height: 1px; background: var(--border); margin: 16px 0; }
+
+/* Espace bas de page */
+.bottom-spacer { height: 32px; }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <a class="topbar-back" href="index.html">←</a>
+    <div class="topbar-title">
+      <span class="topbar-main">Législation</span>
+      <span class="topbar-sub">Contrôle aux frontières</span>
+    </div>
+    <span class="topbar-icon">⚖️</span>
+  </header>
+
+  <!-- ONGLETS -->
+  <nav class="tab-bar" id="tab-bar">
+    <button class="tab active" data-tab="absence">🌍 Durée d'absence hors Schengen</button>
+    <button class="tab" data-tab="subsistance">💳 Moyens de subsistance</button>
+    <button class="tab" data-tab="visa">🪪 Visa obligatoire</button>
+  </nav>
+
+  <!-- ══════════════════════════════════════════════════
+       ONGLET 1 — DURÉE D'ABSENCE HORS SCHENGEN
+  ══════════════════════════════════════════════════ -->
+  <div class="tab-content active" id="tab-absence">
+
+    <h2 class="section-title">Règle des 90/180 jours</h2>
+
+    <div class="alert alert-info">
+      <span class="alert-icon">ℹ️</span>
+      <span>Un ressortissant de pays tiers ne peut séjourner dans l'espace Schengen que <strong>90 jours maximum sur toute période de 180 jours</strong>.</span>
+    </div>
+
+    <div class="info-card">
+      <div class="label">Durée maximale de séjour</div>
+      <div class="value">90 jours / 180 jours glissants</div>
+      <div class="detail">La période de 180 jours est calculée à rebours depuis le jour du contrôle.</div>
+    </div>
+
+    <div class="info-card">
+      <div class="label">Base légale</div>
+      <div class="value">Article 6 du Code frontières Schengen (Règlement UE 2016/399)</div>
+    </div>
+
+    <h2 class="section-title">Comment calculer</h2>
+    <p class="text">Comptez à rebours sur les 180 derniers jours et additionnez tous les jours passés dans l'espace Schengen. Si le total dépasse 90 jours, l'entrée doit être refusée.</p>
+
+    <div class="alert alert-warning">
+      <span class="alert-icon">⚠️</span>
+      <span>Le jour d'entrée et le jour de sortie comptent chacun comme <strong>1 jour complet</strong>.</span>
+    </div>
+
+    <div class="info-card">
+      <div class="label">Outil de calcul en ligne</div>
+      <div class="value">
+        <a href="https://ec.europa.eu/assets/home/visa-calculator/calculator.htm?lang=fr"
+           target="_blank" style="color:var(--navy-3);text-decoration:underline;">
+          Calculateur officiel de la Commission européenne →
+        </a>
+      </div>
+    </div>
+
+    <h2 class="section-title">Exceptions</h2>
+    <ul class="list">
+      <li>Titulaires d'un visa de long séjour (D) — séjour illimité dans l'État émetteur</li>
+      <li>Titulaires d'un titre de séjour valide</li>
+      <li>Ressortissants de l'UE, EEE et Suisse</li>
+      <li>Personnes bénéficiant d'un accord bilatéral spécifique</li>
+    </ul>
+
+    <div class="bottom-spacer"></div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════
+       ONGLET 2 — MOYENS DE SUBSISTANCE
+  ══════════════════════════════════════════════════ -->
+  <div class="tab-content" id="tab-subsistance">
+
+    <h2 class="section-title">Montants de référence (Belgique)</h2>
+
+    <div class="alert alert-info">
+      <span class="alert-icon">ℹ️</span>
+      <span>Ces montants sont indicatifs et peuvent être adaptés selon la situation du voyageur (hébergement gratuit, invitation, etc.).</span>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Durée du séjour</th><th>Montant minimum</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Par jour (sans hébergement garanti)</td><td><strong>95 €</strong></td></tr>
+          <tr><td>Par jour (avec hébergement garanti)</td><td><strong>45 €</strong></td></tr>
+          <tr><td>Séjour ≤ 3 jours (forfait)</td><td><strong>285 €</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2 class="section-title">Justificatifs acceptés</h2>
+    <ul class="list">
+      <li>Espèces (EUR ou devises convertibles)</li>
+      <li>Carte bancaire avec preuve de solde</li>
+      <li>Chèques de voyage</li>
+      <li>Lettre de prise en charge (sponsor)</li>
+      <li>Réservation hôtel prépayée</li>
+      <li>Invitation officielle avec engagement de prise en charge</li>
+    </ul>
+
+    <h2 class="section-title">Lettre de prise en charge</h2>
+    <p class="text">Si un tiers prend en charge le voyageur, une lettre d'invitation signée accompagnée d'une preuve de ressources du garant peut être exigée.</p>
+
+    <div class="alert alert-warning">
+      <span class="alert-icon">⚠️</span>
+      <span>La possession d'une carte bancaire ne suffit pas sans preuve du solde disponible.</span>
+    </div>
+
+    <h2 class="section-title">Base légale</h2>
+    <div class="info-card">
+      <div class="label">Référence</div>
+      <div class="value">Article 6 §1 point c) du Code frontières Schengen</div>
+      <div class="detail">+ Arrêté royal belge du 22 décembre 2009 fixant les montants de référence.</div>
+    </div>
+
+    <div class="bottom-spacer"></div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════
+       ONGLET 3 — VISA OBLIGATOIRE
+  ══════════════════════════════════════════════════ -->
+  <div class="tab-content" id="tab-visa">
+
+    <h2 class="section-title">Principe général</h2>
+
+    <div class="alert alert-info">
+      <span class="alert-icon">ℹ️</span>
+      <span>Le Règlement (UE) 2018/1806 établit la liste des pays dont les ressortissants sont soumis ou exemptés de visa pour franchir les frontières extérieures Schengen.</span>
+    </div>
+
+    <h2 class="section-title">Pays exemptés de visa (court séjour)</h2>
+    <p class="text">Les ressortissants des pays suivants peuvent entrer sans visa pour un séjour ≤ 90 jours :</p>
+
+    <div class="section-sub">Exemples — Europe hors UE</div>
+    <div>
+      <span class="badge badge-green">Albanie</span>
+      <span class="badge badge-green">Bosnie-Herzégovine</span>
+      <span class="badge badge-green">Géorgie</span>
+      <span class="badge badge-green">Macédoine du Nord</span>
+      <span class="badge badge-green">Moldavie</span>
+      <span class="badge badge-green">Monténégro</span>
+      <span class="badge badge-green">Serbie</span>
+      <span class="badge badge-green">Ukraine</span>
+    </div>
+
+    <div class="section-sub">Exemples — Autres continents</div>
+    <div>
+      <span class="badge badge-green">Brésil</span>
+      <span class="badge badge-green">Argentine</span>
+      <span class="badge badge-green">Mexique</span>
+      <span class="badge badge-green">Canada</span>
+      <span class="badge badge-green">Australie</span>
+      <span class="badge badge-green">Japon</span>
+      <span class="badge badge-green">Corée du Sud</span>
+      <span class="badge badge-green">États-Unis</span>
+    </div>
+
+    <div class="divider"></div>
+
+    <h2 class="section-title">Pays soumis à visa</h2>
+    <p class="text">Les ressortissants des pays suivants doivent être en possession d'un visa Schengen valide :</p>
+
+    <div class="section-sub">Exemples</div>
+    <div>
+      <span class="badge badge-red">Afghanistan</span>
+      <span class="badge badge-red">Bangladesh</span>
+      <span class="badge badge-red">Chine</span>
+      <span class="badge badge-red">Inde</span>
+      <span class="badge badge-red">Irak</span>
+      <span class="badge badge-red">Iran</span>
+      <span class="badge badge-red">Maroc</span>
+      <span class="badge badge-red">Pakistan</span>
+      <span class="badge badge-red">Russie</span>
+      <span class="badge badge-red">Turquie</span>
+    </div>
+
+    <div class="alert alert-warning" style="margin-top:14px">
+      <span class="alert-icon">⚠️</span>
+      <span>Cette liste n'est pas exhaustive. Vérifiez toujours la liste officielle à jour.</span>
+    </div>
+
+    <h2 class="section-title">Types de visa</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Type</th><th>Durée</th><th>Usage</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>Visa C</strong></td><td>≤ 90 jours</td><td>Tourisme, affaires, transit</td></tr>
+          <tr><td><strong>Visa D</strong></td><td>&gt; 90 jours</td><td>Long séjour (études, travail…)</td></tr>
+          <tr><td><strong>Visa A</strong></td><td>Transit</td><td>Zone internationale aéroport</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2 class="section-title">Vérification en ligne</h2>
+    <div class="info-card">
+      <div class="label">Source officielle</div>
+      <div class="value">
+        <a href="https://ec.europa.eu/home-affairs/what-we-do/policies/borders-and-visas/visa-policy_en"
+           target="_blank" style="color:var(--navy-3);text-decoration:underline;">
+          Commission européenne — Politique des visas →
+        </a>
+      </div>
+    </div>
+
+    <div class="info-card">
+      <div class="label">Règlement de référence</div>
+      <div class="value">Règlement (UE) 2018/1806 du Parlement européen et du Conseil</div>
+      <div class="detail">Annexe I = visa obligatoire / Annexe II = visa non obligatoire</div>
+    </div>
+
+    <div class="bottom-spacer"></div>
+  </div>
+
+</div><!-- /#app -->
+
+<script>
+"use strict";
+// Gestion des onglets
+document.getElementById("tab-bar").addEventListener("click", e => {
+  const tab = e.target.closest(".tab");
+  if (!tab) return;
+  const key = tab.dataset.tab;
+  // Onglets
+  document.querySelectorAll(".tab").forEach(t =>
+    t.classList.toggle("active", t.dataset.tab === key));
+  // Contenus
+  document.querySelectorAll(".tab-content").forEach(c =>
+    c.classList.toggle("active", c.id === "tab-" + key));
+});
+</script>
+</body>
+</html>
