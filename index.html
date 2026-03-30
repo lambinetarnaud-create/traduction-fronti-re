@@ -146,7 +146,7 @@ input  { font-family: var(--font-body); color: var(--text); background: transpar
 .phrase-list::-webkit-scrollbar-thumb { background:var(--sage-l); border-radius:2px; }
 
 /* Phrase card */
-.pcard { background:var(--white); border:1px solid var(--border); border-radius:var(--r-xl); overflow:hidden; box-shadow:var(--sh-sm); }
+.pcard { background:var(--white); border:1px solid var(--border); border-radius:var(--r-xl); overflow:visible; box-shadow:var(--sh-sm); }
 .pcard-fr { display:flex; align-items:flex-start; gap:7px; padding:10px 14px 8px; border-bottom:1px dashed var(--border-2); }
 .pcard-fr-flag { font-size:.95rem; flex-shrink:0; margin-top:1px; }
 .pcard-fr-text { font-size:.78rem; color:var(--muted); font-style:italic; line-height:1.55; flex:1; }
@@ -1194,12 +1194,12 @@ function openFullscreen(idx) {
   // Taille adaptative selon la longueur du texte traduit
   const len = q.tr.length;
   let size;
-  if      (len <= 6)  size = "clamp(3.5rem, 20vw, 6rem)";
-  else if (len <= 12) size = "clamp(3rem,   16vw, 5rem)";
-  else if (len <= 20) size = "clamp(2.5rem, 13vw, 4.2rem)";
-  else if (len <= 35) size = "clamp(2rem,   10vw, 3.4rem)";
-  else if (len <= 55) size = "clamp(1.6rem,  8vw, 2.8rem)";
-  else                size = "clamp(1.3rem,  6vw, 2.2rem)";
+  if      (len <= 6)  size = "clamp(3.5rem, 35vw, 20rem)";
+  else if (len <= 12) size = "clamp(3rem,   20vw, 14rem)";
+  else if (len <= 20) size = "clamp(2.5rem, 15vw, 12rem)";
+  else if (len <= 35) size = "clamp(2rem,   15vw, 10rem)";
+  else if (len <= 55) size = "clamp(1.6rem,  13vw, 10rem)";
+  else                size = "clamp(1.3rem,  10vw, 10rem)";
   DOM.fsTr.style.fontSize = size;
 
   DOM.fsSpeak.className = "fs-speak idle";
