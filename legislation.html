@@ -195,6 +195,16 @@ tr:nth-child(even) td { background: rgba(28,43,74,.03); }
 #visa-table-wrap::-webkit-scrollbar { width: 3px; }
 #visa-table-wrap::-webkit-scrollbar-thumb { background: var(--sage-l); border-radius: 2px; }
 
+/* Tableau IATA — même comportement via wrapper */
+#iata-wrap {
+  max-height: calc(100vh - 280px);
+  overflow-y: auto;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+#iata-wrap::-webkit-scrollbar { width: 3px; }
+#iata-wrap::-webkit-scrollbar-thumb { background: var(--sage-l); border-radius: 2px; }
+
 /* Liste à puces stylée */
 .list { list-style: none; margin-bottom: 12px; }
 .list li {
@@ -324,7 +334,7 @@ tr:nth-child(even) td { background: rgba(28,43,74,.03); }
       <span id="iata-count" style="font-size:.75rem;color:var(--muted);white-space:nowrap;"></span>
     </div>
 
-    <div class="table-wrap">
+    <div id="iata-wrap">
       <table id="iata-table">
         <thead>
           <tr><th>Ville</th><th>Code IATA</th><th>Région</th></tr>
