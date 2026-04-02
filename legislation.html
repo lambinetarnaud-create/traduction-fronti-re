@@ -233,7 +233,7 @@ tr:nth-child(even) td { background: rgba(28,43,74,.03); }
   <!-- ONGLETS -->
   <nav class="tab-bar" id="tab-bar">
     <button class="tab active" data-tab="absence">🌍 Durée d'absence hors Schengen</button>
-    <button class="tab" data-tab="subsistance">💳 Moyens de subsistance</button>
+    <button class="tab" data-tab="subsistance">✈️ Codes IATA</button>
     <button class="tab" data-tab="visa">🪪 Visa obligatoire</button>
   </nav>
 
@@ -242,101 +242,85 @@ tr:nth-child(even) td { background: rgba(28,43,74,.03); }
   ══════════════════════════════════════════════════ -->
   <div class="tab-content active" id="tab-absence">
 
-    <h2 class="section-title">Règle des 90/180 jours</h2>
+    <h2 class="section-title">Titres de séjour grec et chypriote</h2>
 
-    <div class="alert alert-info">
-      <span class="alert-icon">ℹ️</span>
-      <span>Un ressortissant de pays tiers ne peut séjourner dans l'espace Schengen que <strong>90 jours maximum sur toute période de 180 jours</strong>.</span>
-    </div>
-
-    <div class="info-card">
-      <div class="label">Durée maximale de séjour</div>
-      <div class="value">90 jours / 180 jours glissants</div>
-      <div class="detail">La période de 180 jours est calculée à rebours depuis le jour du contrôle.</div>
-    </div>
-
-    <div class="info-card">
-      <div class="label">Base légale</div>
-      <div class="value">Article 6 du Code frontières Schengen (Règlement UE 2016/399)</div>
-    </div>
-
-    <h2 class="section-title">Comment calculer</h2>
-    <p class="text">Comptez à rebours sur les 180 derniers jours et additionnez tous les jours passés dans l'espace Schengen. Si le total dépasse 90 jours, l'entrée doit être refusée.</p>
-
-    <div class="alert alert-warning">
+    <div class="alert alert-danger">
       <span class="alert-icon">⚠️</span>
-      <span>Le jour d'entrée et le jour de sortie comptent chacun comme <strong>1 jour complet</strong>.</span>
+      <span><strong>Attention :</strong> L'Irlande et Chypre sont membres de l'UE mais <strong>ne font pas partie de l'espace Schengen</strong>. Leurs titres de séjour et visas n'ont <strong>en principe aucune valeur</strong> pour voyager dans l'espace Schengen — sauf les documents listés ci-dessous.</span>
     </div>
 
-    <div class="info-card">
-      <div class="label">Outil de calcul en ligne</div>
-      <div class="value">
-        <a href="https://ec.europa.eu/assets/home/visa-calculator/calculator.htm?lang=fr"
-           target="_blank" style="color:var(--navy-3);text-decoration:underline;">
-          Calculateur officiel de la Commission européenne →
-        </a>
+    <!-- CHYPRE -->
+    <div class="info-card" style="border-left:3px solid var(--navy-3);">
+      <div class="label">🇨🇾 Chypre — Titres de séjour valables dans l'espace Schengen</div>
+      <div class="value" style="margin-bottom:8px;">Titres délivrés au titre de la <strong>directive 2004/38/CE</strong> aux citoyens de l'UE et membres de leur famille (format papier) :</div>
+
+      <div style="background:var(--cream);border-radius:var(--r-sm);padding:10px 12px;margin-bottom:10px;">
+        <div style="font-size:.75rem;font-weight:600;color:var(--navy);margin-bottom:4px;">Document 1</div>
+        <div style="font-size:.8rem;color:var(--text);font-style:italic;margin-bottom:4px;">ΠΙΣΤΟΠΟΙΗΤΙΚΟ/ΔΕΛΤΙΟ ΜΟΝΙΜΗΣ ΔΙΑΜΟΝΗΣ Πολίτη της Ένωσης και Μέλους της Οικογένειας του που είναι επίσης Πολίτης της Ένωσης και μέλους της Οικογένειας του που δεν είναι υπήκοος Κράτους Μέλους της Ένωσης</div>
+        <div style="font-size:.8rem;color:var(--muted);">CERTIFICAT/CARTE DE SÉJOUR PERMANENT pour citoyen de l'Union et pour les membres de sa famille, également citoyens de l'Union, ainsi que pour les membres de sa famille qui sont ressortissants de pays tiers.</div>
+      </div>
+
+      <div style="background:var(--cream);border-radius:var(--r-sm);padding:10px 12px;margin-bottom:10px;">
+        <div style="font-size:.75rem;font-weight:600;color:var(--navy);margin-bottom:4px;">Document 2</div>
+        <div style="font-size:.8rem;color:var(--text);font-style:italic;margin-bottom:4px;">ΔΕΛΤΙΟ ΔΙΑΜΟΝΗΣ Μέλους Οικογένειας Πολίτη της Ένωσης που δεν είναι υπήκοος Κράτους Μέλους της Ένωσης</div>
+        <div style="font-size:.8rem;color:var(--muted);">CARTE DE SÉJOUR de ressortissants de pays tiers membre de la famille d'un citoyen de l'Union.</div>
+      </div>
+
+      <div style="background:var(--cream);border-radius:var(--r-sm);padding:10px 12px;margin-bottom:10px;">
+        <div style="font-size:.75rem;font-weight:600;color:var(--navy);margin-bottom:4px;">Document 3</div>
+        <div style="font-size:.8rem;color:var(--text);font-style:italic;margin-bottom:4px;">ΒΕΒΑΙΩΣΗ ΕΓΓΡΑΦΗΣ Πολίτη της Ένωσης και Μέλους της Οικογένειας του που είναι επίσης πολίτης της Ένωσης</div>
+        <div style="font-size:.8rem;color:var(--muted);">ATTESTATION D'ENREGISTREMENT pour citoyen de l'Union et pour les membres de sa famille, également citoyens de l'Union.</div>
+      </div>
+
+      <div class="detail" style="margin-top:6px;">Ces documents sont progressivement remplacés par des documents conformes au règlement (UE) 2019/1157. Les documents délivrés aux citoyens de l'Union restent au format papier ; ceux délivrés aux ressortissants de pays tiers sont au format ID-1 (règlement CE n° 1030/2002 modifié).</div>
+    </div>
+
+    <!-- IRLANDE -->
+    <div class="info-card" style="border-left:3px solid var(--gold);">
+      <div class="label">🇮🇪 Irlande — Titre de séjour valable dans l'espace Schengen</div>
+      <div class="value" style="margin-bottom:8px;"><strong>Carte de séjour délivrée aux membres de famille de ressortissants de l'Union européenne</strong></div>
+      <div class="alert alert-warning" style="margin-top:8px;margin-bottom:0;">
+        <span class="alert-icon">⚠️</span>
+        <span>La rubrique <strong>« Stamp No: »</strong> doit comporter explicitement la mention <strong>« 4 EUFam »</strong>. Sans cette mention exacte, le document ne permet pas l'exemption de visa.</span>
       </div>
     </div>
 
-    <h2 class="section-title">Exceptions</h2>
-    <ul class="list">
-      <li>Titulaires d'un visa de long séjour (D) — séjour illimité dans l'État émetteur</li>
-      <li>Titulaires d'un titre de séjour valide</li>
-      <li>Ressortissants de l'UE, EEE et Suisse</li>
-      <li>Personnes bénéficiant d'un accord bilatéral spécifique</li>
-    </ul>
+    <div class="alert alert-info">
+      <span class="alert-icon">ℹ️</span>
+      <span>Si le titre de séjour spécifique ne figure pas dans cette liste, il <strong>ne permet pas</strong> d'entrer dans l'espace Schengen sans visa. En cas de doute, vérifier auprès du SPF Intérieur.</span>
+    </div>
 
     <div class="bottom-spacer"></div>
   </div>
 
   <!-- ══════════════════════════════════════════════════
-       ONGLET 2 — MOYENS DE SUBSISTANCE
+       ONGLET 2 — CODES IATA
   ══════════════════════════════════════════════════ -->
   <div class="tab-content" id="tab-subsistance">
 
-    <h2 class="section-title">Montants de référence (Belgique)</h2>
+    <h2 class="section-title">Codes IATA — Destinations depuis Charleroi</h2>
 
     <div class="alert alert-info">
       <span class="alert-icon">ℹ️</span>
-      <span>Ces montants sont indicatifs et peuvent être adaptés selon la situation du voyageur (hébergement gratuit, invitation, etc.).</span>
+      <span>Codes IATA des destinations au départ de l'aéroport de Bruxelles-Sud Charleroi (CRL).</span>
+    </div>
+
+    <!-- Recherche -->
+    <div style="display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--border);border-radius:var(--r-md);padding:9px 13px;margin-bottom:14px;box-shadow:var(--sh-sm);">
+      <span style="color:var(--muted);">🔍</span>
+      <input type="search" id="iata-search" placeholder="Rechercher une ville ou un code…"
+             style="flex:1;border:none;outline:none;font-family:var(--font-body);font-size:.9rem;color:var(--text);background:transparent;"
+             oninput="filterIata(this.value)" autocomplete="off" spellcheck="false"/>
+      <span id="iata-count" style="font-size:.75rem;color:var(--muted);white-space:nowrap;"></span>
     </div>
 
     <div class="table-wrap">
-      <table>
+      <table id="iata-table">
         <thead>
-          <tr><th>Durée du séjour</th><th>Montant minimum</th></tr>
+          <tr><th>Ville</th><th>Code IATA</th><th>Région</th></tr>
         </thead>
-        <tbody>
-          <tr><td>Par jour (sans hébergement garanti)</td><td><strong>95 €</strong></td></tr>
-          <tr><td>Par jour (avec hébergement garanti)</td><td><strong>45 €</strong></td></tr>
-          <tr><td>Séjour ≤ 3 jours (forfait)</td><td><strong>285 €</strong></td></tr>
-        </tbody>
+        <tbody id="iata-tbody"></tbody>
       </table>
-    </div>
-
-    <h2 class="section-title">Justificatifs acceptés</h2>
-    <ul class="list">
-      <li>Espèces (EUR ou devises convertibles)</li>
-      <li>Carte bancaire avec preuve de solde</li>
-      <li>Chèques de voyage</li>
-      <li>Lettre de prise en charge (sponsor)</li>
-      <li>Réservation hôtel prépayée</li>
-      <li>Invitation officielle avec engagement de prise en charge</li>
-    </ul>
-
-    <h2 class="section-title">Lettre de prise en charge</h2>
-    <p class="text">Si un tiers prend en charge le voyageur, une lettre d'invitation signée accompagnée d'une preuve de ressources du garant peut être exigée.</p>
-
-    <div class="alert alert-warning">
-      <span class="alert-icon">⚠️</span>
-      <span>La possession d'une carte bancaire ne suffit pas sans preuve du solde disponible.</span>
-    </div>
-
-    <h2 class="section-title">Base légale</h2>
-    <div class="info-card">
-      <div class="label">Référence</div>
-      <div class="value">Article 6 §1 point c) du Code frontières Schengen</div>
-      <div class="detail">+ Arrêté royal belge du 22 décembre 2009 fixant les montants de référence.</div>
     </div>
 
     <div class="bottom-spacer"></div>
@@ -347,93 +331,43 @@ tr:nth-child(even) td { background: rgba(28,43,74,.03); }
   ══════════════════════════════════════════════════ -->
   <div class="tab-content" id="tab-visa">
 
-    <h2 class="section-title">Principe général</h2>
-
-    <div class="alert alert-info">
+    <div class="alert alert-info" style="margin-bottom:14px">
       <span class="alert-icon">ℹ️</span>
-      <span>Le Règlement (UE) 2018/1806 établit la liste des pays dont les ressortissants sont soumis ou exemptés de visa pour franchir les frontières extérieures Schengen.</span>
+      <span>Source : aide-mémoire SPF Intérieur — Police Fédérale LPA Gosselies — Mise à jour janvier 2026.</span>
     </div>
 
-    <h2 class="section-title">Pays exemptés de visa (court séjour)</h2>
-    <p class="text">Les ressortissants des pays suivants peuvent entrer sans visa pour un séjour ≤ 90 jours :</p>
-
-    <div class="section-sub">Exemples — Europe hors UE</div>
-    <div>
-      <span class="badge badge-green">Albanie</span>
-      <span class="badge badge-green">Bosnie-Herzégovine</span>
-      <span class="badge badge-green">Géorgie</span>
-      <span class="badge badge-green">Macédoine du Nord</span>
-      <span class="badge badge-green">Moldavie</span>
-      <span class="badge badge-green">Monténégro</span>
-      <span class="badge badge-green">Serbie</span>
-      <span class="badge badge-green">Ukraine</span>
+    <!-- Légende -->
+    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;">
+      <span class="badge badge-green">✅ Pas de visa</span>
+      <span class="badge badge-red">🔴 Visa obligatoire</span>
+      <span class="badge badge-orange">🪪 PP biométrique requis</span>
     </div>
 
-    <div class="section-sub">Exemples — Autres continents</div>
-    <div>
-      <span class="badge badge-green">Brésil</span>
-      <span class="badge badge-green">Argentine</span>
-      <span class="badge badge-green">Mexique</span>
-      <span class="badge badge-green">Canada</span>
-      <span class="badge badge-green">Australie</span>
-      <span class="badge badge-green">Japon</span>
-      <span class="badge badge-green">Corée du Sud</span>
-      <span class="badge badge-green">États-Unis</span>
+    <!-- Recherche -->
+    <div style="display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--border);border-radius:var(--r-md);padding:9px 13px;margin-bottom:12px;box-shadow:var(--sh-sm);">
+      <span style="color:var(--muted);">🔍</span>
+      <input type="search" id="visa-search" placeholder="Rechercher un pays ou un code…"
+             style="flex:1;border:none;outline:none;font-family:var(--font-body);font-size:.9rem;color:var(--text);background:transparent;"
+             oninput="filterVisa(this.value)" autocomplete="off" spellcheck="false"/>
+      <span id="visa-count" style="font-size:.75rem;color:var(--muted);white-space:nowrap;"></span>
     </div>
 
-    <div class="divider"></div>
-
-    <h2 class="section-title">Pays soumis à visa</h2>
-    <p class="text">Les ressortissants des pays suivants doivent être en possession d'un visa Schengen valide :</p>
-
-    <div class="section-sub">Exemples</div>
-    <div>
-      <span class="badge badge-red">Afghanistan</span>
-      <span class="badge badge-red">Bangladesh</span>
-      <span class="badge badge-red">Chine</span>
-      <span class="badge badge-red">Inde</span>
-      <span class="badge badge-red">Irak</span>
-      <span class="badge badge-red">Iran</span>
-      <span class="badge badge-red">Maroc</span>
-      <span class="badge badge-red">Pakistan</span>
-      <span class="badge badge-red">Russie</span>
-      <span class="badge badge-red">Turquie</span>
-    </div>
-
-    <div class="alert alert-warning" style="margin-top:14px">
-      <span class="alert-icon">⚠️</span>
-      <span>Cette liste n'est pas exhaustive. Vérifiez toujours la liste officielle à jour.</span>
-    </div>
-
-    <h2 class="section-title">Types de visa</h2>
-    <div class="table-wrap">
-      <table>
+    <!-- Tableau -->
+    <div class="table-wrap" id="visa-table-wrap">
+      <table id="visa-table">
         <thead>
-          <tr><th>Type</th><th>Durée</th><th>Usage</th></tr>
+          <tr>
+            <th>Pays</th>
+            <th>Code</th>
+            <th>PP normaux</th>
+            <th>SV</th>
+            <th>Dip</th>
+            <th>Transit</th>
+            <th>Remarque</th>
+          </tr>
         </thead>
-        <tbody>
-          <tr><td><strong>Visa C</strong></td><td>≤ 90 jours</td><td>Tourisme, affaires, transit</td></tr>
-          <tr><td><strong>Visa D</strong></td><td>&gt; 90 jours</td><td>Long séjour (études, travail…)</td></tr>
-          <tr><td><strong>Visa A</strong></td><td>Transit</td><td>Zone internationale aéroport</td></tr>
-        </tbody>
+        <tbody id="visa-tbody"></tbody>
       </table>
-    </div>
-
-    <h2 class="section-title">Vérification en ligne</h2>
-    <div class="info-card">
-      <div class="label">Source officielle</div>
-      <div class="value">
-        <a href="https://ec.europa.eu/home-affairs/what-we-do/policies/borders-and-visas/visa-policy_en"
-           target="_blank" style="color:var(--navy-3);text-decoration:underline;">
-          Commission européenne — Politique des visas →
-        </a>
-      </div>
-    </div>
-
-    <div class="info-card">
-      <div class="label">Règlement de référence</div>
-      <div class="value">Règlement (UE) 2018/1806 du Parlement européen et du Conseil</div>
-      <div class="detail">Annexe I = visa obligatoire / Annexe II = visa non obligatoire</div>
     </div>
 
     <div class="bottom-spacer"></div>
@@ -443,18 +377,606 @@ tr:nth-child(even) td { background: rgba(28,43,74,.03); }
 
 <script>
 "use strict";
-// Gestion des onglets
+
+// ── DONNÉES (source: aide-mémoire SPF Intérieur, jan. 2026)
+// pp=PP normaux, sv=Services/Spéciaux, dip=Diplomatique
+// transit=visa transit aéroportuaire
+// bio=visa obligatoire si PP NON biométrique
+// 0=non requis, 1=requis
+const PAYS_VISA = [
+  {pays:"AFGHANISTAN",         code:"AFG", pp:1, sv:1, dip:0, transit:1, bio:false, note:""},
+  {pays:"AFRIQUE DU SUD",      code:"ZAF", pp:0, sv:0, dip:0, transit:0, bio:false, note:""},
+  {pays:"ALBANIE",             code:"ALB", pp:0, sv:0, dip:0, transit:0, bio:true,  note:""},
+  {pays:"ALGERIE",             code:"DZA", pp:1, sv:1, dip:0, transit:1, bio:false, note:""},
+  {pays:"ALLEMAGNE",           code:"DEU", pp:0, sv:0, dip:0, transit:0, bio:false, note:"UE"},
+  {pays:"ANDORRE",             code:"AND", pp:0, sv:0, dip:0, transit:0, bio:false, note:""},
+  {pays:"ANGOLA",              code:"AGO", pp:1, sv:1, dip:0, transit:1, bio:false, note:""},
+  {pays:"ANTIGUA EN BARBUDA",  code:"ATG", pp:0, sv:0, dip:0, transit:0, bio:false, note:""},
+  {pays:"ARABIE SAOUDITE",     code:"SAU", pp:1, sv:1, dip:0, transit:0, bio:false, note:""},
+  {pays:"ARGENTINE",           code:"ARG", pp:0, sv:0, dip:0, transit:0, bio:false, note:""},
+  {pays:"ARMENIE",             code:"ARM", pp:1, sv:1, dip:0, transit:0, bio:true,  note:""},
+  {pays:"AUSTRALIE",           code:"AUS", pp:0, sv:0, dip:0, transit:0, bio:false, note:""},
+  {pays:"AUTRICHE",            code:"AUT", pp:0, sv:0, dip:0, transit:0, bio:false, note:"UE"},
+  {pays:"AZERBAIDJAN",         code:"AZE", pp:1, sv:1, dip:0, transit:0, bio:false, note:""},
+  {pays:"BAHAMAS",             code:"BHS", pp:0, sv:0, dip:0, transit:0, bio:false, note:""},
+  {pays:"BAHREIN",             code:"BHR", pp:1, sv:1, dip:0, transit:0, bio:false, note:""},
+  {pays:"BANGLADESH",          code:"BGD", pp:1, sv:1, dip:0, transit:1, bio:false, note:""},
+  {pays:"BARBADE",             code:"BRB", pp:0, sv:0, dip:0, transit:0, bio:false, note:""},
+  {pays:"BELGIQUE",            code:"BEL", pp:0, sv:0, dip:0, transit:0, bio:false, note:"UE"},
+  {pays:"BELIZE",              code:"BLZ", pp:1, sv:1, dip:0, transit:0, bio:false, note:""},
+  {pays:"BENIN",               code:"BEN", pp:1, sv:1, dip:0, transit:0, bio:false, note:""},
+  {pays:"BHOUTAN",             code:"BTN", pp:1, sv:1, dip:0, transit:1, bio:false, note:""},
+  {pays:"BIELORUSSIE",         code:"BLR", pp:1, sv:1, dip:0, transit:0, bio:false, note:""},
+  {pays:"BOLIVIE",             code:"BOL", pp:1, sv:1, dip:0, transit:0, bio:false, note:""},
+  {pays:"BOSNIE-HERZEGOVINE",  code:"BIH", pp:0, sv:0, dip:0, transit:0, bio:true,  note:""},
+  {pays:"BOTSWANA",            code:"BWA", pp:0, sv:0, dip:0, transit:1, bio:false, note:""},
+  {pays:"BRESIL",              code:"BRA", pp:0, sv:0, dip:0, transit:0, bio:false, note:""},
+  {pays:"BRUNEI",              code:"BRN", pp:0, sv:0, dip:0, transit:0, bio:true,  note:""},
+  {pays:"BULGARIE",            code:"BGR", pp:0, sv:0, dip:0, transit:0, bio:false, note:"UE"},
+  {pays:"BURKINA FASO",        code:"BFA", pp:1, sv:1, dip:0, transit:0, bio:false, note:""},
+  {pays:"BURUNDI",             code:"BDI", pp:1, sv:1, dip:0, transit:1, bio:false, note:""},
+  {pays:"CAMBODGE",            code:"KHM", pp:1, sv:1, dip:0, transit:0, bio:false, note:""},
+  {pays:"CAMEROUN",            code:"CMR", pp:1, sv:1, dip:0, transit:1, bio:false, note:""},
+  {pays:"CANADA",              code:"CAN", pp:0, sv:0, dip:0, transit:0, bio:false, note:""},
+  {pays:"CAP VERT",            code:"CPV", pp:1, sv:1, dip:0, transit:0, bio:false, note:""},
+  {pays:"CHILI",               code:"CHL", pp:0, sv:0, dip:0, transit:0, bio:false, note:""},
+  {pays:"CHINE",               code:"CHN", pp:1, sv:1, dip:0, transit:1, bio:false, note:""},
+  {pays:"CHYPRE",              code:"CYP", pp:0, sv:0, dip:0, transit:0, bio:false, note:"UE"},
+  {pays:"COLOMBIE",            code:"COL", pp:0, sv:0, dip:0, transit:0, bio:false, note:""},
+  {pays:"COMORES",             code:"COM", pp:1, sv:1, dip:0, transit:1, bio:false, note:""},
+  {pays:"CONGO (REP.)",        code:"COG", pp:1, sv:1, dip:0, transit:1, bio:false, note:""},
+  {pays:"COREE DU NORD",       code:"PRK", pp:1, sv:1, dip:1, transit:1, bio:false, note:""},
+  {pays:"COREE DU SUD",        code:"KOR", pp:0, sv:0, dip:0, transit:0, bio:false, note:""},
+  {pays:"COSTA RICA",          code:"CRI", pp:0, sv:0, dip:0, transit:0, bio:false, note:""},
+  {pays:"COTE D'IVOIRE",       code:"CIV", pp:1, sv:1, dip:0, transit:1, bio:false, note:""},
+  {pays:"CROATIE",             code:"HRV", pp:0, sv:0, dip:0, transit:0, bio:false, note:"UE"},
+  {pays:"CUBA",                code:"CUB", pp:1, sv:1, dip:0, transit:0, bio:false, note:""},
+  {pays:"DANEMARK",            code:"DNK", pp:0, sv:0, dip:0, transit:0, bio:false, note:"UE"},
+  {pays:"DJIBOUTI",            code:"DJI", pp:1, sv:1, dip:0, transit:0, bio:false, note:""},
+  {pays:"DOMINIQUE",           code:"DMA", pp:0, sv:0, dip:0, transit:0, bio:false, note:""},
+  {pays:"EGYPTE",              code:"EGY", pp:1, sv:1, dip:0, transit:1, bio:false, note:""},
+  {pays:"EMIRATS ARABES UNIS", code:"ARE", pp:0, sv:0, dip:0, transit:0, bio:false, note:""},
+  {pays:"EQUATEUR",            code:"ECU", pp:0, sv:0, dip:0, transit:0, bio:false, note:""},
+  {pays:"ERYTHREE",            code:"ERI", pp:1, sv:1, dip:0, transit:1, bio:false, note:""},
+  {pays:"ESPAGNE",             code:"ESP", pp:0, sv:0, dip:0, transit:0, bio:false, note:"UE"},
+  {pays:"ESTONIE",             code:"EST", pp:0, sv:0, dip:0, transit:0, bio:false, note:"UE"},
+  {pays:"ETHIOPIE",            code:"ETH", pp:1, sv:1, dip:0, transit:1, bio:false, note:""},
+  {pays:"FIJI",                code:"FJI", pp:0, sv:0, dip:0, transit:0, bio:false, note:""},
+  {pays:"FINLANDE",            code:"FIN", pp:0, sv:0, dip:0, transit:0, bio:false, note:"UE"},
+  {pays:"FRANCE",              code:"FRA", pp:0, sv:0, dip:0, transit:0, bio:false, note:"UE"},
+  {pays:"GABON",               code:"GAB", pp:1, sv:1, dip:0, transit:0, bio:false, note:""},
+  {pays:"GAMBIE",              code:"GMB", pp:1, sv:1, dip:0, transit:1, bio:false, note:""},
+  {pays:"GEORGIE",             code:"GEO", pp:0, sv:0, dip:0, transit:0, bio:true,  note:""},
+  {pays:"GHANA",               code:"GHA", pp:1, sv:1, dip:0, transit:1, bio:false, note:"(*)"},
+  {pays:"GRANDE BRETAGNE",     code:"GBR", pp:0, sv:0, dip:0, transit:0, bio:false, note:""},
+  {pays:"GRECE",               code:"GRC", pp:0, sv:0, dip:0, transit:0, bio:false, note:"UE"},
+  {pays:"GRENADE",             code:"GRD", pp:0, sv:0, dip:0, transit:0, bio:false, note:""},
+  {pays:"GUATEMALA",           code:"GTM", pp:0, sv:0, dip:0, transit:0, bio:false, note:""},
+  {pays:"GUINEE EQUATORIALE",  code:"GNQ", pp:1, sv:1, dip:0, transit:1, bio:false, note:""},
+  {pays:"GUINEE",              code:"GIN", pp:1, sv:1, dip:0, transit:1, bio:false, note:"(*)"},
+  {pays:"GUINEE-BISSAU",       code:"GNB", pp:1, sv:1, dip:0, transit:1, bio:false, note:""},
+  {pays:"GUYANA",              code:"GUY", pp:1, sv:1, dip:0, transit:1, bio:false, note:""},
+  {pays:"HAITI",               code:"HTI", pp:1, sv:1, dip:0, transit:0, bio:false, note:""},
+  {pays:"HONDURAS",            code:"HND", pp:0, sv:0, dip:0, transit:0, bio:false, note:""},
+  {pays:"HONG KONG (SAR)",     code:"HKG", pp:0, sv:0, dip:0, transit:0, bio:false, note:""},
+  {pays:"HONGRIE",             code:"HUN", pp:0, sv:0, dip:0, transit:0, bio:false, note:"UE"},
+  {pays:"ILES MARSHALL",       code:"MHL", pp:0, sv:0, dip:0, transit:0, bio:false, note:""},
+  {pays:"ILES SALOMON",        code:"SLB", pp:0, sv:0, dip:0, transit:0, bio:false, note:""},
+  {pays:"INDE",                code:"IND", pp:1, sv:1, dip:0, transit:1, bio:false, note:""},
+  {pays:"INDONESIE",           code:"IDN", pp:1, sv:1, dip:0, transit:0, bio:false, note:""},
+  {pays:"IRAN",                code:"IRN", pp:1, sv:1, dip:1, transit:1, bio:false, note:""},
+  {pays:"IRAQ",                code:"IRQ", pp:1, sv:1, dip:0, transit:1, bio:false, note:"⚠️ Vérif n°PP"},
+  {pays:"IRLANDE",             code:"IRL", pp:0, sv:0, dip:0, transit:0, bio:false, note:"UE"},
+  {pays:"ISLANDE",             code:"ISL", pp:0, sv:0, dip:0, transit:0, bio:false, note:""},
+  {pays:"ISRAEL",              code:"ISR", pp:0, sv:0, dip:0, transit:0, bio:false, note:""},
+  {pays:"ITALIE",              code:"ITA", pp:0, sv:0, dip:0, transit:0, bio:false, note:"UE"},
+  {pays:"JAMAIQUE",            code:"JAM", pp:0, sv:0, dip:0, transit:0, bio:false, note:""},
+  {pays:"JAPON",               code:"JPN", pp:0, sv:0, dip:0, transit:0, bio:false, note:""},
+  {pays:"JORDANIE",            code:"JOR", pp:1, sv:1, dip:0, transit:0, bio:false, note:""},
+  {pays:"KAZAKHSTAN",          code:"KAZ", pp:1, sv:1, dip:0, transit:0, bio:false, note:""},
+  {pays:"KENYA",               code:"KEN", pp:1, sv:1, dip:0, transit:1, bio:false, note:""},
+  {pays:"KIRGHIZIE",           code:"KGZ", pp:1, sv:1, dip:0, transit:0, bio:false, note:""},
+  {pays:"KIRIBATI",            code:"KIR", pp:0, sv:0, dip:0, transit:0, bio:false, note:""},
+  {pays:"KOSOVO",              code:"RKS", pp:0, sv:0, dip:0, transit:0, bio:true,  note:"Libre depuis 01/01/2024"},
+  {pays:"KOWEIT",              code:"KWT", pp:1, sv:1, dip:0, transit:0, bio:false, note:""},
+  {pays:"LAOS",                code:"LAO", pp:1, sv:1, dip:0, transit:0, bio:false, note:""},
+  {pays:"LESOTHO",             code:"LSO", pp:1, sv:1, dip:0, transit:0, bio:false, note:""},
+  {pays:"LETTONIE",            code:"LTU", pp:0, sv:0, dip:0, transit:0, bio:false, note:"UE"},
+  {pays:"LIBAN",               code:"LBN", pp:1, sv:1, dip:0, transit:1, bio:false, note:""},
+  {pays:"LIBERIA",             code:"LBR", pp:1, sv:1, dip:0, transit:1, bio:false, note:""},
+  {pays:"LIBYE",               code:"LBY", pp:1, sv:1, dip:0, transit:1, bio:false, note:""},
+  {pays:"LIECHTENSTEIN",       code:"LIE", pp:0, sv:0, dip:0, transit:0, bio:false, note:""},
+  {pays:"LITUANIE",            code:"LVA", pp:0, sv:0, dip:0, transit:0, bio:false, note:"UE"},
+  {pays:"LUXEMBOURG",          code:"LUX", pp:0, sv:0, dip:0, transit:0, bio:false, note:"UE"},
+  {pays:"MACAO (SAR)",         code:"MAC", pp:0, sv:0, dip:0, transit:0, bio:false, note:""},
+  {pays:"MACEDOINE DU NORD",   code:"MKD", pp:0, sv:0, dip:0, transit:0, bio:true,  note:""},
+  {pays:"MADAGASCAR",          code:"MDG", pp:1, sv:1, dip:0, transit:1, bio:false, note:""},
+  {pays:"MALAISIE",            code:"MYS", pp:0, sv:0, dip:0, transit:1, bio:false, note:""},
+  {pays:"MALAWI",              code:"MWI", pp:1, sv:1, dip:0, transit:1, bio:false, note:""},
+  {pays:"MALDIVES",            code:"MDV", pp:1, sv:1, dip:0, transit:0, bio:false, note:""},
+  {pays:"MALI",                code:"MLI", pp:1, sv:1, dip:0, transit:1, bio:false, note:""},
+  {pays:"MALTE",               code:"MLT", pp:0, sv:0, dip:0, transit:0, bio:false, note:"UE"},
+  {pays:"MAROC",               code:"MAR", pp:1, sv:1, dip:0, transit:1, bio:false, note:""},
+  {pays:"MAURICE",             code:"MUS", pp:0, sv:0, dip:0, transit:0, bio:false, note:""},
+  {pays:"MAURITANIE",          code:"MRT", pp:1, sv:1, dip:0, transit:1, bio:false, note:""},
+  {pays:"MEXIQUE",             code:"MEX", pp:0, sv:0, dip:0, transit:0, bio:false, note:""},
+  {pays:"MICRONESIE",          code:"FSM", pp:0, sv:0, dip:0, transit:0, bio:false, note:""},
+  {pays:"MOLDAVIE",            code:"MDA", pp:0, sv:0, dip:0, transit:0, bio:true,  note:""},
+  {pays:"MONACO",              code:"MCO", pp:0, sv:0, dip:0, transit:0, bio:false, note:""},
+  {pays:"MONGOLIE",            code:"MNG", pp:1, sv:1, dip:0, transit:0, bio:false, note:""},
+  {pays:"MONTENEGRO",          code:"MNE", pp:0, sv:0, dip:0, transit:0, bio:true,  note:""},
+  {pays:"MOZAMBIQUE",          code:"MOZ", pp:1, sv:1, dip:0, transit:0, bio:false, note:""},
+  {pays:"MYANMAR/BIRMANIE",    code:"MMR", pp:1, sv:1, dip:0, transit:1, bio:false, note:""},
+  {pays:"NAMIBIE",             code:"NAM", pp:0, sv:0, dip:0, transit:0, bio:false, note:""},
+  {pays:"NAURU",               code:"NRU", pp:0, sv:0, dip:0, transit:0, bio:false, note:""},
+  {pays:"NEPAL",               code:"NPL", pp:1, sv:1, dip:0, transit:0, bio:false, note:""},
+  {pays:"NICARAGUA",           code:"NIC", pp:0, sv:0, dip:0, transit:0, bio:false, note:""},
+  {pays:"NIGER",               code:"NER", pp:1, sv:1, dip:0, transit:1, bio:false, note:""},
+  {pays:"NIGERIA",             code:"NGA", pp:1, sv:1, dip:0, transit:1, bio:false, note:"(*)"},
+  {pays:"NORVEGE",             code:"NOR", pp:0, sv:0, dip:0, transit:0, bio:false, note:""},
+  {pays:"NOUVELLE ZELANDE",    code:"NZL", pp:0, sv:0, dip:0, transit:0, bio:false, note:""},
+  {pays:"OMAN",                code:"OMN", pp:1, sv:1, dip:0, transit:0, bio:false, note:""},
+  {pays:"OUGANDA",             code:"UGA", pp:1, sv:1, dip:0, transit:1, bio:false, note:""},
+  {pays:"OUZBEKISTAN",         code:"UZB", pp:1, sv:1, dip:0, transit:0, bio:false, note:""},
+  {pays:"PAKISTAN",            code:"PAK", pp:1, sv:1, dip:0, transit:1, bio:false, note:""},
+  {pays:"PALAU",               code:"PLW", pp:0, sv:0, dip:0, transit:0, bio:false, note:""},
+  {pays:"PALESTINE",           code:"PSE", pp:1, sv:1, dip:0, transit:0, bio:false, note:""},
+  {pays:"PANAMA",              code:"PAN", pp:0, sv:0, dip:0, transit:0, bio:false, note:""},
+  {pays:"PAPOUASIE-N-GUINEE",  code:"PNG", pp:1, sv:1, dip:0, transit:0, bio:false, note:""},
+  {pays:"PARAGUAY",            code:"PRY", pp:0, sv:0, dip:0, transit:0, bio:false, note:""},
+  {pays:"PAYS-BAS",            code:"NLD", pp:0, sv:0, dip:0, transit:0, bio:false, note:"UE"},
+  {pays:"PEROU",               code:"PER", pp:0, sv:0, dip:0, transit:0, bio:false, note:""},
+  {pays:"PHILIPPINES",         code:"PHL", pp:1, sv:1, dip:0, transit:0, bio:false, note:""},
+  {pays:"POLOGNE",             code:"POL", pp:0, sv:0, dip:0, transit:0, bio:false, note:"UE"},
+  {pays:"PORTUGAL",            code:"PRT", pp:0, sv:0, dip:0, transit:0, bio:false, note:"UE"},
+  {pays:"QATAR",               code:"QAT", pp:0, sv:0, dip:0, transit:0, bio:false, note:""},
+  {pays:"REP. CENTRAFRICAINE", code:"CAF", pp:1, sv:1, dip:0, transit:1, bio:false, note:""},
+  {pays:"REP. DEM. CONGO",     code:"CGO", pp:1, sv:1, dip:0, transit:1, bio:false, note:""},
+  {pays:"REP. DOMINICAINE",    code:"DOM", pp:0, sv:0, dip:0, transit:1, bio:false, note:""},
+  {pays:"REP. TCHEQUE",        code:"CZE", pp:0, sv:0, dip:0, transit:0, bio:false, note:"UE"},
+  {pays:"ROUMANIE",            code:"ROU", pp:0, sv:0, dip:0, transit:0, bio:false, note:"UE"},
+  {pays:"RUSSIE",              code:"RUS", pp:1, sv:1, dip:0, transit:0, bio:false, note:""},
+  {pays:"RWANDA",              code:"RWA", pp:1, sv:1, dip:0, transit:0, bio:false, note:""},
+  {pays:"SAINT-KITTS-ET-NEVIS",code:"KNA", pp:0, sv:0, dip:0, transit:0, bio:false, note:""},
+  {pays:"SAINTE-LUCIE",        code:"LCA", pp:0, sv:0, dip:0, transit:0, bio:false, note:""},
+  {pays:"SAINT-VINCENT",       code:"VCT", pp:0, sv:0, dip:0, transit:0, bio:false, note:""},
+  {pays:"SALVADOR",            code:"SLV", pp:0, sv:0, dip:0, transit:0, bio:false, note:""},
+  {pays:"SAMOA",               code:"WSM", pp:0, sv:0, dip:0, transit:0, bio:false, note:""},
+  {pays:"SAN MARIN",           code:"SMR", pp:0, sv:0, dip:0, transit:0, bio:false, note:""},
+  {pays:"SAO TOME ET PRINCIPE",code:"STP", pp:1, sv:1, dip:0, transit:1, bio:false, note:""},
+  {pays:"SENEGAL",             code:"SEN", pp:1, sv:1, dip:0, transit:1, bio:false, note:""},
+  {pays:"SERBIE",              code:"SRB", pp:0, sv:0, dip:0, transit:0, bio:true,  note:""},
+  {pays:"SEYCHELLES",          code:"SYC", pp:0, sv:0, dip:0, transit:0, bio:false, note:""},
+  {pays:"SIERRA LEONE",        code:"SLE", pp:1, sv:1, dip:0, transit:1, bio:false, note:""},
+  {pays:"SINGAPOUR",           code:"SGP", pp:0, sv:0, dip:0, transit:0, bio:false, note:""},
+  {pays:"SLOVAQUIE",           code:"SVK", pp:0, sv:0, dip:0, transit:0, bio:false, note:"UE"},
+  {pays:"SLOVENIE",            code:"SVN", pp:0, sv:0, dip:0, transit:0, bio:false, note:"UE"},
+  {pays:"SOMALIE",             code:"SOM", pp:1, sv:1, dip:1, transit:1, bio:false, note:""},
+  {pays:"SOUDAN",              code:"SDN", pp:1, sv:1, dip:0, transit:1, bio:false, note:""},
+  {pays:"SRI LANKA",           code:"LKA", pp:1, sv:1, dip:0, transit:1, bio:false, note:""},
+  {pays:"SUD SOUDAN",          code:"SSD", pp:1, sv:1, dip:0, transit:1, bio:false, note:""},
+  {pays:"SUEDE",               code:"SWE", pp:0, sv:0, dip:0, transit:0, bio:false, note:"UE"},
+  {pays:"SUISSE",              code:"CHE", pp:0, sv:0, dip:0, transit:0, bio:false, note:""},
+  {pays:"SURINAME",            code:"SUR", pp:1, sv:1, dip:0, transit:0, bio:false, note:""},
+  {pays:"SWAZILAND",           code:"SWZ", pp:1, sv:1, dip:0, transit:0, bio:false, note:""},
+  {pays:"SYRIE",               code:"SYR", pp:1, sv:1, dip:1, transit:1, bio:false, note:""},
+  {pays:"TADJIKISTAN",         code:"TJK", pp:1, sv:1, dip:0, transit:0, bio:false, note:""},
+  {pays:"TAIWAN",              code:"TWN", pp:0, sv:0, dip:0, transit:0, bio:false, note:""},
+  {pays:"TANZANIE",            code:"TZA", pp:1, sv:1, dip:0, transit:1, bio:false, note:""},
+  {pays:"TCHAD",               code:"TCD", pp:1, sv:1, dip:0, transit:1, bio:false, note:""},
+  {pays:"THAILANDE",           code:"THA", pp:0, sv:0, dip:0, transit:0, bio:false, note:""},
+  {pays:"TIMOR ORIENTAL",      code:"TLS", pp:1, sv:1, dip:0, transit:0, bio:false, note:""},
+  {pays:"TOGO",                code:"TGO", pp:1, sv:1, dip:0, transit:1, bio:false, note:""},
+  {pays:"TONGA",               code:"TON", pp:0, sv:0, dip:0, transit:0, bio:false, note:""},
+  {pays:"TRINIDAD ET TOBAGO",  code:"TTO", pp:0, sv:0, dip:0, transit:0, bio:false, note:""},
+  {pays:"TUNISIE",             code:"TUN", pp:1, sv:1, dip:0, transit:1, bio:false, note:""},
+  {pays:"TURKMENISTAN",        code:"TKM", pp:1, sv:1, dip:0, transit:0, bio:false, note:""},
+  {pays:"TURQUIE",             code:"TUR", pp:1, sv:1, dip:0, transit:0, bio:false, note:""},
+  {pays:"TUVALU",              code:"TUV", pp:0, sv:0, dip:0, transit:0, bio:false, note:""},
+  {pays:"UKRAINE",             code:"UKR", pp:0, sv:0, dip:0, transit:0, bio:true,  note:""},
+  {pays:"URUGUAY",             code:"URY", pp:0, sv:0, dip:0, transit:0, bio:false, note:""},
+  {pays:"USA",                 code:"USA", pp:0, sv:0, dip:0, transit:0, bio:false, note:""},
+  {pays:"VANUATU",             code:"VUT", pp:1, sv:1, dip:0, transit:0, bio:false, note:""},
+  {pays:"VATICAN",             code:"VAT", pp:0, sv:0, dip:0, transit:1, bio:false, note:""},
+  {pays:"VENEZUELA",           code:"VEN", pp:0, sv:0, dip:0, transit:1, bio:false, note:""},
+  {pays:"VIETNAM",             code:"VNM", pp:1, sv:1, dip:0, transit:0, bio:false, note:""},
+  {pays:"YEMEN",               code:"YEM", pp:1, sv:1, dip:1, transit:1, bio:false, note:""},
+  {pays:"ZAMBIE",              code:"ZMB", pp:1, sv:1, dip:0, transit:0, bio:false, note:""},
+  {pays:"ZIMBABWE",            code:"ZWE", pp:1, sv:1, dip:0, transit:1, bio:false, note:""},
+];
+
+// ── RENDU CELLULES
+function cellVisa(val) {
+  return val === 1
+    ? '<span style="color:#c0392b;font-weight:700;">🔴</span>'
+    : '<span style="color:#1a6632;">✅</span>';
+}
+
+function cellBio(bio) {
+  return bio
+    ? '<span style="color:#856404;font-size:.75rem;font-weight:600;">🪪 PP bio requis</span>'
+    : '';
+}
+
+function buildNote(p) {
+  const parts = [];
+  if (p.bio)         parts.push('<span style="color:#856404;font-size:.75rem;">🪪 PP biométrique requis</span>');
+  if (p.note)        parts.push(`<span style="font-size:.75rem;color:var(--muted);">${p.note}</span>`);
+  return parts.join('<br>');
+}
+
+function renderTable(data) {
+  const tbody = document.getElementById("visa-tbody");
+  const count = document.getElementById("visa-count");
+  if (!data.length) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:20px;">Aucun résultat</td></tr>';
+    count.textContent = "0 pays";
+    return;
+  }
+  count.textContent = data.length + " pays";
+  tbody.innerHTML = data.map(p => `
+    <tr${p.bio ? ' style="background:#fffbf0;"' : ''}>
+      <td><strong>${p.pays}</strong></td>
+      <td><code style="font-size:.8rem;background:#f0f4ff;padding:2px 6px;border-radius:4px;">${p.code}</code></td>
+      <td style="text-align:center;">${cellVisa(p.pp)}</td>
+      <td style="text-align:center;">${cellVisa(p.sv)}</td>
+      <td style="text-align:center;">${cellVisa(p.dip)}</td>
+      <td style="text-align:center;">${cellVisa(p.transit)}</td>
+      <td>${buildNote(p)}</td>
+    </tr>`).join("");
+}
+
+function filterVisa(q) {
+  const s = q.trim().toLowerCase();
+  const filtered = s
+    ? PAYS_VISA.filter(p =>
+        p.pays.toLowerCase().includes(s) ||
+        p.code.toLowerCase().includes(s))
+    : PAYS_VISA;
+  renderTable(filtered);
+}
+
+// ── ONGLETS
 document.getElementById("tab-bar").addEventListener("click", e => {
   const tab = e.target.closest(".tab");
   if (!tab) return;
   const key = tab.dataset.tab;
-  // Onglets
   document.querySelectorAll(".tab").forEach(t =>
     t.classList.toggle("active", t.dataset.tab === key));
-  // Contenus
   document.querySelectorAll(".tab-content").forEach(c =>
     c.classList.toggle("active", c.id === "tab-" + key));
+  if (key === "visa") renderTable(PAYS_VISA);
 });
+
+// ── INIT
+renderTable(PAYS_VISA);
+</script>
+  {pays:"AFGHANISTAN",          code:"AFG", pp:1, sv:1, dip:0, note:""},
+  {pays:"AFRIQUE DU SUD",       code:"ZAF", pp:0, sv:0, dip:0, note:""},
+  {pays:"ALBANIE",              code:"ALB", pp:0, sv:0, dip:0, note:""},
+  {pays:"ALGERIE",              code:"DZA", pp:1, sv:1, dip:0, note:""},
+  {pays:"ALLEMAGNE",            code:"DEU", pp:0, sv:0, dip:0, note:"UE"},
+  {pays:"ANDORRE",              code:"AND", pp:0, sv:0, dip:0, note:""},
+  {pays:"ANGOLA",               code:"AGO", pp:1, sv:1, dip:0, note:""},
+  {pays:"ANTIGUA EN BARBUDA",   code:"ATG", pp:0, sv:0, dip:0, note:""},
+  {pays:"ARABIE SAOUDITE",      code:"SAU", pp:1, sv:1, dip:0, note:""},
+  {pays:"ARGENTINE",            code:"ARG", pp:0, sv:0, dip:0, note:""},
+  {pays:"ARMENIE",              code:"ARM", pp:1, sv:1, dip:0, note:""},
+  {pays:"AUSTRALIE",            code:"AUS", pp:0, sv:0, dip:0, note:""},
+  {pays:"AUTRICHE",             code:"AUT", pp:0, sv:0, dip:0, note:"UE"},
+  {pays:"AZERBAIDJAN",          code:"AZE", pp:1, sv:1, dip:0, note:""},
+  {pays:"BAHAMAS",              code:"BHS", pp:0, sv:0, dip:0, note:""},
+  {pays:"BAHREIN",              code:"BHR", pp:1, sv:1, dip:0, note:""},
+  {pays:"BANGLADESH",           code:"BGD", pp:1, sv:1, dip:0, note:""},
+  {pays:"BARBADE",              code:"BRB", pp:0, sv:0, dip:0, note:""},
+  {pays:"BELGIQUE",             code:"BEL", pp:0, sv:0, dip:0, note:"UE"},
+  {pays:"BELIZE",               code:"BLZ", pp:1, sv:1, dip:0, note:""},
+  {pays:"BENIN",                code:"BEN", pp:1, sv:1, dip:0, note:""},
+  {pays:"BHOUTAN",              code:"BTN", pp:1, sv:1, dip:0, note:""},
+  {pays:"BIELORUSSIE",          code:"BLR", pp:1, sv:1, dip:0, note:""},
+  {pays:"BOLIVIE",              code:"BOL", pp:1, sv:1, dip:0, note:""},
+  {pays:"BOSNIE-HERZEGOVINE",   code:"BIH", pp:0, sv:0, dip:0, note:""},
+  {pays:"BOTSWANA",             code:"BWA", pp:0, sv:0, dip:0, note:""},
+  {pays:"BRESIL",               code:"BRA", pp:0, sv:0, dip:0, note:""},
+  {pays:"BRUNEI",               code:"BRN", pp:0, sv:0, dip:0, note:""},
+  {pays:"BULGARIE",             code:"BGR", pp:0, sv:0, dip:0, note:"UE"},
+  {pays:"BURKINA FASO",         code:"BFA", pp:1, sv:1, dip:0, note:""},
+  {pays:"BURUNDI",              code:"BDI", pp:1, sv:1, dip:0, note:""},
+  {pays:"CAMBODGE",             code:"KHM", pp:1, sv:1, dip:0, note:""},
+  {pays:"CAMEROUN",             code:"CMR", pp:1, sv:1, dip:0, note:""},
+  {pays:"CANADA",               code:"CAN", pp:0, sv:0, dip:0, note:""},
+  {pays:"CAP VERT",             code:"CPV", pp:1, sv:1, dip:0, note:""},
+  {pays:"CHILI",                code:"CHL", pp:0, sv:0, dip:0, note:""},
+  {pays:"CHINE",                code:"CHN", pp:1, sv:1, dip:0, note:""},
+  {pays:"CHYPRE",               code:"CYP", pp:0, sv:0, dip:0, note:"UE"},
+  {pays:"COLOMBIE",             code:"COL", pp:0, sv:0, dip:0, note:""},
+  {pays:"COMORES",              code:"COM", pp:1, sv:1, dip:0, note:""},
+  {pays:"CONGO (REP.)",         code:"COG", pp:1, sv:1, dip:0, note:""},
+  {pays:"COREE DU NORD",        code:"PRK", pp:1, sv:1, dip:1, note:""},
+  {pays:"COREE DU SUD",         code:"KOR", pp:0, sv:0, dip:0, note:""},
+  {pays:"COSTA RICA",           code:"CRI", pp:0, sv:0, dip:0, note:""},
+  {pays:"COTE D'IVOIRE",        code:"CIV", pp:1, sv:1, dip:0, note:""},
+  {pays:"CROATIE",              code:"HRV", pp:0, sv:0, dip:0, note:"UE"},
+  {pays:"CUBA",                 code:"CUB", pp:1, sv:1, dip:0, note:""},
+  {pays:"DANEMARK",             code:"DNK", pp:0, sv:0, dip:0, note:"UE"},
+  {pays:"DJIBOUTI",             code:"DJI", pp:1, sv:1, dip:0, note:""},
+  {pays:"DOMINIQUE",            code:"DMA", pp:0, sv:0, dip:0, note:""},
+  {pays:"EGYPTE",               code:"EGY", pp:1, sv:1, dip:0, note:""},
+  {pays:"EMIRATS ARABES UNIS",  code:"ARE", pp:0, sv:0, dip:0, note:""},
+  {pays:"EQUATEUR",             code:"ECU", pp:0, sv:0, dip:0, note:""},
+  {pays:"ERYTHREE",             code:"ERI", pp:1, sv:1, dip:0, note:""},
+  {pays:"ESPAGNE",              code:"ESP", pp:0, sv:0, dip:0, note:"UE"},
+  {pays:"ESTONIE",              code:"EST", pp:0, sv:0, dip:0, note:"UE"},
+  {pays:"ETHIOPIE",             code:"ETH", pp:1, sv:1, dip:0, note:""},
+  {pays:"FIJI",                 code:"FJI", pp:0, sv:0, dip:0, note:""},
+  {pays:"FINLANDE",             code:"FIN", pp:0, sv:0, dip:0, note:"UE"},
+  {pays:"FRANCE",               code:"FRA", pp:0, sv:0, dip:0, note:"UE"},
+  {pays:"GABON",                code:"GAB", pp:1, sv:1, dip:0, note:""},
+  {pays:"GAMBIE",               code:"GMB", pp:1, sv:1, dip:0, note:""},
+  {pays:"GEORGIE",              code:"GEO", pp:0, sv:0, dip:0, note:""},
+  {pays:"GHANA",                code:"GHA", pp:1, sv:1, dip:0, note:"(*)"},
+  {pays:"GRANDE BRETAGNE",      code:"GBR", pp:0, sv:0, dip:0, note:""},
+  {pays:"GRECE",                code:"GRC", pp:0, sv:0, dip:0, note:"UE"},
+  {pays:"GRENADE",              code:"GRD", pp:0, sv:0, dip:0, note:""},
+  {pays:"GUATEMALA",            code:"GTM", pp:0, sv:0, dip:0, note:""},
+  {pays:"GUINEE EQUATORIALE",   code:"GNQ", pp:1, sv:1, dip:0, note:""},
+  {pays:"GUINEE",               code:"GIN", pp:1, sv:1, dip:0, note:"(*)"},
+  {pays:"GUINEE-BISSAU",        code:"GNB", pp:1, sv:1, dip:0, note:""},
+  {pays:"GUYANA",               code:"GUY", pp:1, sv:1, dip:0, note:""},
+  {pays:"HAITI",                code:"HTI", pp:1, sv:1, dip:0, note:""},
+  {pays:"HONDURAS",             code:"HND", pp:0, sv:0, dip:0, note:""},
+  {pays:"HONG KONG (SAR)",      code:"HKG", pp:0, sv:0, dip:0, note:""},
+  {pays:"HONGRIE",              code:"HUN", pp:0, sv:0, dip:0, note:"UE"},
+  {pays:"ILES MARSHALL",        code:"MHL", pp:0, sv:0, dip:0, note:""},
+  {pays:"ILES SALOMON",         code:"SLB", pp:0, sv:0, dip:0, note:""},
+  {pays:"INDE",                 code:"IND", pp:1, sv:1, dip:0, note:""},
+  {pays:"INDONESIE",            code:"IDN", pp:1, sv:1, dip:0, note:""},
+  {pays:"IRAN",                 code:"IRN", pp:1, sv:1, dip:1, note:""},
+  {pays:"IRAQ",                 code:"IRQ", pp:1, sv:1, dip:0, note:"⚠️ Vérif n°PP"},
+  {pays:"IRLANDE",              code:"IRL", pp:0, sv:0, dip:0, note:"UE"},
+  {pays:"ISLANDE",              code:"ISL", pp:0, sv:0, dip:0, note:""},
+  {pays:"ISRAEL",               code:"ISR", pp:0, sv:0, dip:0, note:""},
+  {pays:"ITALIE",               code:"ITA", pp:0, sv:0, dip:0, note:"UE"},
+  {pays:"JAMAIQUE",             code:"JAM", pp:0, sv:0, dip:0, note:""},
+  {pays:"JAPON",                code:"JPN", pp:0, sv:0, dip:0, note:""},
+  {pays:"JORDANIE",             code:"JOR", pp:1, sv:1, dip:0, note:""},
+  {pays:"KAZAKHSTAN",           code:"KAZ", pp:1, sv:1, dip:0, note:""},
+  {pays:"KENYA",                code:"KEN", pp:1, sv:1, dip:0, note:""},
+  {pays:"KIRGHIZIE",            code:"KGZ", pp:1, sv:1, dip:0, note:""},
+  {pays:"KIRIBATI",             code:"KIR", pp:0, sv:0, dip:0, note:""},
+  {pays:"KOSOVO",               code:"RKS", pp:1, sv:1, dip:0, note:""},
+  {pays:"KOWEIT",               code:"KWT", pp:1, sv:1, dip:0, note:""},
+  {pays:"LAOS",                 code:"LAO", pp:1, sv:1, dip:0, note:""},
+  {pays:"LESOTHO",              code:"LSO", pp:1, sv:1, dip:0, note:""},
+  {pays:"LETTONIE",             code:"LTU", pp:0, sv:0, dip:0, note:"UE"},
+  {pays:"LIBAN",                code:"LBN", pp:1, sv:1, dip:0, note:""},
+  {pays:"LIBERIA",              code:"LBR", pp:1, sv:1, dip:0, note:""},
+  {pays:"LIBYE",                code:"LBY", pp:1, sv:1, dip:0, note:""},
+  {pays:"LIECHTENSTEIN",        code:"LIE", pp:0, sv:0, dip:0, note:""},
+  {pays:"LITUANIE",             code:"LVA", pp:0, sv:0, dip:0, note:"UE"},
+  {pays:"LUXEMBOURG",           code:"LUX", pp:0, sv:0, dip:0, note:"UE"},
+  {pays:"MACAO (SAR)",          code:"MAC", pp:0, sv:0, dip:0, note:""},
+  {pays:"MACEDOINE DU NORD",    code:"MKD", pp:0, sv:0, dip:0, note:""},
+  {pays:"MADAGASCAR",           code:"MDG", pp:1, sv:1, dip:0, note:""},
+  {pays:"MALAISIE",             code:"MYS", pp:0, sv:0, dip:0, note:""},
+  {pays:"MALAWI",               code:"MWI", pp:1, sv:1, dip:0, note:""},
+  {pays:"MALDIVES",             code:"MDV", pp:1, sv:1, dip:0, note:""},
+  {pays:"MALI",                 code:"MLI", pp:1, sv:1, dip:0, note:""},
+  {pays:"MALTE",                code:"MLT", pp:0, sv:0, dip:0, note:"UE"},
+  {pays:"MAROC",                code:"MAR", pp:1, sv:1, dip:0, note:""},
+  {pays:"MAURICE",              code:"MUS", pp:0, sv:0, dip:0, note:""},
+  {pays:"MAURITANIE",           code:"MRT", pp:1, sv:1, dip:0, note:""},
+  {pays:"MEXIQUE",              code:"MEX", pp:0, sv:0, dip:0, note:""},
+  {pays:"MICRONESIE",           code:"FSM", pp:0, sv:0, dip:0, note:""},
+  {pays:"MOLDAVIE",             code:"MDA", pp:0, sv:0, dip:0, note:""},
+  {pays:"MONACO",               code:"MCO", pp:0, sv:0, dip:0, note:""},
+  {pays:"MONGOLIE",             code:"MNG", pp:1, sv:1, dip:0, note:""},
+  {pays:"MONTENEGRO",           code:"MNE", pp:0, sv:0, dip:0, note:""},
+  {pays:"MOZAMBIQUE",           code:"MOZ", pp:1, sv:1, dip:0, note:""},
+  {pays:"MYANMAR/BIRMANIE",     code:"MMR", pp:1, sv:1, dip:0, note:""},
+  {pays:"NAMIBIE",              code:"NAM", pp:0, sv:0, dip:0, note:""},
+  {pays:"NAURU",                code:"NRU", pp:0, sv:0, dip:0, note:""},
+  {pays:"NEPAL",                code:"NPL", pp:1, sv:1, dip:0, note:""},
+  {pays:"NICARAGUA",            code:"NIC", pp:0, sv:0, dip:0, note:""},
+  {pays:"NIGER",                code:"NER", pp:1, sv:1, dip:0, note:""},
+  {pays:"NIGERIA",              code:"NGA", pp:1, sv:1, dip:0, note:"(*)"},
+  {pays:"NORVEGE",              code:"NOR", pp:0, sv:0, dip:0, note:""},
+  {pays:"NOUVELLE ZELANDE",     code:"NZL", pp:0, sv:0, dip:0, note:""},
+  {pays:"OMAN",                 code:"OMN", pp:1, sv:1, dip:0, note:""},
+  {pays:"OUGANDA",              code:"UGA", pp:1, sv:1, dip:0, note:""},
+  {pays:"OUZBEKISTAN",          code:"UZB", pp:1, sv:1, dip:0, note:""},
+  {pays:"PAKISTAN",             code:"PAK", pp:1, sv:1, dip:0, note:""},
+  {pays:"PALAU",                code:"PLW", pp:0, sv:0, dip:0, note:""},
+  {pays:"PALESTINE",            code:"PSE", pp:1, sv:1, dip:0, note:""},
+  {pays:"PANAMA",               code:"PAN", pp:0, sv:0, dip:0, note:""},
+  {pays:"PAPOUASIE-N-GUINEE",   code:"PNG", pp:1, sv:1, dip:0, note:""},
+  {pays:"PARAGUAY",             code:"PRY", pp:0, sv:0, dip:0, note:""},
+  {pays:"PAYS-BAS",             code:"NLD", pp:0, sv:0, dip:0, note:"UE"},
+  {pays:"PEROU",                code:"PER", pp:0, sv:0, dip:0, note:""},
+  {pays:"PHILIPPINES",          code:"PHL", pp:1, sv:1, dip:0, note:""},
+  {pays:"POLOGNE",              code:"POL", pp:0, sv:0, dip:0, note:"UE"},
+  {pays:"PORTUGAL",             code:"PRT", pp:0, sv:0, dip:0, note:"UE"},
+  {pays:"QATAR",                code:"QAT", pp:0, sv:0, dip:0, note:""},
+  {pays:"REP. CENTRAFRICAINE",  code:"CAF", pp:1, sv:1, dip:0, note:""},
+  {pays:"REP. DEM. CONGO",      code:"CGO", pp:1, sv:1, dip:0, note:""},
+  {pays:"REP. DOMINICAINE",     code:"DOM", pp:0, sv:0, dip:0, note:""},
+  {pays:"REP. TCHEQUE",         code:"CZE", pp:0, sv:0, dip:0, note:"UE"},
+  {pays:"ROUMANIE",             code:"ROU", pp:0, sv:0, dip:0, note:"UE"},
+  {pays:"RUSSIE",               code:"RUS", pp:1, sv:1, dip:0, note:""},
+  {pays:"RWANDA",               code:"RWA", pp:1, sv:1, dip:0, note:""},
+  {pays:"SAINT-KITTS-ET-NEVIS", code:"KNA", pp:0, sv:0, dip:0, note:""},
+  {pays:"SAINTE-LUCIE",         code:"LCA", pp:0, sv:0, dip:0, note:""},
+  {pays:"SAINT-VINCENT",        code:"VCT", pp:0, sv:0, dip:0, note:""},
+  {pays:"SALVADOR",             code:"SLV", pp:0, sv:0, dip:0, note:""},
+  {pays:"SAMOA",                code:"WSM", pp:0, sv:0, dip:0, note:""},
+  {pays:"SAN MARIN",            code:"SMR", pp:0, sv:0, dip:0, note:""},
+  {pays:"SAO TOME ET PRINCIPE", code:"STP", pp:1, sv:1, dip:0, note:""},
+  {pays:"SENEGAL",              code:"SEN", pp:1, sv:1, dip:0, note:""},
+  {pays:"SERBIE",               code:"SRB", pp:0, sv:0, dip:0, note:""},
+  {pays:"SEYCHELLES",           code:"SYC", pp:0, sv:0, dip:0, note:""},
+  {pays:"SIERRA LEONE",         code:"SLE", pp:1, sv:1, dip:0, note:""},
+  {pays:"SINGAPOUR",            code:"SGP", pp:0, sv:0, dip:0, note:""},
+  {pays:"SLOVAQUIE",            code:"SVK", pp:0, sv:0, dip:0, note:"UE"},
+  {pays:"SLOVENIE",             code:"SVN", pp:0, sv:0, dip:0, note:"UE"},
+  {pays:"SOMALIE",              code:"SOM", pp:1, sv:1, dip:1, note:""},
+  {pays:"SOUDAN",               code:"SDN", pp:1, sv:1, dip:0, note:""},
+  {pays:"SRI LANKA",            code:"LKA", pp:1, sv:1, dip:0, note:""},
+  {pays:"SUD SOUDAN",           code:"SSD", pp:1, sv:1, dip:0, note:""},
+  {pays:"SUEDE",                code:"SWE", pp:0, sv:0, dip:0, note:"UE"},
+  {pays:"SUISSE",               code:"CHE", pp:0, sv:0, dip:0, note:""},
+  {pays:"SURINAME",             code:"SUR", pp:1, sv:1, dip:0, note:""},
+  {pays:"SWAZILAND",            code:"SWZ", pp:1, sv:1, dip:0, note:""},
+  {pays:"SYRIE",                code:"SYR", pp:1, sv:1, dip:1, note:""},
+  {pays:"TADJIKISTAN",          code:"TJK", pp:1, sv:1, dip:0, note:""},
+  {pays:"TAIWAN",               code:"TWN", pp:0, sv:0, dip:0, note:""},
+  {pays:"TANZANIE",             code:"TZA", pp:1, sv:1, dip:0, note:""},
+  {pays:"TCHAD",                code:"TCD", pp:1, sv:1, dip:0, note:""},
+  {pays:"THAILANDE",            code:"THA", pp:0, sv:0, dip:0, note:""},
+  {pays:"TIMOR ORIENTAL",       code:"TLS", pp:1, sv:1, dip:0, note:""},
+  {pays:"TOGO",                 code:"TGO", pp:1, sv:1, dip:0, note:""},
+  {pays:"TONGA",                code:"TON", pp:0, sv:0, dip:0, note:""},
+  {pays:"TRINIDAD ET TOBAGO",   code:"TTO", pp:0, sv:0, dip:0, note:""},
+  {pays:"TUNISIE",              code:"TUN", pp:1, sv:1, dip:0, note:""},
+  {pays:"TURKMENISTAN",         code:"TKM", pp:1, sv:1, dip:0, note:""},
+  {pays:"TURQUIE",              code:"TUR", pp:1, sv:1, dip:0, note:""},
+  {pays:"TUVALU",               code:"TUV", pp:0, sv:0, dip:0, note:""},
+  {pays:"UKRAINE",              code:"UKR", pp:0, sv:0, dip:0, note:""},
+  {pays:"URUGUAY",              code:"URY", pp:0, sv:0, dip:0, note:""},
+  {pays:"USA",                  code:"USA", pp:0, sv:0, dip:0, note:""},
+  {pays:"VANUATU",              code:"VUT", pp:1, sv:1, dip:0, note:""},
+  {pays:"VATICAN",              code:"VAT", pp:0, sv:0, dip:0, note:""},
+  {pays:"VENEZUELA",            code:"VEN", pp:0, sv:0, dip:0, note:""},
+  {pays:"VIETNAM",              code:"VNM", pp:1, sv:1, dip:0, note:""},
+  {pays:"YEMEN",                code:"YEM", pp:1, sv:1, dip:1, note:""},
+  {pays:"ZAMBIE",               code:"ZMB", pp:1, sv:1, dip:0, note:""},
+  {pays:"ZIMBABWE",             code:"ZWE", pp:1, sv:1, dip:0, note:""},
+];
+
+// ── RENDU TABLEAU
+function cellVisa(val) {
+  if (val === 1) return '<span style="color:#c0392b;font-weight:700;">🔴 Oui</span>';
+  if (val === 0) return '<span style="color:#1a6632;font-weight:700;">✅ Non</span>';
+  return '<span style="color:#856404;">⚠️</span>';
+}
+
+function renderTable(data) {
+  const tbody = document.getElementById("visa-tbody");
+  const count = document.getElementById("visa-count");
+  if (!data.length) {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:20px;">Aucun résultat</td></tr>';
+    count.textContent = "0 pays";
+    return;
+  }
+  count.textContent = data.length + " pays";
+  tbody.innerHTML = data.map(p => `
+    <tr>
+      <td><strong>${p.pays}</strong></td>
+      <td><code style="font-size:.8rem;background:#f0f4ff;padding:2px 6px;border-radius:4px;">${p.code}</code></td>
+      <td>${cellVisa(p.pp)}</td>
+      <td>${cellVisa(p.sv)}</td>
+      <td>${cellVisa(p.dip)}</td>
+      <td style="font-size:.75rem;color:var(--muted);">${p.note}</td>
+    </tr>`).join("");
+}
+
+function filterVisa(q) {
+  const s = q.trim().toLowerCase();
+  const filtered = s
+    ? PAYS_VISA.filter(p =>
+        p.pays.toLowerCase().includes(s) ||
+        p.code.toLowerCase().includes(s))
+    : PAYS_VISA;
+  renderTable(filtered);
+}
+
+// ── DONNÉES IATA (source: CSV CODE_IATA)
+const IATA_DATA = [
+  {ville:"Tirana",           code:"TIA",     region:"Europe"},
+  {ville:"Vienne",           code:"VIE",     region:"Europe"},
+  {ville:"Sofia",            code:"SOF",     region:"Europe"},
+  {ville:"Varna",            code:"VAR",     region:"Europe"},
+  {ville:"Paphos",           code:"PFO",     region:"Europe"},
+  {ville:"Dubrovnik",        code:"DBV",     region:"Europe"},
+  {ville:"Zagreb",           code:"ZAG",     region:"Europe"},
+  {ville:"Cracovie",         code:"KRK",     region:"Europe"},
+  {ville:"Varsovie",         code:"WAW/WMI", region:"Europe"},
+  {ville:"Wrocław",          code:"WRO",     region:"Europe"},
+  {ville:"Katowice",         code:"KTW",     region:"Europe"},
+  {ville:"Poznań",           code:"POZ",     region:"Europe"},
+  {ville:"Podgorica",        code:"TGD",     region:"Europe"},
+  {ville:"Chișinău",         code:"RMO",     region:"Europe"},
+  {ville:"Marseille",        code:"MRS",     region:"Europe"},
+  {ville:"Toulouse",         code:"TLS",     region:"Europe"},
+  {ville:"Nice",             code:"NCE",     region:"Europe"},
+  {ville:"Nantes",           code:"NTE",     region:"Europe"},
+  {ville:"Nîmes",            code:"FNI",     region:"Europe"},
+  {ville:"Perpignan",        code:"PGF",     region:"Europe"},
+  {ville:"Rodez",            code:"RDZ",     region:"Europe"},
+  {ville:"Lourdes (Tarbes)", code:"LDE",     region:"Europe"},
+  {ville:"Bologne",          code:"BLQ",     region:"Europe"},
+  {ville:"Brindisi",         code:"BDS",     region:"Europe"},
+  {ville:"Cagliari",         code:"CAG",     region:"Europe"},
+  {ville:"Catane",           code:"CTA",     region:"Europe"},
+  {ville:"Alghero",          code:"AHO",     region:"Europe"},
+  {ville:"Gênes",            code:"GOA",     region:"Europe"},
+  {ville:"Agadir",           code:"—",       region:"Afrique"},
+  {ville:"Fès",              code:"—",       region:"Afrique"},
+  {ville:"Marrakech",        code:"—",       region:"Afrique"},
+  {ville:"Nador",            code:"—",       region:"Afrique"},
+  {ville:"Oujda",            code:"—",       region:"Afrique"},
+  {ville:"Rabat",            code:"—",       region:"Afrique"},
+  {ville:"Tanger",           code:"—",       region:"Afrique"},
+  {ville:"Istanbul",         code:"SAW",     region:"Moyen-Orient"},
+  {ville:"Kutaisi",          code:"KUT",     region:"Moyen-Orient"},
+  {ville:"Amman Queen Alia", code:"AMM",     region:"Moyen-Orient"},
+];
+
+const REGION_COLORS = {
+  "Europe":       "var(--navy)",
+  "Afrique":      "#2A6050",
+  "Moyen-Orient": "#8B3A2A",
+};
+
+function renderIata(data) {
+  const tbody = document.getElementById("iata-tbody");
+  const count = document.getElementById("iata-count");
+  if (!tbody) return;
+  count.textContent = data.length + " villes";
+  tbody.innerHTML = data.map(d => `
+    <tr>
+      <td><strong>${d.ville}</strong></td>
+      <td><code style="font-size:.85rem;background:#f0f4ff;padding:2px 8px;border-radius:4px;font-weight:700;">${d.code}</code></td>
+      <td><span style="font-size:.75rem;font-weight:500;color:${REGION_COLORS[d.region] || 'var(--muted)'};">${d.region}</span></td>
+    </tr>`).join("");
+}
+
+function filterIata(q) {
+  const s = q.trim().toLowerCase();
+  const filtered = s
+    ? IATA_DATA.filter(d =>
+        d.ville.toLowerCase().includes(s) ||
+        d.code.toLowerCase().includes(s) ||
+        d.region.toLowerCase().includes(s))
+    : IATA_DATA;
+  renderIata(filtered);
+}
+
+// ── ONGLETS
+document.getElementById("tab-bar").addEventListener("click", e => {
+  const tab = e.target.closest(".tab");
+  if (!tab) return;
+  const key = tab.dataset.tab;
+  document.querySelectorAll(".tab").forEach(t =>
+    t.classList.toggle("active", t.dataset.tab === key));
+  document.querySelectorAll(".tab-content").forEach(c =>
+    c.classList.toggle("active", c.id === "tab-" + key));
+  if (key === "visa")        renderTable(PAYS_VISA);
+  if (key === "subsistance") renderIata(IATA_DATA);
+});
+
+// ── INIT
+renderTable(PAYS_VISA);
+renderIata(IATA_DATA);
 </script>
 </body>
 </html>
