@@ -180,10 +180,20 @@ button { font-family: var(--font-body); cursor: pointer; border: none; backgroun
 /* Tableau simple */
 .table-wrap { overflow-x: auto; margin-bottom: 12px; }
 table { width: 100%; border-collapse: collapse; font-size: .82rem; }
-th { background: var(--navy); color: #fff; padding: 8px 10px; text-align: left; font-weight: 500; }
+th { background: var(--navy); color: #fff; padding: 8px 10px; text-align: left; font-weight: 500; position: sticky; top: 0; z-index: 2; }
 td { padding: 8px 10px; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: top; }
 tr:last-child td { border-bottom: none; }
 tr:nth-child(even) td { background: rgba(28,43,74,.03); }
+
+/* Tableau visa — conteneur avec scroll vertical uniquement */
+#visa-table-wrap {
+  max-height: calc(100vh - 280px);
+  overflow-y: auto;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+#visa-table-wrap::-webkit-scrollbar { width: 3px; }
+#visa-table-wrap::-webkit-scrollbar-thumb { background: var(--sage-l); border-radius: 2px; }
 
 /* Liste à puces stylée */
 .list { list-style: none; margin-bottom: 12px; }
