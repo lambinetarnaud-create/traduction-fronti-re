@@ -947,12 +947,13 @@ function renderIata(data) {
   const count = document.getElementById("iata-count");
   if (!tbody) return;
   count.textContent = data.length + " villes";
-  tbody.innerHTML = data.map(d => `
-    <tr>
-      <td><strong>${d.ville}</strong></td>
-      <td><code style="font-size:.85rem;background:#f0f4ff;padding:2px 8px;border-radius:4px;font-weight:700;">${d.code}</code></td>
-      <td><span style="font-size:.75rem;font-weight:500;color:${REGION_COLORS[d.region] || 'var(--muted)'};">${d.region}</span></td>
-    </tr>`).join("");
+  const rows = data.map(d => {
+    const color = REGION_COLORS[d.region] || "var(--muted)";
+    return "<tr><td><strong>" + d.ville + "</strong></td>" +
+      "<td><code style='font-size:.85rem;background:#f0f4ff;padding:2px 8px;border-radius:4px;font-weight:700;'>" + d.code + "</code></td>" +
+      "<td><span style='font-size:.75rem;font-weight:500;color:" + color + ";'>" + d.region + "</span></td></tr>";
+  });
+  tbody.innerHTML = rows.join("");
 }
 
 function filterIata(q) {
@@ -976,7 +977,10 @@ document.getElementById("tab-bar").addEventListener("click", e => {
   document.querySelectorAll(".tab-content").forEach(c =>
     c.classList.toggle("active", c.id === "tab-" + key));
   if (key === "visa")        renderTable(PAYS_VISA);
-  if (key === "subsistance") renderIata(IATA_DATA);
+  if (key === "subsistance") {
+    // Forcer le rendu après que le div soit visible
+    setTimeout(() => renderIata(IATA_DATA), 0);
+  }
 });
 
 // ── INIT
