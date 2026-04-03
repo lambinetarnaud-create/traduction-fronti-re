@@ -1524,6 +1524,59 @@ document.addEventListener("visibilitychange", () => { if (document.hidden) stopA
 ───────────────────────────────────────────────────────── */
 renderFilters();
 renderGrid();
+
+/* ─────────────────────────────────────────────────────────
+   LOGIN PIN
+───────────────────────────────────────────────────────── */
+(function() {
+  const PIN_CODE = '1234';
+  const SESSION_KEY = 'pin_unlocked';
+
+  const screen  = document.getElementById('login-screen');
+  const dotsEl  = document.getElementById('pin-dots');
+  const dotEls  = [0,1,2,3].map(i => document.getElementById('pd'+i));
+
+  let entered = '';
+
+  if (sessionStorage.getItem(SESSION_KEY) === '1') {
+    screen.style.display = 'none';
+    return;
+  }
+
+  function updateDots() {
+    dotEls.forEach((d, i) => d.classList.toggle('filled', i < entered.length));
+  }
+
+  function onSuccess() {
+    sessionStorage.setItem(SESSION_KEY, '1');
+    screen.classList.add('hide');
+    screen.addEventListener('transitionend', () => { screen.style.display = 'none'; }, { once: true });
+  }
+
+  function onError() {
+    dotsEl.classList.add('error', 'shake');
+    if (navigator.vibrate) navigator.vibrate([80, 40, 80]);
+    setTimeout(() => {
+      dotsEl.classList.remove('error', 'shake');
+      entered = '';
+      updateDots();
+    }, 600);
+  }
+
+  function pressKey(k) {
+    if (k === 'del') { entered = entered.slice(0, -1); updateDots(); return; }
+    if (entered.length >= 4) return;
+    entered += k;
+    updateDots();
+    if (entered.length === 4) {
+      if (entered === PIN_CODE) { onSuccess(); } else { onError(); }
+    }
+  }
+
+  document.querySelectorAll('.pin-key[data-k]').forEach(btn => {
+    btn.addEventListener('click', () => pressKey(btn.dataset.k));
+  });
+})();
 </script>
 </body>
 </html>
