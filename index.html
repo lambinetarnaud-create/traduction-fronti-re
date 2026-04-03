@@ -282,9 +282,125 @@ input  { font-family: var(--font-body); color: var(--text); background: transpar
 .fs-speak.playing { background: linear-gradient(135deg,#2A6050,#3D8A72); border-color:transparent; }
 .fs-speak .spk-icon { font-size:1.1rem; }
 .fs-speak.playing .spk-icon { animation: icon-pulse .45s infinite alternate; }
+
+/* ── LOGIN PIN ── */
+#login-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: var(--navy);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  padding: 24px;
+  transition: opacity .35s ease;
+}
+#login-screen.hide {
+  opacity: 0;
+  pointer-events: none;
+}
+.login-header { text-align: center; }
+.login-logo {
+  width: 56px; height: 56px;
+  border-radius: var(--r-md);
+  background: linear-gradient(135deg, var(--gold), var(--gold-l));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26px;
+  margin: 0 auto 16px;
+}
+.login-title {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  color: #fff;
+  margin-bottom: 4px;
+}
+.login-sub {
+  font-size: .75rem;
+  color: rgba(255,255,255,.4);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+.pin-dots {
+  display: flex;
+  gap: 18px;
+}
+.pin-dot {
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  border: 2px solid rgba(197,151,58,.6);
+  background: transparent;
+  transition: background .15s, border-color .15s;
+}
+.pin-dot.filled {
+  background: var(--gold);
+  border-color: var(--gold);
+}
+@keyframes pin-shake {
+  0%,100% { transform: translateX(0); }
+  20%      { transform: translateX(-8px); }
+  40%      { transform: translateX(8px); }
+  60%      { transform: translateX(-6px); }
+  80%      { transform: translateX(6px); }
+}
+.pin-dots.shake { animation: pin-shake .4s ease; }
+.pin-dots.error .pin-dot { border-color: #e05555; background: #e05555; }
+.pin-keypad {
+  display: grid;
+  grid-template-columns: repeat(3, 72px);
+  grid-template-rows: repeat(4, 72px);
+  gap: 12px;
+}
+.pin-key {
+  width: 72px; height: 72px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.08);
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 1.4rem;
+  font-weight: 400;
+  display: flex; align-items: center; justify-content: center;
+  transition: background .15s, transform .1s;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+.pin-key:active { background: rgba(197,151,58,.35); transform: scale(.92); }
+.pin-key.del { font-size: 1.1rem; background: rgba(255,255,255,.04); }
+.pin-key.empty { visibility: hidden; pointer-events: none; }
 </style>
 </head>
 <body>
+
+<!-- ── LOGIN PIN SCREEN ── -->
+<div id="login-screen">
+  <div class="login-header">
+    <div class="login-logo">🛂</div>
+    <div class="login-title">Contrôle Frontière</div>
+    <div class="login-sub">Entrez votre code PIN</div>
+  </div>
+  <div class="pin-dots" id="pin-dots">
+    <div class="pin-dot" id="pd0"></div>
+    <div class="pin-dot" id="pd1"></div>
+    <div class="pin-dot" id="pd2"></div>
+    <div class="pin-dot" id="pd3"></div>
+  </div>
+  <div class="pin-keypad">
+    <button class="pin-key" data-k="1">1</button>
+    <button class="pin-key" data-k="2">2</button>
+    <button class="pin-key" data-k="3">3</button>
+    <button class="pin-key" data-k="4">4</button>
+    <button class="pin-key" data-k="5">5</button>
+    <button class="pin-key" data-k="6">6</button>
+    <button class="pin-key" data-k="7">7</button>
+    <button class="pin-key" data-k="8">8</button>
+    <button class="pin-key" data-k="9">9</button>
+    <button class="pin-key empty" aria-hidden="true"></button>
+    <button class="pin-key" data-k="0">0</button>
+    <button class="pin-key del" data-k="del">⌫</button>
+  </div>
+</div>
+
 <div id="app">
   <header class="topbar">
     <div class="topbar-state" id="topbar-home">
