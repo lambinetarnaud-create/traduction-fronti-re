@@ -587,14 +587,25 @@ input {
   border-color: var(--sage);
 }
 
-/* ══════════════════════════════════════════
-   SCREEN 1 (suite) — Bouton Liens & Codes
-══════════════════════════════════════════ */
-.links-btn-wrap {
-  flex-shrink: 0;
-  padding: 0 var(--gap) 20px;
-  /* Colle le bouton sous la grille, visible même si la liste est courte */
+/* ── 7. PREVENT OS DARK MODE from inverting anything ── */
+/*
+   Using `color-scheme: light only` in :root is the main guard.
+   The rules below add an extra safety net for browsers that
+   ignore color-scheme on individual elements.
+*/
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: light;
+  }
+  body,
+  #app,
+  .screen,
+  .pcard,
+  .lang-card,
+  .search-box,
+  .chip,
+  .btn-copy {
+    background-color: unset;
+    color: unset;
+  }
 }
-
-.links-btn {
- 

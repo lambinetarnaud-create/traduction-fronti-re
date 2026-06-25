@@ -1,22 +1,65 @@
 /* ═══════════════════════════════════════════════════════════
    app.js — Traduction Contrôle Frontière
-   Handles: data, rendering, navigation, TTS, copy, fullscreen
+   Données issues du Google Sheet Arnaud
 ═══════════════════════════════════════════════════════════ */
-
 "use strict";
 
 /* ─────────────────────────────────────────────────────────
-   1. CATÉGORIES
+   1. DONNÉES — CATÉGORIES
 ───────────────────────────────────────────────────────── */
-
 const CATEGORIES = [
-  { key: "motif",  label: "Motif de voyage", icon: "✈️",  color: "#2E6A58" },
-  { key: "duree",  label: "Durée du voyage",  icon: "📅",  color: "#B07D20" },
-  { key: "lieux",  label: "Lieux du séjour",  icon: "📍",  color: "#2A5A88" },
-  { key: "argent", label: "Argent",            icon: "💳",  color: "#8B3A2A" },
-  { key: "autres", label: "Autres",            icon: "📋",  color: "#5A3A8B" },
+  { key: "motif",   label: "Motif de voyage", icon: "✈️",  color: "#2E6A58", offset: 0  },
+  { key: "duree",   label: "Durée du voyage",  icon: "📅",  color: "#B07D20", offset: 5  },
+  { key: "lieux",   label: "Lieux du séjour",  icon: "📍",  color: "#2A5A88", offset: 11 },
+  { key: "argent",  label: "Argent",            icon: "💳",  color: "#8B3A2A", offset: 15 },
+  { key: "autres",  label: "Autres",            icon: "📋",  color: "#5A3A8B", offset: 18 },
 ];
 
+/* ─────────────────────────────────────────────────────────
+   2. DONNÉES — LIENS UTILES
+───────────────────────────────────────────────────────── */
+const LINKS = [
+  { id:1, titre:"Vols départs",           url:"https://www.brussels-charleroi-airport.com/d_jour.html",                                              icon:"✈️" },
+  { id:2, titre:"Vols arrivées",           url:"https://www.brussels-charleroi-airport.com/a_jours.html",                                             icon:"🛬" },
+  { id:3, titre:"Calculateur de séjour",  url:"https://ec.europa.eu/assets/home/visa-calculator/calculator.htm?lang=fr",                             icon:"🗓️" },
+  { id:4, titre:"Vérification Booking",   url:"https://secure.booking.com/help/confirmation_pin_auth?origin=home_bnpinauth_start",                    icon:"🏨" },
+  { id:5, titre:"Vérification Pégasus",   url:"https://www.flypgs.com/fr",                                                                           icon:"🛩️" },
+  { id:6, titre:"Vérification Wizzair",   url:"https://www.wizzair.com/en-gb/travel-agency-booking",                                                  icon:"🟣" },
+];
+
+/* ─────────────────────────────────────────────────────────
+   3. DONNÉES — LANGUES + QUESTIONS
+   Structure : { slug, id, name, native, flag, region, rtl, audioFolder, questions }
+   questions : tableau de 20 objets { fr, tr, cat }
+   Les questions sont dans l'ordre Q001→Q020 tel que le CSV.
+   Catégorie déduite de la colonne "catégorie" du CSV.
+───────────────────────────────────────────────────────── */
+
+// Map LangueID → { slug, native, region, rtl, audioFolder }
+const LANG_META = {
+  SQ: { slug:"albanais",    native:"Shqip",       region:"europe",        rtl:false, audioFolder:"Albanais"    },
+  DE: { slug:"allemand",    native:"Deutsch",      region:"europe",        rtl:false, audioFolder:"Allemand"    },
+  EN: { slug:"anglais",     native:"English",      region:"europe",        rtl:false, audioFolder:"Anglais"     },
+  AR: { slug:"arabe",       native:"العربية",       region:"moyen-orient",  rtl:true,  audioFolder:"Arabe"       },
+  BS: { slug:"bosniaque",   native:"Bosanski",     region:"europe",        rtl:false, audioFolder:"Bosniaque"   },
+  ZH: { slug:"chinois",     native:"中文",          region:"asie",          rtl:false, audioFolder:"Chinois"     },
+  ES: { slug:"espagnol",    native:"Español",      region:"amerique",      rtl:false, audioFolder:"Espagnol"    },
+  KA: { slug:"georgien",    native:"ქართული",      region:"europe",        rtl:false, audioFolder:"Georgien"    },
+  EL: { slug:"grec",        native:"Ελληνικά",     region:"europe",        rtl:false, audioFolder:"Grec"        },
+  HE: { slug:"hebreu",      native:"עברית",         region:"moyen-orient",  rtl:true,  audioFolder:"Hebreu"      },
+  IT: { slug:"italien",     native:"Italiano",     region:"europe",        rtl:false, audioFolder:"Italien"     },
+  MK: { slug:"macedonien",  native:"Македонски",   region:"europe",        rtl:false, audioFolder:"Macedonien"  },
+  NL: { slug:"neerlandais", native:"Nederlands",   region:"europe",        rtl:false, audioFolder:"Neerlandais" },
+  FA: { slug:"persan",      native:"فارسی",         region:"moyen-orient",  rtl:true,  audioFolder:"Persan"      },
+  PT: { slug:"portugais",   native:"Português",    region:"amerique",      rtl:false, audioFolder:"Portugais"   },
+  RO: { slug:"roumain",     native:"Română",       region:"europe",        rtl:false, audioFolder:"Roumain"     },
+  RU: { slug:"russe",       native:"Русский",      region:"europe",        rtl:false, audioFolder:"Russe"       },
+  SR: { slug:"serbe",       native:"Srpski",       region:"europe",        rtl:false, audioFolder:"Serbe"       },
+  TR: { slug:"turc",        native:"Türkçe",       region:"europe",        rtl:false, audioFolder:"Turc"        },
+  UK: { slug:"ukrainien",   native:"Українська",   region:"europe",        rtl:false, audioFolder:"Ukrainien"   },
+};
+
+// Map catégorie CSV → clé interne
 const CAT_MAP = {
   "Motif de voyage": "motif",
   "Durée du voyage": "duree",
@@ -25,46 +68,7 @@ const CAT_MAP = {
   "Autres":          "autres",
 };
 
-/* ─────────────────────────────────────────────────────────
-   2. MÉTADONNÉES LANGUES
-───────────────────────────────────────────────────────── */
-
-const LANG_META = {
-  SQ: { slug:"albanais",    native:"Shqip",       region:"europe",       rtl:false, ttsLang:"sq-AL", flag:"🇦🇱" },
-  DE: { slug:"allemand",    native:"Deutsch",      region:"europe",       rtl:false, ttsLang:"de-DE", flag:"🇩🇪" },
-  EN: { slug:"anglais",     native:"English",      region:"europe",       rtl:false, ttsLang:"en-GB", flag:"🇬🇧" },
-  AR: { slug:"arabe",       native:"العربية",       region:"moyen-orient", rtl:true,  ttsLang:"ar-SA", flag:"🇸🇦" },
-  BS: { slug:"bosniaque",   native:"Bosanski",     region:"europe",       rtl:false, ttsLang:"bs-BA", flag:"🇧🇦" },
-  ZH: { slug:"chinois",     native:"中文",          region:"asie",         rtl:false, ttsLang:"zh-CN", flag:"🇨🇳" },
-  ES: { slug:"espagnol",    native:"Español",      region:"amerique",     rtl:false, ttsLang:"es-ES", flag:"🇪🇸" },
-  KA: { slug:"georgien",    native:"ქართული",      region:"europe",       rtl:false, ttsLang:"ka-GE", flag:"🇬🇪" },
-  EL: { slug:"grec",        native:"Ελληνικά",     region:"europe",       rtl:false, ttsLang:"el-GR", flag:"🇬🇷" },
-  HE: { slug:"hebreu",      native:"עברית",         region:"moyen-orient", rtl:true,  ttsLang:"he-IL", flag:"🇮🇱" },
-  IT: { slug:"italien",     native:"Italiano",     region:"europe",       rtl:false, ttsLang:"it-IT", flag:"🇮🇹" },
-  MK: { slug:"macedonien",  native:"Македонски",   region:"europe",       rtl:false, ttsLang:"mk-MK", flag:"🇲🇰" },
-  NL: { slug:"neerlandais", native:"Nederlands",   region:"europe",       rtl:false, ttsLang:"nl-NL", flag:"🇳🇱" },
-  FA: { slug:"persan",      native:"فارسی",         region:"moyen-orient", rtl:true,  ttsLang:"fa-IR", flag:"🇮🇷" },
-  PT: { slug:"portugais",   native:"Português",    region:"amerique",     rtl:false, ttsLang:"pt-PT", flag:"🇵🇹" },
-  RO: { slug:"roumain",     native:"Română",       region:"europe",       rtl:false, ttsLang:"ro-RO", flag:"🇷🇴" },
-  RU: { slug:"russe",       native:"Русский",      region:"europe",       rtl:false, ttsLang:"ru-RU", flag:"🇷🇺" },
-  SR: { slug:"serbe",       native:"Srpski",       region:"europe",       rtl:false, ttsLang:"sr-RS", flag:"🇷🇸" },
-  TR: { slug:"turc",        native:"Türkçe",       region:"europe",       rtl:false, ttsLang:"tr-TR", flag:"🇹🇷" },
-  UK: { slug:"ukrainien",   native:"Українська",   region:"europe",       rtl:false, ttsLang:"uk-UA", flag:"🇺🇦" },
-};
-
-const LANG_ORDER = ["SQ","DE","EN","AR","BS","ZH","ES","KA","EL","HE","IT","MK","NL","FA","PT","RO","RU","SR","TR","UK"];
-
-const LANG_NAMES = {
-  SQ:"Albanais", DE:"Allemand", EN:"Anglais",  AR:"Arabe",      BS:"Bosniaque",
-  ZH:"Chinois",  ES:"Espagnol", KA:"Géorgien", EL:"Grec",       HE:"Hébreu",
-  IT:"Italien",  MK:"Macédonien", NL:"Néerlandais", FA:"Persan (Farsi)",
-  PT:"Portugais", RO:"Roumain", RU:"Russe",    SR:"Serbe",      TR:"Turc",  UK:"Ukrainien",
-};
-
-/* ─────────────────────────────────────────────────────────
-   3. QUESTIONS (20 par langue × 20 langues)
-───────────────────────────────────────────────────────── */
-
+// Toutes les questions issues du CSV (ordre identique)
 const RAW_QUESTIONS = [
   // ── ALBANAIS (SQ)
   {id:"Q001",lang:"SQ",fr:"Pourquoi venir en Belgique ?",tr:"Pse të vini në Belgjikë ?",cat:"Motif de voyage"},
@@ -109,7 +113,7 @@ const RAW_QUESTIONS = [
   {id:"Q019",lang:"DE",fr:"Mettez les 4 doigts de la main droite sur la lumière verte",tr:"Legen Sie die vier Finger Ihrer rechten Hand auf das grüne Licht.",cat:"Autres"},
   {id:"Q020",lang:"DE",fr:"Placez-vous devant la caméra",tr:"Stellen Sie sich vor die Kamera.",cat:"Autres"},
   // ── ANGLAIS (EN)
-  {id:"Q001",lang:"EN",fr:"Pourquoi venir en Belgique ?",tr:"Why do you come to Belgium?",cat:"Motif de voyage"},
+  {id:"Q001",lang:"EN",fr:"Pourquoi venir en Belgique ?",tr:"Why do you come in Belgium ?",cat:"Motif de voyage"},
   {id:"Q002",lang:"EN",fr:"Pour rendre visite à de la famille ?",tr:"To visit your family?",cat:"Motif de voyage"},
   {id:"Q003",lang:"EN",fr:"Pour faire du tourisme ?",tr:"For tourism?",cat:"Motif de voyage"},
   {id:"Q004",lang:"EN",fr:"Pour le travail ?",tr:"For work?",cat:"Motif de voyage"},
@@ -376,4 +380,643 @@ const RAW_QUESTIONS = [
   {id:"Q013",lang:"PT",fr:"Chez de la famille ou des amis ?",tr:"Na casa de familiares ou amigos?",cat:"Lieux du séjour"},
   {id:"Q014",lang:"PT",fr:"A l'hôtel ?",tr:"Num hotel?",cat:"Lieux du séjour"},
   {id:"Q015",lang:"PT",fr:"Montrez-moi la réservation d'hôtel",tr:"Mostre-me a reserva do hotel",cat:"Lieux du séjour"},
-  {id:"Q016",lang:"PT",fr:"Avez-vous de l'argent liqui
+  {id:"Q016",lang:"PT",fr:"Avez-vous de l'argent liquide ou une carte de crédit ?",tr:"Tem dinheiro em espécie ou cartão de crédito?",cat:"Argent"},
+  {id:"Q017",lang:"PT",fr:"Montrez-moi l'argent",tr:"Mostre-me o dinheiro",cat:"Argent"},
+  {id:"Q018",lang:"PT",fr:"Montrez-moi la carte de crédit",tr:"Mostre-me o cartão de crédito",cat:"Argent"},
+  {id:"Q019",lang:"PT",fr:"Mettez les 4 doigts de la main droite sur la lumière verte",tr:"Coloque os quatro dedos da sua mão direita sobre a luz verde.",cat:"Autres"},
+  {id:"Q020",lang:"PT",fr:"Placez-vous devant la caméra",tr:"Posicione-se em frente à câmara.",cat:"Autres"},
+  // ── ROUMAIN (RO)
+  {id:"Q001",lang:"RO",fr:"Pourquoi venir en Belgique ?",tr:"De ce să veniți în Belgia?",cat:"Motif de voyage"},
+  {id:"Q002",lang:"RO",fr:"Pour rendre visite à de la famille ?",tr:"Pentru a vă vizita familia?",cat:"Motif de voyage"},
+  {id:"Q003",lang:"RO",fr:"Pour faire du tourisme ?",tr:"Pentru turism?",cat:"Motif de voyage"},
+  {id:"Q004",lang:"RO",fr:"Pour le travail ?",tr:"Pentru muncă?",cat:"Motif de voyage"},
+  {id:"Q005",lang:"RO",fr:"Montrez-moi votre contrat de travail ou votre invitation.",tr:"Arată-mi contractul de muncă sau invitația.",cat:"Motif de voyage"},
+  {id:"Q006",lang:"RO",fr:"Combien de temps restez vous en Europe ?",tr:"Cât timp rămâi în Europa?",cat:"Durée du voyage"},
+  {id:"Q007",lang:"RO",fr:"Jours",tr:"Zile",cat:"Durée du voyage"},
+  {id:"Q008",lang:"RO",fr:"Semaines",tr:"Săptămâni",cat:"Durée du voyage"},
+  {id:"Q009",lang:"RO",fr:"Mois",tr:"Luni",cat:"Durée du voyage"},
+  {id:"Q010",lang:"RO",fr:"Avez-vous un billet retour ?",tr:"Ai bilet de întoarcere?",cat:"Durée du voyage"},
+  {id:"Q011",lang:"RO",fr:"Montrez moi votre billet retour",tr:"Arată-mi biletul de întoarcere.",cat:"Durée du voyage"},
+  {id:"Q012",lang:"RO",fr:"Où allez vous dormir ?",tr:"Unde veți dormi?",cat:"Lieux du séjour"},
+  {id:"Q013",lang:"RO",fr:"Chez de la famille ou des amis ?",tr:"La familie sau prieteni?",cat:"Lieux du séjour"},
+  {id:"Q014",lang:"RO",fr:"A l'hôtel ?",tr:"La hotel?",cat:"Lieux du séjour"},
+  {id:"Q015",lang:"RO",fr:"Montrez-moi la réservation d'hôtel",tr:"Arată-mi rezervarea de hotel",cat:"Lieux du séjour"},
+  {id:"Q016",lang:"RO",fr:"Avez-vous de l'argent liquide ou une carte de crédit ?",tr:"Aveți bani cash sau card de credit?",cat:"Argent"},
+  {id:"Q017",lang:"RO",fr:"Montrez-moi l'argent",tr:"Arată-mi banii",cat:"Argent"},
+  {id:"Q018",lang:"RO",fr:"Montrez-moi la carte de crédit",tr:"Arată-mi cardul de credit",cat:"Argent"},
+  {id:"Q019",lang:"RO",fr:"Mettez les 4 doigts de la main droite sur la lumière verte",tr:"Puneți cele patru degete ale mâinii drepte pe lumina verde.",cat:"Autres"},
+  {id:"Q020",lang:"RO",fr:"Placez-vous devant la caméra",tr:"Așezați-vă în fața camerei.",cat:"Autres"},
+  // ── RUSSE (RU)
+  {id:"Q001",lang:"RU",fr:"Pourquoi venir en Belgique ?",tr:"Почему стоит приехать в Бельгию ?",cat:"Motif de voyage"},
+  {id:"Q002",lang:"RU",fr:"Pour rendre visite à de la famille ?",tr:"Чтобы навестить семью?",cat:"Motif de voyage"},
+  {id:"Q003",lang:"RU",fr:"Pour faire du tourisme ?",tr:"Для туризма?",cat:"Motif de voyage"},
+  {id:"Q004",lang:"RU",fr:"Pour le travail ?",tr:"Для работы?",cat:"Motif de voyage"},
+  {id:"Q005",lang:"RU",fr:"Montrez-moi votre contrat de travail ou votre invitation.",tr:"Покажите мне ваш трудовой договор или приглашение.",cat:"Motif de voyage"},
+  {id:"Q006",lang:"RU",fr:"Combien de temps restez vous en Europe ?",tr:"Как долго вы останетесь в Европе?",cat:"Durée du voyage"},
+  {id:"Q007",lang:"RU",fr:"Jours",tr:"Дни",cat:"Durée du voyage"},
+  {id:"Q008",lang:"RU",fr:"Semaines",tr:"Недели",cat:"Durée du voyage"},
+  {id:"Q009",lang:"RU",fr:"Mois",tr:"Месяцы",cat:"Durée du voyage"},
+  {id:"Q010",lang:"RU",fr:"Avez-vous un billet retour ?",tr:"У вас есть обратный билет?",cat:"Durée du voyage"},
+  {id:"Q011",lang:"RU",fr:"Montrez moi votre billet retour",tr:"Покажите мне ваш обратный билет.",cat:"Durée du voyage"},
+  {id:"Q012",lang:"RU",fr:"Où allez vous dormir ?",tr:"Где вы будете ночевать?",cat:"Lieux du séjour"},
+  {id:"Q013",lang:"RU",fr:"Chez de la famille ou des amis ?",tr:"У родственников или друзей?",cat:"Lieux du séjour"},
+  {id:"Q014",lang:"RU",fr:"A l'hôtel ?",tr:"В отеле?",cat:"Lieux du séjour"},
+  {id:"Q015",lang:"RU",fr:"Montrez-moi la réservation d'hôtel",tr:"Покажите мне бронирование отеля",cat:"Lieux du séjour"},
+  {id:"Q016",lang:"RU",fr:"Avez-vous de l'argent liquide ou une carte de crédit ?",tr:"У вас есть наличные деньги или кредитная карта?",cat:"Argent"},
+  {id:"Q017",lang:"RU",fr:"Montrez-moi l'argent",tr:"Покажите мне деньги",cat:"Argent"},
+  {id:"Q018",lang:"RU",fr:"Montrez-moi la carte de crédit",tr:"Покажите мне кредитную карту",cat:"Argent"},
+  {id:"Q019",lang:"RU",fr:"Mettez les 4 doigts de la main droite sur la lumière verte",tr:"Поместите четыре пальца правой руки на зеленый индикатор.",cat:"Autres"},
+  {id:"Q020",lang:"RU",fr:"Placez-vous devant la caméra",tr:"Встаньте перед камерой.",cat:"Autres"},
+  // ── SERBE (SR)
+  {id:"Q001",lang:"SR",fr:"Pourquoi venir en Belgique ?",tr:"Зашто доћи у Белгију?",cat:"Motif de voyage"},
+  {id:"Q002",lang:"SR",fr:"Pour rendre visite à de la famille ?",tr:"Да посетите своју породицу?",cat:"Motif de voyage"},
+  {id:"Q003",lang:"SR",fr:"Pour faire du tourisme ?",tr:"За туризам?",cat:"Motif de voyage"},
+  {id:"Q004",lang:"SR",fr:"Pour le travail ?",tr:"За посао?",cat:"Motif de voyage"},
+  {id:"Q005",lang:"SR",fr:"Montrez-moi votre contrat de travail ou votre invitation.",tr:"Покажите ми ваш уговор о раду или позив.",cat:"Motif de voyage"},
+  {id:"Q006",lang:"SR",fr:"Combien de temps restez vous en Europe ?",tr:"Колико дуго боравите у Европи?",cat:"Durée du voyage"},
+  {id:"Q007",lang:"SR",fr:"Jours",tr:"Дани",cat:"Durée du voyage"},
+  {id:"Q008",lang:"SR",fr:"Semaines",tr:"Недеље",cat:"Durée du voyage"},
+  {id:"Q009",lang:"SR",fr:"Mois",tr:"Месеци",cat:"Durée du voyage"},
+  {id:"Q010",lang:"SR",fr:"Avez-vous un billet retour ?",tr:"Имате ли повратну карту?",cat:"Durée du voyage"},
+  {id:"Q011",lang:"SR",fr:"Montrez moi votre billet retour",tr:"Покажите ми вашу повратну карту.",cat:"Durée du voyage"},
+  {id:"Q012",lang:"SR",fr:"Où allez vous dormir ?",tr:"Где ћете боравити?",cat:"Lieux du séjour"},
+  {id:"Q013",lang:"SR",fr:"Chez de la famille ou des amis ?",tr:"Са породицом или пријатељима?",cat:"Lieux du séjour"},
+  {id:"Q014",lang:"SR",fr:"A l'hôtel ?",tr:"У хотелу?",cat:"Lieux du séjour"},
+  {id:"Q015",lang:"SR",fr:"Montrez-moi la réservation d'hôtel",tr:"Покажите ми резервацију хотела.",cat:"Lieux du séjour"},
+  {id:"Q016",lang:"SR",fr:"Avez-vous de l'argent liquide ou une carte de crédit ?",tr:"Имате ли готовину или кредитну картицу?",cat:"Argent"},
+  {id:"Q017",lang:"SR",fr:"Montrez-moi l'argent",tr:"Покажите ми готовину.",cat:"Argent"},
+  {id:"Q018",lang:"SR",fr:"Montrez-moi la carte de crédit",tr:"Покажите ми кредитну картицу.",cat:"Argent"},
+  {id:"Q019",lang:"SR",fr:"Mettez les 4 doigts de la main droite sur la lumière verte",tr:"Ставите четири прста десне руке на зелено светло.",cat:"Autres"},
+  {id:"Q020",lang:"SR",fr:"Placez-vous devant la caméra",tr:"Станите испред камере.",cat:"Autres"},
+  // ── TURC (TR)
+  {id:"Q001",lang:"TR",fr:"Pourquoi venir en Belgique ?",tr:"Neden Belçika'ya geldiniz?",cat:"Motif de voyage"},
+  {id:"Q002",lang:"TR",fr:"Pour rendre visite à de la famille ?",tr:"Ailenizi ziyaret etmek için mi?",cat:"Motif de voyage"},
+  {id:"Q003",lang:"TR",fr:"Pour faire du tourisme ?",tr:"Turizm için mi?",cat:"Motif de voyage"},
+  {id:"Q004",lang:"TR",fr:"Pour le travail ?",tr:"İş için mi?",cat:"Motif de voyage"},
+  {id:"Q005",lang:"TR",fr:"Montrez-moi votre contrat de travail ou votre invitation.",tr:"İş sözleşmenizi veya davetiyenizi gösterin.",cat:"Motif de voyage"},
+  {id:"Q006",lang:"TR",fr:"Combien de temps restez vous en Europe ?",tr:"Avrupa'da ne kadar kalacaksınız?",cat:"Durée du voyage"},
+  {id:"Q007",lang:"TR",fr:"Jours",tr:"Gün",cat:"Durée du voyage"},
+  {id:"Q008",lang:"TR",fr:"Semaines",tr:"Hafta",cat:"Durée du voyage"},
+  {id:"Q009",lang:"TR",fr:"Mois",tr:"Ay",cat:"Durée du voyage"},
+  {id:"Q010",lang:"TR",fr:"Avez-vous un billet retour ?",tr:"Gidiş-dönüş biletiniz var mı?",cat:"Durée du voyage"},
+  {id:"Q011",lang:"TR",fr:"Montrez moi votre billet retour",tr:"Dönüş biletinizi gösterin.",cat:"Durée du voyage"},
+  {id:"Q012",lang:"TR",fr:"Où allez vous dormir ?",tr:"Nerede kalacaksınız?",cat:"Lieux du séjour"},
+  {id:"Q013",lang:"TR",fr:"Chez de la famille ou des amis ?",tr:"Ailenin veya arkadaşlarının yanında mı?",cat:"Lieux du séjour"},
+  {id:"Q014",lang:"TR",fr:"A l'hôtel ?",tr:"Otelde mi?",cat:"Lieux du séjour"},
+  {id:"Q015",lang:"TR",fr:"Montrez-moi la réservation d'hôtel",tr:"Otel rezervasyonunuzu gösterin",cat:"Lieux du séjour"},
+  {id:"Q016",lang:"TR",fr:"Avez-vous de l'argent liquide ou une carte de crédit ?",tr:"Nakit paranız veya kredi kartınız var mı?",cat:"Argent"},
+  {id:"Q017",lang:"TR",fr:"Montrez-moi l'argent",tr:"Paranızı gösterin",cat:"Argent"},
+  {id:"Q018",lang:"TR",fr:"Montrez-moi la carte de crédit",tr:"Kredi kartınızı gösterin",cat:"Argent"},
+  {id:"Q019",lang:"TR",fr:"Mettez les 4 doigts de la main droite sur la lumière verte",tr:"Sağ elinizin dört parmağını yeşil ışığın üzerine koyun.",cat:"Autres"},
+  {id:"Q020",lang:"TR",fr:"Placez-vous devant la caméra",tr:"Kameranın önüne geçin.",cat:"Autres"},
+  // ── UKRAINIEN (UK)
+  {id:"Q001",lang:"UK",fr:"Pourquoi venir en Belgique ?",tr:"Навіщо приїжджати до Бельгії?",cat:"Motif de voyage"},
+  {id:"Q002",lang:"UK",fr:"Pour rendre visite à de la famille ?",tr:"Щоб відвідати свою родину?",cat:"Motif de voyage"},
+  {id:"Q003",lang:"UK",fr:"Pour faire du tourisme ?",tr:"Для туризму?",cat:"Motif de voyage"},
+  {id:"Q004",lang:"UK",fr:"Pour le travail ?",tr:"Для роботи?",cat:"Motif de voyage"},
+  {id:"Q005",lang:"UK",fr:"Montrez-moi votre contrat de travail ou votre invitation.",tr:"Покажіть мені ваш трудовий договір або запрошення.",cat:"Motif de voyage"},
+  {id:"Q006",lang:"UK",fr:"Combien de temps restez vous en Europe ?",tr:"Як довго ви залишаєтеся в Європі?",cat:"Durée du voyage"},
+  {id:"Q007",lang:"UK",fr:"Jours",tr:"Дні",cat:"Durée du voyage"},
+  {id:"Q008",lang:"UK",fr:"Semaines",tr:"Тижні",cat:"Durée du voyage"},
+  {id:"Q009",lang:"UK",fr:"Mois",tr:"Місяці",cat:"Durée du voyage"},
+  {id:"Q010",lang:"UK",fr:"Avez-vous un billet retour ?",tr:"У вас є зворотний квиток?",cat:"Durée du voyage"},
+  {id:"Q011",lang:"UK",fr:"Montrez moi votre billet retour",tr:"Покажіть мені ваш зворотний квиток.",cat:"Durée du voyage"},
+  {id:"Q012",lang:"UK",fr:"Où allez vous dormir ?",tr:"Де ви будете ночувати?",cat:"Lieux du séjour"},
+  {id:"Q013",lang:"UK",fr:"Chez de la famille ou des amis ?",tr:"У родичів чи друзів?",cat:"Lieux du séjour"},
+  {id:"Q014",lang:"UK",fr:"A l'hôtel ?",tr:"В готелі?",cat:"Lieux du séjour"},
+  {id:"Q015",lang:"UK",fr:"Montrez-moi la réservation d'hôtel",tr:"Покажіть мені бронювання готелю",cat:"Lieux du séjour"},
+  {id:"Q016",lang:"UK",fr:"Avez-vous de l'argent liquide ou une carte de crédit ?",tr:"У вас є готівка або кредитна картка?",cat:"Argent"},
+  {id:"Q017",lang:"UK",fr:"Montrez-moi l'argent",tr:"Покажіть мені гроші",cat:"Argent"},
+  {id:"Q018",lang:"UK",fr:"Montrez-moi la carte de crédit",tr:"Покажіть мені кредитну картку",cat:"Argent"},
+  {id:"Q019",lang:"UK",fr:"Mettez les 4 doigts de la main droite sur la lumière verte",tr:"Покладіть чотири пальці правої руки на зелене світло.",cat:"Autres"},
+  {id:"Q020",lang:"UK",fr:"Placez-vous devant la caméra",tr:"Встаньте перед камерою.",cat:"Autres"},
+];
+
+/* ─────────────────────────────────────────────────────────
+   4. CONSTRUCTION DES LANGUES
+   Regroupe les questions par langue et catégorie
+───────────────────────────────────────────────────────── */
+
+// Liste ordonnée des LangueID (ordre du CSV Langues)
+const LANG_ORDER = ["SQ","DE","EN","AR","BS","ZH","ES","KA","EL","HE","IT","MK","NL","FA","PT","RO","RU","SR","TR","UK"];
+
+// Noms affichés (du CSV Langues)
+const LANG_NAMES = {
+  SQ:"Albanais", DE:"Allemand", EN:"Anglais", AR:"Arabe", BS:"Bosniaque",
+  ZH:"Chinois",  ES:"Espagnol", KA:"Géorgien", EL:"Grec", HE:"Hébreu",
+  IT:"Italien",  MK:"Macédonien", NL:"Néerlandais", FA:"Persan (Farsi)",
+  PT:"Portugais", RO:"Roumain", RU:"Russe", SR:"Serbe", TR:"Turc", UK:"Ukrainien",
+};
+
+// Flags (du CSV Langues)
+const LANG_FLAGS = {
+  SQ:"🇦🇱", DE:"🇩🇪", EN:"🇬🇧", AR:"🇸🇦", BS:"🇧🇦",
+  ZH:"🇨🇳", ES:"🇪🇸", KA:"🇬🇪", EL:"🇬🇷", HE:"🇮🇱",
+  IT:"🇮🇹", MK:"🇲🇰", NL:"🇳🇱", FA:"🇮🇷", PT:"🇵🇹",
+  RO:"🇷🇴", RU:"🇷🇺", SR:"🇷🇸", TR:"🇹🇷", UK:"🇺🇦",
+};
+
+// Construit l'objet LANGUAGES utilisé par l'UI
+const LANGUAGES = LANG_ORDER.map(id => {
+  const meta = LANG_META[id];
+  const qs   = RAW_QUESTIONS.filter(q => q.lang === id);
+  // Regroupe par catégorie
+  const bycat = {};
+  CATEGORIES.forEach(c => { bycat[c.key] = []; });
+  qs.forEach(q => {
+    const key = CAT_MAP[q.cat];
+    if (key && bycat[key]) bycat[key].push({ fr: q.fr.trim(), tr: q.tr.trim(), qid: q.id });
+  });
+  return {
+    id,
+    slug:        meta.slug,
+    name:        LANG_NAMES[id],
+    native:      meta.native,
+    flag:        LANG_FLAGS[id],
+    region:      meta.region,
+    rtl:         meta.rtl,
+    audioFolder: meta.audioFolder,
+    questions:   bycat,
+  };
+});
+
+/* ─────────────────────────────────────────────────────────
+   5. ÉTAT
+───────────────────────────────────────────────────────── */
+const state = {
+  screen:      "home",   // "home" | "phrases" | "links"
+  lang:        null,
+  cat:         "motif",
+  region:      "all",
+  playingKey:  null,     // "idx-catkey" ou null
+  fsIdx:       null,     // index dans la liste filtrée courante
+};
+
+/* ─────────────────────────────────────────────────────────
+   6. DOM
+───────────────────────────────────────────────────────── */
+const $ = id => document.getElementById(id);
+const DOM = {
+  topbarHome:     $("topbar-home"),
+  topbarPhrases:  $("topbar-phrases"),
+  topbarLinks:    $("topbar-links"),
+  langName:       $("topbar-lang-name"),
+  langNative:     $("topbar-lang-native"),
+  langFlag:       $("topbar-lang-flag"),
+  btnBack:        $("btn-back"),
+  btnBackLinks:   $("btn-back-links"),
+  screenHome:     $("screen-home"),
+  screenPhrases:  $("screen-phrases"),
+  screenLinks:    $("screen-links"),
+  searchInput:    $("search-input"),
+  searchClear:    $("search-clear"),
+  filterBar:      $("filter-bar"),
+  langGrid:       $("lang-grid"),
+  catTabs:        $("cat-tabs"),
+  phraseList:     $("phrase-list"),
+  linksPage:      $("links-page"),
+  btnOpenLinks:   $("btn-open-links"),
+  fsOverlay:      $("fs-overlay"),
+  fsClose:        $("fs-close"),
+  fsFr:           $("fs-fr"),
+  fsTr:           $("fs-tr"),
+  fsSpeak:        $("fs-speak"),
+};
+
+/* ─────────────────────────────────────────────────────────
+   7. NAVIGATION
+───────────────────────────────────────────────────────── */
+function showScreen(name) {
+  stopAudio();
+  state.screen = name;
+  // topbars
+  DOM.topbarHome.classList.toggle   ("hidden", name !== "home");
+  DOM.topbarPhrases.classList.toggle("hidden", name !== "phrases");
+  DOM.topbarLinks.classList.toggle  ("hidden", name !== "links");
+  // screens
+  DOM.screenHome.classList.toggle   ("active",  name === "home");
+  DOM.screenHome.classList.toggle   ("hidden",  name !== "home");
+  DOM.screenPhrases.classList.toggle("active",  name === "phrases");
+  DOM.screenPhrases.classList.toggle("hidden",  name !== "phrases");
+  DOM.screenLinks.classList.toggle  ("active",  name === "links");
+  DOM.screenLinks.classList.toggle  ("hidden",  name !== "links");
+}
+
+function goHome() { showScreen("home"); state.lang = null; }
+
+function goToPhrases(lang) {
+  state.lang = lang;
+  state.cat  = "motif";
+  DOM.langName.textContent   = lang.name;
+  DOM.langNative.textContent = lang.native;
+  DOM.langFlag.textContent   = lang.flag;
+  showScreen("phrases");
+  renderCatTabs();
+  renderPhrases();
+  DOM.phraseList.scrollTop = 0;
+}
+
+function goToLinks() {
+  currentInfoTab = "liens";
+  showScreen("links");
+  // Reset onglets visuels
+  document.querySelectorAll(".itab").forEach(t => {
+    t.classList.toggle("active", t.dataset.tab === "liens");
+  });
+  renderLinks();
+}
+
+/* ─────────────────────────────────────────────────────────
+   8. RENDER — HOME
+───────────────────────────────────────────────────────── */
+function renderFilters() {
+  const regions = [
+    ["all","Toutes"],["europe","Europe"],["moyen-orient","Moyen-Orient"],
+    ["asie","Asie"],["amerique","Amériques"],
+  ];
+  DOM.filterBar.innerHTML = regions.map(([k,l]) =>
+    `<button class="chip${state.region===k?" active":""}" data-region="${k}">${l}</button>`
+  ).join("");
+}
+
+function renderGrid() {
+  const q = DOM.searchInput.value.trim().toLowerCase();
+  const filtered = LANGUAGES.filter(l => {
+    const mr = state.region === "all" || l.region === state.region;
+    const ms = l.name.toLowerCase().includes(q) || l.native.toLowerCase().includes(q);
+    return mr && ms;
+  });
+  if (!filtered.length) {
+    DOM.langGrid.innerHTML = `<div class="empty-state"><div class="empty-icon">🔍</div><p>Aucune langue trouvée</p></div>`;
+    return;
+  }
+  DOM.langGrid.innerHTML = filtered.map(l => `
+    <div class="lang-card" role="listitem" data-id="${l.id}">
+      <span class="lc-flag">${l.flag}</span>
+      <div class="lc-info">
+        <div class="lc-name">${l.name}</div>
+        <div class="lc-native">${l.native}</div>
+      </div>
+      <span class="lc-arrow">›</span>
+    </div>`).join("");
+}
+
+/* ─────────────────────────────────────────────────────────
+   9. RENDER — PHRASES
+───────────────────────────────────────────────────────── */
+function renderCatTabs() {
+  DOM.catTabs.innerHTML = CATEGORIES.map(c => `
+    <button class="ctab${state.cat===c.key?" active":""}"
+      style="${state.cat===c.key?`border-bottom-color:${c.color}`:""}"
+      data-cat="${c.key}" data-color="${c.color}">
+      ${c.icon} ${c.label}
+    </button>`).join("");
+}
+
+function renderPhrases() {
+  const qs    = state.lang.questions[state.cat] || [];
+  const isRtl = state.lang.rtl;
+  if (!qs.length) {
+    DOM.phraseList.innerHTML = `<div class="empty-state"><p>Aucune phrase dans cette catégorie.</p></div>`;
+    return;
+  }
+  DOM.phraseList.innerHTML = qs.map((q, idx) => `
+    <div class="pcard">
+      <div class="pcard-fr">
+        <span class="pcard-fr-flag">🇧🇪</span>
+        <span class="pcard-fr-text">${q.fr}</span>
+      </div>
+      <div class="pcard-tr">
+        <div class="pcard-tr-text${isRtl?" rtl":""}">${q.tr}</div>
+      </div>
+      <div class="pcard-actions">
+        <button class="btn-speak idle" data-idx="${idx}" aria-label="Écouter">
+          <span class="spk-icon">🔊</span> Écouter
+        </button>
+        <button class="btn-expand" data-idx="${idx}" aria-label="Agrandir">⛶</button>
+      </div>
+    </div>`).join("");
+}
+
+/* ─────────────────────────────────────────────────────────
+   10. RENDER — LIENS & CODES VISA
+───────────────────────────────────────────────────────── */
+
+/* Codes B et BNL issus du PDF */
+const CODES_B = [
+  { code:"B1",  desc:"Autorisation de séjour provisoire, séjour limité à la durée des études + article 58 de la loi du 15 décembre 1980" },
+  { code:"B2",  desc:"Inscription à (dénomination de l'établissement d'enseignement)" },
+  { code:"B3",  desc:"Admis aux études à (+ dénomination de l'établissement d'enseignement)" },
+  { code:"B4",  desc:"Demande d'équivalence de diplôme" },
+  { code:"B5",  desc:"Inscription à un examen d'admission" },
+  { code:"B6",  desc:"Autorisation de séjour provisoire, séjour limité à la durée de la bourse" },
+  { code:"B7",  desc:"Autorisation de séjour provisoire, séjour limité à la durée de l'échange" },
+  { code:"B8",  desc:"École privée — séjour temporaire limité à la durée de la formation" },
+  { code:"B9",  desc:"Études secondaires — séjour limité à la durée de l'année scolaire" },
+  { code:"B10", desc:"Regroupement familial étudiant — séjour limité à la durée des études du conjoint, père, mère ou partenaire enregistré" },
+  { code:"B11", desc:"Regroupement familial — article 10, §1, points 4°-7° de la loi du 15 décembre 1980" },
+  { code:"B12", desc:"Séjour limité à la durée de l'activité pour laquelle il y a dispense de permis de travail ou carte professionnelle" },
+  { code:"B13", desc:"Chercheur — séjour limité à la durée de la convention d'accueil" },
+  { code:"B14", desc:"Séjour limité à la durée du permis de travail + un mois" },
+  { code:"B15", desc:"Séjour limité à la durée de la carte professionnelle" },
+  { code:"B16", desc:"Séjour limité à huit mois" },
+  { code:"B17", desc:"Séjour temporaire limité à un an" },
+  { code:"B18", desc:"Séjour limité à six mois" },
+  { code:"B19", desc:"Séjour temporaire — résident de longue durée" },
+  { code:"B20", desc:"Regroupement familial — article 40 bis ou 40 ter de la loi du 15 décembre 1980" },
+  { code:"B21", desc:"Regroupement familial — séjour limité à la durée du séjour du conjoint, partenaire, père, mère, fils ou fille" },
+  { code:"B22", desc:"Regroupement familial — visa de retour" },
+  { code:"B23", desc:"Séjour temporaire limité à six mois en vue d'une adoption" },
+  { code:"B24", desc:"Séjour temporaire limité à un an — travail de vacances" },
+  { code:"B25", desc:"Arrêté royal du 20 octobre 1991 — étrangers envoyés en poste auprès d'une ambassade, consulat ou organisation internationale" },
+  { code:"B26", desc:"Droit de retour — autorisation de séjour provisoire — article 19 de la loi du 15 décembre 1980" },
+  { code:"B27", desc:"Autorisation de retour après un an — autorisation de séjour provisoire" },
+  { code:"B28", desc:"Regroupement familial — séjour limité au séjour du conjoint, partenaire, père ou mère — article 10 bis §2 ou 3" },
+];
+
+const CODES_BNL = [
+  { code:"BNL 1",  desc:"Visa délivré après autorisation des autorités centrales" },
+  { code:"BNL 2",  desc:"Visa délivré d'office" },
+  { code:"BNL 3",  desc:"+ Dénomination du poste frontière d'entrée et/ou date d'entrée (raisons de sécurité, cas exceptionnels)" },
+  { code:"BNL 4",  desc:"Visa délivré en représentation après avoir consulté l'État représenté" },
+  { code:"BNL 5",  desc:"+ X jours : le titulaire du visa doit se présenter à la police dans les «x jours»" },
+  { code:"BNL 8",  desc:"Visa délivré pour soins médicaux (le nom de l'hôpital peut être ajouté)" },
+  { code:"BNL 9",  desc:"ASSURANCE NON REQUISE" },
+  { code:"BNL 10", desc:"Visa délivré pour études" },
+  { code:"BNL 11", desc:"Visa délivré en cas de regroupement familial" },
+  { code:"BNL 12", desc:"Visa délivré pour activité professionnelle" },
+  { code:"BNL 13", desc:"Visa délivré pour affaires" },
+  { code:"BNL 14", desc:"Visa délivré en vue d'une adoption" },
+  { code:"BNL 15", desc:"Visas C délivrés aux étrangers envoyés en poste auprès d'une ambassade, consulat ou organisation internationale" },
+  { code:"BNL 16", desc:"Visa délivré pour partenariat" },
+  { code:"BNL 17", desc:"Visa délivré pour mariage" },
+  { code:"BNL 18", desc:"+ Nom du parent ou tuteur accompagnateur : visas délivrés aux mineurs qui voyagent accompagnés" },
+  { code:"BNL 19", desc:"+ Nom de l'hôte : visas délivrés aux mineurs qui voyagent non accompagnés" },
+];
+
+let currentInfoTab = "liens"; // "liens" | "codes"
+
+function renderLinks() {
+  if (currentInfoTab === "liens") {
+    renderLiensList();
+  } else {
+    renderCodesList();
+  }
+}
+
+function renderLiensList() {
+  DOM.linksPage.innerHTML = `
+    <div class="links-header">
+      <h2>Liens utiles</h2>
+      <p>Ressources en ligne pour le contrôle aux frontières</p>
+    </div>
+    ${LINKS.map(l => `
+      <a class="link-card" href="${l.url}" target="_blank" rel="noopener noreferrer">
+        <div class="link-icon">${l.icon}</div>
+        <div class="link-info">
+          <div class="link-title">${l.titre}</div>
+          <div class="link-url">${l.url.replace(/^https?:\/\//,"")}</div>
+        </div>
+        <span class="link-arrow">›</span>
+      </a>`).join("")}`;
+}
+
+function renderCodesList() {
+  DOM.linksPage.innerHTML = `
+    <div class="links-header">
+      <h2>Codes Visa</h2>
+      <p>Codes B (Belgique) et BNL (Benelux) — Annexe 22 du manuel Schengen</p>
+    </div>
+
+    <div class="codes-section-title">🇧🇪 Codes B — Spécifiques Belgique</div>
+    ${CODES_B.map(c => `
+      <div class="code-card">
+        <div class="code-badge">${c.code}</div>
+        <div class="code-desc">${c.desc}</div>
+      </div>`).join("")}
+
+    <div class="codes-section-title" style="margin-top:20px">🇧🇪🇳🇱🇱🇺 Codes BNL — Benelux</div>
+    ${CODES_BNL.map(c => `
+      <div class="code-card">
+        <div class="code-badge bnl">${c.code}</div>
+        <div class="code-desc">${c.desc}</div>
+      </div>`).join("")}`;
+}
+
+/* ─────────────────────────────────────────────────────────
+   11. FULLSCREEN OVERLAY
+───────────────────────────────────────────────────────── */
+function openFullscreen(idx) {
+  const qs    = state.lang.questions[state.cat] || [];
+  const q     = qs[idx];
+  if (!q) return;
+  state.fsIdx = idx;
+  DOM.fsFr.textContent = q.fr;
+  DOM.fsTr.textContent = q.tr;
+  DOM.fsTr.className   = "fs-tr" + (state.lang.rtl ? " rtl" : "");
+  DOM.fsSpeak.className = "fs-speak idle";
+  DOM.fsSpeak.innerHTML = '<span class="spk-icon">🔊</span> Écouter';
+  DOM.fsOverlay.classList.remove("hidden");
+  document.body.style.overflow = "hidden";
+}
+
+function closeFullscreen() {
+  stopAudio();
+  DOM.fsOverlay.classList.add("hidden");
+  document.body.style.overflow = "";
+  state.fsIdx = null;
+}
+
+/* ─────────────────────────────────────────────────────────
+   12. AUDIO MP3
+───────────────────────────────────────────────────────── */
+let currentAudio = null;
+
+function audioPath(lang, catKey, idx) {
+  // Numérotation continue Q1→Q20 par langue, dans l'ordre du CSV :
+  // motif  5 questions → Q1  à Q5
+  // duree  6 questions → Q6  à Q11
+  // lieux  4 questions → Q12 à Q15
+  // argent 3 questions → Q16 à Q18
+  // autres 2 questions → Q19 à Q20
+  const offsets = { motif:0, duree:5, lieux:11, argent:15, autres:18 };
+  const n = (offsets[catKey] !== undefined ? offsets[catKey] : 0) + idx + 1;
+  return `Audio/${lang.audioFolder}/Q${n}.mp3`;
+}
+
+function stopAudio() {
+  if (currentAudio) {
+    currentAudio.pause();
+    currentAudio.currentTime = 0;
+    currentAudio = null;
+  }
+  state.playingKey = null;
+  updateSpeakBtns();
+  // aussi mettre à jour le bouton fullscreen
+  DOM.fsSpeak.className = "fs-speak idle";
+  DOM.fsSpeak.innerHTML = '<span class="spk-icon">🔊</span> Écouter';
+}
+
+function playAudio(idx, isFullscreen) {
+  const key  = `${state.cat}-${idx}`;
+  if (state.playingKey === key) { stopAudio(); return; }
+  stopAudio();
+  const path = audioPath(state.lang, state.cat, idx);
+
+  // ── DEBUG : affiche le chemin tenté dans la console du navigateur
+  console.log("🔊 Tentative audio :", path);
+
+  const audio = new Audio(path);
+  currentAudio = audio;
+  audio.addEventListener("play", () => {
+    state.playingKey = key;
+    updateSpeakBtns();
+    if (isFullscreen) {
+      DOM.fsSpeak.className = "fs-speak playing";
+      DOM.fsSpeak.innerHTML = '<span class="spk-icon">⏹</span> Lecture…';
+    }
+  });
+  audio.addEventListener("ended", stopAudio);
+  audio.addEventListener("error", e => {
+    // Affiche le chemin ET le code d'erreur dans la console
+    console.error("❌ Audio introuvable :", path, "| code:", e.target.error?.code, "| message:", e.target.error?.message);
+    stopAudio();
+    // Affiche brièvement le chemin sur le bouton pour diagnostic
+    const btn = document.querySelector(`.btn-speak[data-idx="${idx}"]`);
+    if (btn) {
+      btn.innerHTML = `<span style="font-size:.65rem;color:#fca">❌ ${path}</span>`;
+      setTimeout(() => {
+        btn.className = "btn-speak idle";
+        btn.innerHTML = '<span class="spk-icon">🔊</span> Écouter';
+      }, 4000);
+    }
+  });
+  audio.play().catch(err => {
+    console.error("❌ play() rejeté :", err, "| chemin :", path);
+    stopAudio();
+  });
+}
+
+function updateSpeakBtns() {
+  document.querySelectorAll(".btn-speak").forEach(btn => {
+    const idx = parseInt(btn.dataset.idx, 10);
+    const key = `${state.cat}-${idx}`;
+    const on  = key === state.playingKey;
+    btn.className = "btn-speak " + (on ? "playing" : "idle");
+    btn.innerHTML = on
+      ? '<span class="spk-icon">⏹</span> Lecture…'
+      : '<span class="spk-icon">🔊</span> Écouter';
+  });
+}
+
+/* ─────────────────────────────────────────────────────────
+   13. COPIE
+───────────────────────────────────────────────────────── */
+function copyText(text, idx) {
+  navigator.clipboard && navigator.clipboard.writeText(text).catch(()=>{});
+  const btn = $(`cp-${idx}`);
+  if (!btn) return;
+  btn.textContent = "✓";
+  btn.classList.add("copied");
+  setTimeout(() => { btn.textContent = "📋"; btn.classList.remove("copied"); }, 1500);
+}
+
+/* ─────────────────────────────────────────────────────────
+   14. HELPERS
+───────────────────────────────────────────────────────── */
+function escAttr(s) {
+  return String(s)
+    .replace(/&/g,"&amp;").replace(/"/g,"&quot;")
+    .replace(/'/g,"&#39;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+
+/* ─────────────────────────────────────────────────────────
+   15. ÉVÉNEMENTS
+───────────────────────────────────────────────────────── */
+
+// Helper sécurisé — évite les crashs si un élément est absent
+function on(el, evt, fn) { if (el) el.addEventListener(evt, fn); }
+
+// Retour
+on(DOM.btnBack,      "click", goHome);
+on($("btn-back-links"), "click", goHome);
+
+// Ouvrir liens
+on(DOM.btnOpenLinks, "click", goToLinks);
+
+// Onglets liens/codes — sur document pour éviter blocage display:none
+document.addEventListener("click", e => {
+  const tab = e.target.closest(".itab");
+  if (!tab) return;
+  currentInfoTab = tab.dataset.tab;
+  document.querySelectorAll(".itab").forEach(t => {
+    t.classList.toggle("active", t.dataset.tab === currentInfoTab);
+  });
+  if (DOM.linksPage) DOM.linksPage.scrollTop = 0;
+  renderLinks();
+});
+
+// Recherche
+on(DOM.searchInput, "input", () => {
+  const v = DOM.searchInput.value.length > 0;
+  DOM.searchClear.classList.toggle("hidden", !v);
+  renderGrid();
+});
+on(DOM.searchClear, "click", () => {
+  DOM.searchInput.value = "";
+  DOM.searchClear.classList.add("hidden");
+  renderGrid();
+});
+
+// Filtres (délégué)
+on(DOM.filterBar, "click", e => {
+  const c = e.target.closest(".chip");
+  if (!c) return;
+  state.region = c.dataset.region;
+  renderFilters();
+  renderGrid();
+});
+
+// Cartes langues (délégué)
+on(DOM.langGrid, "click", e => {
+  const card = e.target.closest(".lang-card");
+  if (!card) return;
+  const lang = LANGUAGES.find(l => l.id === card.dataset.id);
+  if (lang) goToPhrases(lang);
+});
+
+// Onglets catégories (délégué)
+on(DOM.catTabs, "click", e => {
+  const tab = e.target.closest(".ctab");
+  if (!tab) return;
+  stopAudio();
+  state.cat = tab.dataset.cat;
+  renderCatTabs();
+  renderPhrases();
+  DOM.phraseList.scrollTop = 0;
+});
+
+// Phrase list — speak / expand (délégué)
+on(DOM.phraseList, "click", e => {
+  const speak  = e.target.closest(".btn-speak");
+  if (speak)  { playAudio(parseInt(speak.dataset.idx, 10), false); return; }
+  const expand = e.target.closest(".btn-expand");
+  if (expand) { openFullscreen(parseInt(expand.dataset.idx, 10)); }
+});
+
+// Fullscreen
+on(DOM.fsClose,   "click", closeFullscreen);
+on(DOM.fsOverlay, "click", e => { if (e.target === DOM.fsOverlay) closeFullscreen(); });
+on(DOM.fsSpeak,   "click", () => { if (state.fsIdx !== null) playAudio(state.fsIdx, true); });
+
+// Clavier
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeFullscreen(); });
+
+// Stop audio si onglet caché
+document.addEventListener("visibilitychange", () => { if (document.hidden) stopAudio(); });
+
+/* ─────────────────────────────────────────────────────────
+   16. INIT
+───────────────────────────────────────────────────────── */
+renderFilters();
+renderGrid();
