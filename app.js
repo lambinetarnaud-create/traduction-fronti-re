@@ -770,6 +770,16 @@ function renderLiensList() {
       <h2>Liens utiles</h2>
       <p>Ressources en ligne pour le contrôle aux frontières</p>
     </div>
+
+    <a class="link-card" href="legislation.html" style="border-left:3px solid var(--gold);">
+      <div class="link-icon" style="background:linear-gradient(135deg,#8B3A2A,#c0392b);">⚖️</div>
+      <div class="link-info">
+        <div class="link-title">Législation</div>
+        <div class="link-url">Irlande et Chypre · Obligation Visa · Code IATA</div>
+      </div>
+      <span class="link-arrow">›</span>
+    </a>
+
     ${LINKS.map(l => `
       <a class="link-card" href="${l.url}" target="_blank" rel="noopener noreferrer">
         <div class="link-icon">${l.icon}</div>
@@ -807,13 +817,25 @@ function renderCodesList() {
    11. FULLSCREEN OVERLAY
 ───────────────────────────────────────────────────────── */
 function openFullscreen(idx) {
-  const qs    = state.lang.questions[state.cat] || [];
-  const q     = qs[idx];
+  const qs = state.lang.questions[state.cat] || [];
+  const q  = qs[idx];
   if (!q) return;
   state.fsIdx = idx;
   DOM.fsFr.textContent = q.fr;
   DOM.fsTr.textContent = q.tr;
   DOM.fsTr.className   = "fs-tr" + (state.lang.rtl ? " rtl" : "");
+
+  // Taille adaptative selon la longueur du texte traduit
+  const len = q.tr.length;
+  let size;
+  if      (len <= 6)  size = "clamp(3.5rem, 35vw, 20rem)";
+  else if (len <= 12) size = "clamp(3rem,   20vw, 14rem)";
+  else if (len <= 20) size = "clamp(2.5rem, 15vw, 12rem)";
+  else if (len <= 35) size = "clamp(2rem,   15vw, 10rem)";
+  else if (len <= 55) size = "clamp(1.6rem,  13vw, 10rem)";
+  else                size = "clamp(1.3rem,  10vw, 10rem)";
+  DOM.fsTr.style.fontSize = size;
+
   DOM.fsSpeak.className = "fs-speak idle";
   DOM.fsSpeak.innerHTML = '<span class="spk-icon">🔊</span> Écouter';
   DOM.fsOverlay.classList.remove("hidden");
@@ -1020,3 +1042,4 @@ document.addEventListener("visibilitychange", () => { if (document.hidden) stopA
 ───────────────────────────────────────────────────────── */
 renderFilters();
 renderGrid();
+
