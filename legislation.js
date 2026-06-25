@@ -345,3 +345,6 @@ function filterIata(q) {
 
 renderTable(PAYS_VISA);
 renderIata(IATA_DATA);
+
+document.getElementById("iata-search").addEventListener("input", function() { filterIata(this.value); });
+document.getElementById("visa-search").addEventListener("input", function() { filterVisa(this.value); });
