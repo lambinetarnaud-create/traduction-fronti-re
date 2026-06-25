@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- Fond dégradé navy -->
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1C2B4A"/>
+      <stop offset="100%" style="stop-color:#253660"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#C5973A"/>
+      <stop offset="100%" style="stop-color:#E8C97A"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Fond arrondi -->
+  <rect width="512" height="512" rx="96" fill="url(#bg)"/>
+
+  <!-- Passeport stylisé (forme arrondie) -->
+  <rect x="140" y="110" width="232" height="292" rx="18" fill="url(#gold)" opacity="0.18"/>
+  <rect x="148" y="118" width="216" height="276" rx="14" fill="none" stroke="#C5973A" stroke-width="4" opacity="0.7"/>
+
+  <!-- Étoiles en arc (référence EU/Schengen) -->
+  <g fill="#E8C97A" opacity="0.9">
+    <!-- 5 étoiles en arc -->
+    <polygon points="256,138 259,148 270,148 261,155 264,165 256,159 248,165 251,155 242,148 253,148" transform="translate(0,-8)"/>
+    <polygon points="256,138 259,148 270,148 261,155 264,165 256,159 248,165 251,155 242,148 253,148" transform="translate(-55,16)"/>
+    <polygon points="256,138 259,148 270,148 261,155 264,165 256,159 248,165 251,155 242,148 253,148" transform="translate(55,16)"/>
+    <polygon points="256,138 259,148 270,148 261,155 264,165 256,159 248,165 251,155 242,148 253,148" transform="translate(-38,55)"/>
+    <polygon points="256,138 259,148 270,148 261,155 264,165 256,159 248,165 251,155 242,148 253,148" transform="translate(38,55)"/>
+  </g>
+
+  <!-- Silhouette personne (voyageur) -->
+  <circle cx="256" cy="262" r="38" fill="#E8C97A"/>
+  <path d="M178,370 Q178,310 256,310 Q334,310 334,370" fill="#E8C97A"/>
+
+  <!-- Tampon visa (cercle golden) -->
+  <circle cx="340" cy="360" r="52" fill="none" stroke="#C5973A" stroke-width="6" opacity="0.5" stroke-dasharray="8,4"/>
+  <text x="340" y="352" text-anchor="middle" font-family="serif" font-size="13" fill="#C5973A" opacity="0.9" font-weight="bold">SCHENGEN</text>
+  <text x="340" y="370" text-anchor="middle" font-family="serif" font-size="18" fill="#C5973A" font-weight="bold">✓</text>
+  <text x="340" y="386" text-anchor="middle" font-family="serif" font-size="10" fill="#C5973A" opacity="0.8">BELGIQUE</text>
+
+  <!-- Lettre "T" en bas pour Traduction -->
+  <text x="256" y="440" text-anchor="middle" font-family="Georgia,serif" font-size="28" fill="rgba(255,255,255,0.35)" letter-spacing="4" font-weight="bold">TRAD</text>
+</svg>
