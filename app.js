@@ -50,7 +50,7 @@ const LANG_META = {
   IT: { slug:"italien",     native:"Italiano",     region:"europe",        rtl:false, audioFolder:"Italien"     },
   MK: { slug:"macedonien",  native:"Македонски",   region:"europe",        rtl:false, audioFolder:"Macedonien"  },
   NL: { slug:"neerlandais", native:"Nederlands",   region:"europe",        rtl:false, audioFolder:"Neerlandais" },
-  FA: { slug:"persan",      native:"فارسی",         region:"moyen-orient",  rtl:true,  audioFolder:"Persan"      },
+  FA: { slug:"persan",      native:"فارسی",         region:"moyen-orient",  rtl:true,  audioFolder:null      },
   PT: { slug:"portugais",   native:"Português",    region:"amerique",      rtl:false, audioFolder:"Portugais"   },
   RO: { slug:"roumain",     native:"Română",       region:"europe",        rtl:false, audioFolder:"Roumain"     },
   RU: { slug:"russe",       native:"Русский",      region:"europe",        rtl:false, audioFolder:"Russe"       },
@@ -654,8 +654,8 @@ function renderGrid() {
     <div class="lang-card" role="listitem" data-id="${l.id}">
       <span class="lc-flag">${l.flag}</span>
       <div class="lc-info">
-        <div class="lc-name">${l.name}</div>
-        <div class="lc-native">${l.native}</div>
+        <div class="lc-name">${esc(l.name)}</div>
+        <div class="lc-native">${esc(l.native)}</div>
       </div>
       <span class="lc-arrow">›</span>
     </div>`).join("");
@@ -669,7 +669,7 @@ function renderCatTabs() {
     <button class="ctab${state.cat===c.key?" active":""}"
       style="${state.cat===c.key?`border-bottom-color:${c.color}`:""}"
       data-cat="${c.key}" data-color="${c.color}">
-      ${c.icon} ${c.label}
+      ${c.icon} ${esc(c.label)}
     </button>`).join("");
 }
 
@@ -680,19 +680,20 @@ function renderPhrases() {
     DOM.phraseList.innerHTML = `<div class="empty-state"><p>Aucune phrase dans cette catégorie.</p></div>`;
     return;
   }
+  const hasAudio = !!(state.lang && state.lang.audioFolder);
   DOM.phraseList.innerHTML = qs.map((q, idx) => `
     <div class="pcard">
       <div class="pcard-fr">
         <span class="pcard-fr-flag">🇧🇪</span>
-        <span class="pcard-fr-text">${q.fr}</span>
+        <span class="pcard-fr-text">${esc(q.fr)}</span>
       </div>
       <div class="pcard-tr">
-        <div class="pcard-tr-text${isRtl?" rtl":""}">${q.tr}</div>
+        <div class="pcard-tr-text${isRtl?" rtl":""}">${esc(q.tr)}</div>
       </div>
       <div class="pcard-actions">
-        <button class="btn-speak idle" data-idx="${idx}" aria-label="Écouter">
+        ${hasAudio ? `<button class="btn-speak idle" data-idx="${idx}" aria-label="Écouter">
           <span class="spk-icon">🔊</span> Écouter
-        </button>
+        </button>` : ""}
         <button class="btn-expand" data-idx="${idx}" aria-label="Agrandir">⛶</button>
       </div>
     </div>`).join("");
@@ -781,11 +782,11 @@ function renderLiensList() {
     </a>
 
     ${LINKS.map(l => `
-      <a class="link-card" href="${l.url}" target="_blank" rel="noopener noreferrer">
+      <a class="link-card" href="${esc(l.url)}" target="_blank" rel="noopener noreferrer">
         <div class="link-icon">${l.icon}</div>
         <div class="link-info">
-          <div class="link-title">${l.titre}</div>
-          <div class="link-url">${l.url.replace(/^https?:\/\//,"")}</div>
+          <div class="link-title">${esc(l.titre)}</div>
+          <div class="link-url">${esc(l.url.replace(/^https?:\/\//,""))}</div>
         </div>
         <span class="link-arrow">›</span>
       </a>`).join("")}`;
@@ -801,15 +802,15 @@ function renderCodesList() {
     <div class="codes-section-title">🇧🇪 Codes B — Spécifiques Belgique</div>
     ${CODES_B.map(c => `
       <div class="code-card">
-        <div class="code-badge">${c.code}</div>
-        <div class="code-desc">${c.desc}</div>
+        <div class="code-badge">${esc(c.code)}</div>
+        <div class="code-desc">${esc(c.desc)}</div>
       </div>`).join("")}
 
     <div class="codes-section-title" style="margin-top:20px">🇧🇪🇳🇱🇱🇺 Codes BNL — Benelux</div>
     ${CODES_BNL.map(c => `
       <div class="code-card">
-        <div class="code-badge bnl">${c.code}</div>
-        <div class="code-desc">${c.desc}</div>
+        <div class="code-badge bnl">${esc(c.code)}</div>
+        <div class="code-desc">${esc(c.desc)}</div>
       </div>`).join("")}`;
 }
 
@@ -838,6 +839,7 @@ function openFullscreen(idx) {
 
   DOM.fsSpeak.className = "fs-speak idle";
   DOM.fsSpeak.innerHTML = '<span class="spk-icon">🔊</span> Écouter';
+  DOM.fsSpeak.classList.toggle("hidden", !(state.lang && state.lang.audioFolder));
   DOM.fsOverlay.classList.remove("hidden");
   document.body.style.overflow = "hidden";
 }
@@ -880,6 +882,7 @@ function stopAudio() {
 }
 
 function playAudio(idx, isFullscreen) {
+  if (!state.lang || !state.lang.audioFolder) return;
   const key  = `${state.cat}-${idx}`;
   if (state.playingKey === key) { stopAudio(); return; }
   stopAudio();
@@ -906,7 +909,7 @@ function playAudio(idx, isFullscreen) {
     // Affiche brièvement le chemin sur le bouton pour diagnostic
     const btn = document.querySelector(`.btn-speak[data-idx="${idx}"]`);
     if (btn) {
-      btn.innerHTML = `<span style="font-size:.65rem;color:#fca">❌ ${path}</span>`;
+      btn.innerHTML = `<span style="font-size:.65rem;color:#fca">❌ ${esc(path)}</span>`;
       setTimeout(() => {
         btn.className = "btn-speak idle";
         btn.innerHTML = '<span class="spk-icon">🔊</span> Écouter';
@@ -946,7 +949,7 @@ function copyText(text, idx) {
 /* ─────────────────────────────────────────────────────────
    14. HELPERS
 ───────────────────────────────────────────────────────── */
-function escAttr(s) {
+function esc(s) {
   return String(s)
     .replace(/&/g,"&amp;").replace(/"/g,"&quot;")
     .replace(/'/g,"&#39;").replace(/</g,"&lt;").replace(/>/g,"&gt;");

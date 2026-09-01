@@ -1,6 +1,6 @@
 "use strict";
-
 function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");}
+
 
 // ── DONNÉES (source: aide-mémoire SPF Intérieur, jan. 2026)
 // pp=PP normaux, sv=Services/Spéciaux, dip=Diplomatique
@@ -347,6 +347,3 @@ function filterIata(q) {
 
 renderTable(PAYS_VISA);
 renderIata(IATA_DATA);
-
-document.getElementById("iata-search").addEventListener("input", function() { filterIata(this.value); });
-document.getElementById("visa-search").addEventListener("input", function() { filterVisa(this.value); });
