@@ -3,7 +3,7 @@
 Ce dossier est le **vrai dépôt git** connecté à GitHub et déployé sur Netlify.
 
 - **GitHub** : https://github.com/lambinetarnaud-create/traduction-fronti-re
-- **Netlify** : https://traduction-fronti-re.netlify.app
+- **Netlify** : https://apptrad.netlify.app
 - **Branche** : main
 
 ## Fichiers à modifier dans CE dossier uniquement

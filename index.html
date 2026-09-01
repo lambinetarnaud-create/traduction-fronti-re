@@ -8,8 +8,11 @@
 <meta name="color-scheme" content="light only"/>
 <meta name="theme-color" content="#1C2B4A"/>
 <title>Traduction Contrôle Frontière</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<meta name="description" content="Guide de traduction gratuit pour le contrôle aux frontières : 20 langues, phrases clés avec audio, codes visa et ressources utiles."/>
+<link rel="manifest" href="manifest.json"/>
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png"/>
+<link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png"/>
+<link rel="stylesheet" href="fonts.css"/>
 <style>
 /* ═══════════════════════════════════════════════════════════
    style.css — Traduction Contrôle Frontière
@@ -34,7 +37,7 @@
   --border:     rgba(28,43,74,.10);
   --border-2:   rgba(28,43,74,.06);
   --text:       #1E2235;
-  --muted:      #7A7D90;
+  --muted:      #5E6175;
   --sh-sm:      0 2px 8px  rgba(28,43,74,.07);
   --sh-md:      0 4px 20px rgba(28,43,74,.10);
   --r-sm:  8px;
@@ -76,7 +79,7 @@ input  { font-family: var(--font-body); color: var(--text); background: transpar
 .topbar-logo  { width:36px; height:36px; border-radius:var(--r-sm); background:linear-gradient(135deg,var(--gold),var(--gold-l)); display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
 .topbar-title { flex:1; display:flex; flex-direction:column; gap:1px; }
 .topbar-main  { font-family:var(--font-display); font-size:1rem; font-weight:500; color:#fff; line-height:1.2; }
-.topbar-sub   { font-size:.65rem; color:rgba(255,255,255,.45); letter-spacing:.07em; text-transform:uppercase; }
+.topbar-sub   { font-size:.65rem; color:rgba(255,255,255,.72); letter-spacing:.07em; text-transform:uppercase; }
 .topbar-back  { width:36px; height:36px; border-radius:var(--r-sm); background:rgba(255,255,255,.12); color:#fff; font-size:18px; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:background .18s; }
 .topbar-back:active { background:rgba(255,255,255,.28); }
 .topbar-flag  { font-size:1.75rem; flex-shrink:0; }
@@ -89,11 +92,11 @@ input  { font-family: var(--font-body); color: var(--text); background: transpar
 .hero { flex-shrink:0; background:linear-gradient(150deg,var(--navy) 0%,var(--navy-2) 55%,var(--navy-3) 100%); padding:26px var(--gap) 34px; text-align:center; }
 .hero h1 { font-family:var(--font-display); font-size:1.45rem; font-weight:700; color:#fff; line-height:1.28; margin-bottom:8px; }
 .hero h1 .accent { color:var(--gold-l); }
-.hero p { font-size:.82rem; font-weight:300; color:rgba(255,255,255,.52); line-height:1.65; margin-bottom:18px; }
+.hero p { font-size:.82rem; font-weight:300; color:rgba(255,255,255,.78); line-height:1.65; margin-bottom:18px; }
 .hero-stats { display:flex; justify-content:center; gap:24px; }
 .stat { display:flex; flex-direction:column; align-items:center; gap:2px; }
 .stat-n { font-family:var(--font-display); font-size:1.3rem; color:var(--gold-l); line-height:1; }
-.stat-l { font-size:.62rem; color:rgba(255,255,255,.38); letter-spacing:.07em; text-transform:uppercase; }
+.stat-l { font-size:.62rem; color:rgba(255,255,255,.66); letter-spacing:.07em; text-transform:uppercase; }
 
 .wave { display:block; flex-shrink:0; width:100%; height:26px; background:linear-gradient(to bottom,var(--navy-3),var(--navy-3)); }
 
@@ -120,6 +123,8 @@ input  { font-family: var(--font-body); color: var(--text); background: transpar
 
 .lang-card { background:var(--white); border:1px solid var(--border); border-radius:var(--r-lg); padding:13px 11px; display:flex; align-items:center; gap:11px; box-shadow:var(--sh-sm); cursor:pointer; transition:transform .15s,box-shadow .15s; -webkit-tap-highlight-color:transparent; }
 .lang-card:active { transform:scale(.96); box-shadow:none; }
+.lang-card { width:100%; text-align:left; }
+:focus-visible { outline:3px solid var(--gold); outline-offset:2px; border-radius:4px; }
 .lc-flag   { font-size:1.75rem; line-height:1; flex-shrink:0; }
 .lc-info   { flex:1; min-width:0; }
 .lc-name   { font-weight:500; font-size:.88rem; color:var(--navy); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
@@ -137,7 +142,7 @@ input  { font-family: var(--font-body); color: var(--text); background: transpar
 /* ── 7. PHRASE SCREEN ── */
 .cat-tabs { flex-shrink:0; display:flex; overflow-x:auto; background:var(--navy-2); border-bottom:1px solid rgba(255,255,255,.08); }
 .cat-tabs::-webkit-scrollbar { display:none; }
-.ctab { flex-shrink:0; padding:11px 14px; font-size:.76rem; color:rgba(255,255,255,.45); border-bottom:2px solid transparent; white-space:nowrap; transition:color .18s,border-color .18s; }
+.ctab { flex-shrink:0; padding:11px 14px; font-size:.76rem; color:rgba(255,255,255,.72); border-bottom:2px solid transparent; white-space:nowrap; transition:color .18s,border-color .18s; }
 .ctab.active { color:#fff; }
 .ctab:active { opacity:.7; }
 
@@ -176,7 +181,7 @@ input  { font-family: var(--font-body); color: var(--text); background: transpar
 
 /* Onglets liens/codes */
 .info-tabs { flex-shrink:0; display:flex; background:var(--navy-2); border-bottom:1px solid rgba(255,255,255,.08); }
-.itab { flex:1; padding:12px 8px; font-size:.82rem; font-family:var(--font-body); color:rgba(255,255,255,.45); border-bottom:2px solid transparent; transition:all .18s; white-space:nowrap; }
+.itab { flex:1; padding:12px 8px; font-size:.82rem; font-family:var(--font-body); color:rgba(255,255,255,.72); border-bottom:2px solid transparent; transition:all .18s; white-space:nowrap; }
 .itab.active { color:#fff; border-bottom-color:var(--gold); }
 .itab:active { opacity:.7; }
 .links-page { flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:20px var(--gap) 32px; display:flex; flex-direction:column; gap:12px; }
@@ -322,7 +327,7 @@ input  { font-family: var(--font-body); color: var(--text); background: transpar
       <div class="hero-stats">
         <div class="stat"><span class="stat-n">20</span><span class="stat-l">Langues</span></div>
         <div class="stat"><span class="stat-n">5</span><span class="stat-l">Catégories</span></div>
-        <div class="stat"><span class="stat-n">100+</span><span class="stat-l">Phrases</span></div>
+        <div class="stat"><span class="stat-n">400</span><span class="stat-l">Traductions</span></div>
       </div>
     </section>
     <svg class="wave" viewBox="0 0 390 26" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
@@ -331,7 +336,7 @@ input  { font-family: var(--font-body); color: var(--text); background: transpar
     <div class="search-wrap">
       <div class="search-box">
         <span class="search-icon">🔍</span>
-        <input type="search" id="search-input" placeholder="Rechercher une langue…" autocomplete="off" autocorrect="off" spellcheck="false"/>
+        <input type="search" id="search-input" aria-label="Rechercher une langue" placeholder="Rechercher une langue…" autocomplete="off" autocorrect="off" spellcheck="false"/>
         <button class="search-clear hidden" id="search-clear">✕</button>
       </div>
     </div>

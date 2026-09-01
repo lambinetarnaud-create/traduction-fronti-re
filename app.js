@@ -8,11 +8,11 @@
    1. DONNÉES — CATÉGORIES
 ───────────────────────────────────────────────────────── */
 const CATEGORIES = [
-  { key: "motif",   label: "Motif de voyage", icon: "✈️",  color: "#2E6A58", offset: 0  },
-  { key: "duree",   label: "Durée du voyage",  icon: "📅",  color: "#B07D20", offset: 5  },
-  { key: "lieux",   label: "Lieux du séjour",  icon: "📍",  color: "#2A5A88", offset: 11 },
-  { key: "argent",  label: "Argent",            icon: "💳",  color: "#8B3A2A", offset: 15 },
-  { key: "autres",  label: "Autres",            icon: "📋",  color: "#5A3A8B", offset: 18 },
+  { key: "motif",   label: "Motif de voyage", icon: "✈️",  color: "#2E6A58" },
+  { key: "duree",   label: "Durée du voyage",  icon: "📅",  color: "#B07D20" },
+  { key: "lieux",   label: "Lieux du séjour",  icon: "📍",  color: "#2A5A88" },
+  { key: "argent",  label: "Argent",            icon: "💳",  color: "#8B3A2A" },
+  { key: "autres",  label: "Autres",            icon: "📋",  color: "#5A3A8B" },
 ];
 
 /* ─────────────────────────────────────────────────────────
@@ -550,6 +550,7 @@ const state = {
   region:      "all",
   playingKey:  null,     // "idx-catkey" ou null
   fsIdx:       null,     // index dans la liste filtrée courante
+  lastFocus:   null,     // élément à re-focus à la fermeture de l'overlay
 };
 
 /* ─────────────────────────────────────────────────────────
@@ -651,14 +652,14 @@ function renderGrid() {
     return;
   }
   DOM.langGrid.innerHTML = filtered.map(l => `
-    <div class="lang-card" role="listitem" data-id="${l.id}">
-      <span class="lc-flag">${l.flag}</span>
+    <button type="button" class="lang-card" role="listitem" data-id="${l.id}" aria-label="${esc(l.name)}">
+      <span class="lc-flag" aria-hidden="true">${l.flag}</span>
       <div class="lc-info">
         <div class="lc-name">${esc(l.name)}</div>
         <div class="lc-native">${esc(l.native)}</div>
       </div>
-      <span class="lc-arrow">›</span>
-    </div>`).join("");
+      <span class="lc-arrow" aria-hidden="true">›</span>
+    </button>`).join("");
 }
 
 /* ─────────────────────────────────────────────────────────
@@ -840,8 +841,10 @@ function openFullscreen(idx) {
   DOM.fsSpeak.className = "fs-speak idle";
   DOM.fsSpeak.innerHTML = '<span class="spk-icon">🔊</span> Écouter';
   DOM.fsSpeak.classList.toggle("hidden", !(state.lang && state.lang.audioFolder));
+  state.lastFocus = document.activeElement;
   DOM.fsOverlay.classList.remove("hidden");
   document.body.style.overflow = "hidden";
+  DOM.fsClose.focus();
 }
 
 function closeFullscreen() {
@@ -849,6 +852,8 @@ function closeFullscreen() {
   DOM.fsOverlay.classList.add("hidden");
   document.body.style.overflow = "";
   state.fsIdx = null;
+  if (state.lastFocus && state.lastFocus.focus) state.lastFocus.focus();
+  state.lastFocus = null;
 }
 
 /* ─────────────────────────────────────────────────────────
@@ -888,8 +893,6 @@ function playAudio(idx, isFullscreen) {
   stopAudio();
   const path = audioPath(state.lang, state.cat, idx);
 
-  // ── DEBUG : affiche le chemin tenté dans la console du navigateur
-  console.log("🔊 Tentative audio :", path);
 
   const audio = new Audio(path);
   currentAudio = audio;
@@ -904,22 +907,17 @@ function playAudio(idx, isFullscreen) {
   audio.addEventListener("ended", stopAudio);
   audio.addEventListener("error", e => {
     // Affiche le chemin ET le code d'erreur dans la console
-    console.error("❌ Audio introuvable :", path, "| code:", e.target.error?.code, "| message:", e.target.error?.message);
     stopAudio();
-    // Affiche brièvement le chemin sur le bouton pour diagnostic
     const btn = document.querySelector(`.btn-speak[data-idx="${idx}"]`);
     if (btn) {
-      btn.innerHTML = `<span style="font-size:.65rem;color:#fca">❌ ${esc(path)}</span>`;
+      btn.innerHTML = '<span style="font-size:.75rem">Audio indisponible</span>';
       setTimeout(() => {
         btn.className = "btn-speak idle";
         btn.innerHTML = '<span class="spk-icon">🔊</span> Écouter';
-      }, 4000);
+      }, 2500);
     }
   });
-  audio.play().catch(err => {
-    console.error("❌ play() rejeté :", err, "| chemin :", path);
-    stopAudio();
-  });
+  audio.play().catch(() => { stopAudio(); });
 }
 
 function updateSpeakBtns() {
@@ -932,18 +930,6 @@ function updateSpeakBtns() {
       ? '<span class="spk-icon">⏹</span> Lecture…'
       : '<span class="spk-icon">🔊</span> Écouter';
   });
-}
-
-/* ─────────────────────────────────────────────────────────
-   13. COPIE
-───────────────────────────────────────────────────────── */
-function copyText(text, idx) {
-  navigator.clipboard && navigator.clipboard.writeText(text).catch(()=>{});
-  const btn = $(`cp-${idx}`);
-  if (!btn) return;
-  btn.textContent = "✓";
-  btn.classList.add("copied");
-  setTimeout(() => { btn.textContent = "📋"; btn.classList.remove("copied"); }, 1500);
 }
 
 /* ─────────────────────────────────────────────────────────
@@ -1035,7 +1021,19 @@ on(DOM.fsOverlay, "click", e => { if (e.target === DOM.fsOverlay) closeFullscree
 on(DOM.fsSpeak,   "click", () => { if (state.fsIdx !== null) playAudio(state.fsIdx, true); });
 
 // Clavier
-document.addEventListener("keydown", e => { if (e.key === "Escape") closeFullscreen(); });
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") { closeFullscreen(); return; }
+  if (e.key === "Tab" && !DOM.fsOverlay.classList.contains("hidden")) {
+    const focusables = [DOM.fsClose, DOM.fsSpeak].filter(el => !el.classList.contains("hidden"));
+    if (!focusables.length) return;
+    e.preventDefault();
+    const i = focusables.indexOf(document.activeElement);
+    const next = e.shiftKey
+      ? focusables[(i - 1 + focusables.length) % focusables.length]
+      : focusables[(i + 1) % focusables.length];
+    next.focus();
+  }
+});
 
 // Stop audio si onglet caché
 document.addEventListener("visibilitychange", () => { if (document.hidden) stopAudio(); });
@@ -1045,4 +1043,13 @@ document.addEventListener("visibilitychange", () => { if (document.hidden) stopA
 ───────────────────────────────────────────────────────── */
 renderFilters();
 renderGrid();
+
+/* ─────────────────────────────────────────────────────────
+   17. SERVICE WORKER (hors-ligne)
+───────────────────────────────────────────────────────── */
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("sw.js").catch(() => {});
+  });
+}
 
