@@ -364,14 +364,22 @@ tr:nth-child(even) td { background: rgba(28,43,74,.03); }
 
     <div class="alert alert-info" style="margin-bottom:14px">
       <span class="alert-icon">ℹ️</span>
-      <span>Source : aide-mémoire SPF Intérieur — Police Fédérale LPA Gosselies — Mise à jour janvier 2026.</span>
+      <span>Source : aide-mémoire SPF Intérieur — Police Fédérale LPA Gosselies (janvier 2026), <strong>vérifié et corrigé le 3 septembre 2026</strong> d'après les annexes I et II du règlement (UE) 2018/1806 et le règlement d'exécution (UE) 2026/496 (Géorgie).</span>
     </div>
 
     <!-- Légende -->
-    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;">
-      <span class="badge badge-green">✅ Pas de visa</span>
-      <span class="badge badge-red">🔴 Visa obligatoire</span>
-      <span class="badge badge-orange">🪪 PP biométrique requis</span>
+    <div style="background:#fff;border:1px solid var(--border);border-radius:var(--r-md);padding:11px 13px;margin-bottom:14px;box-shadow:var(--sh-sm);font-size:.78rem;line-height:1.7;">
+      <div style="font-weight:600;color:var(--navy);margin-bottom:6px;">Comment lire le tableau</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px;">
+        <span class="badge badge-green">✅ Pas de visa</span>
+        <span class="badge badge-red">🔴 Visa obligatoire</span>
+        <span class="badge badge-orange">🪪 PP biométrique requis</span>
+      </div>
+      <div style="color:var(--muted);">
+        <strong>PP normaux</strong> : passeports ordinaires &nbsp;·&nbsp; <strong>SV</strong> : passeports de service et spéciaux &nbsp;·&nbsp;
+        <strong>Dip</strong> : passeports diplomatiques &nbsp;·&nbsp; <strong>Transit</strong> : visa de transit aéroportuaire (VTA)
+      </div>
+      <div style="color:#856404;margin-top:4px;">🪪 L'exemption ne vaut que pour les passeports biométriques.</div>
     </div>
 
     <!-- Recherche -->
@@ -381,17 +389,6 @@ tr:nth-child(even) td { background: rgba(28,43,74,.03); }
              style="flex:1;border:none;outline:none;font-family:var(--font-body);font-size:.9rem;color:var(--text);background:transparent;"
              autocomplete="off" spellcheck="false"/>
       <span id="visa-count" style="font-size:.75rem;color:var(--muted);white-space:nowrap;"></span>
-    </div>
-
-    <!-- Légende -->
-    <div style="background:#fff;border:1px solid var(--border);border-radius:var(--r-md);padding:11px 13px;margin-bottom:12px;box-shadow:var(--sh-sm);font-size:.78rem;line-height:1.7;">
-      <div style="font-weight:600;color:var(--navy);margin-bottom:5px;">Comment lire le tableau</div>
-      <div><span style="color:#1a6632;">✅</span> Pas de visa requis &nbsp;·&nbsp; <span style="color:#c0392b;font-weight:700;">🔴</span> Visa requis</div>
-      <div style="color:var(--muted);margin-top:4px;">
-        <strong>PP normaux</strong> : passeports ordinaires &nbsp;·&nbsp; <strong>SV</strong> : passeports de service et spéciaux &nbsp;·&nbsp;
-        <strong>Dip</strong> : passeports diplomatiques &nbsp;·&nbsp; <strong>Transit</strong> : visa de transit aéroportuaire (VTA)
-      </div>
-      <div style="color:#856404;margin-top:4px;">🪪 PP biométrique requis : l'exemption ne vaut que pour les passeports biométriques.</div>
     </div>
 
     <!-- Tableau -->
