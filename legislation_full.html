@@ -361,6 +361,17 @@ tr:nth-child(even) td { background: rgba(28,43,74,.03); }
       <span id="visa-count" style="font-size:.75rem;color:var(--muted);white-space:nowrap;"></span>
     </div>
 
+    <!-- Légende -->
+    <div style="background:#fff;border:1px solid var(--border);border-radius:var(--r-md);padding:11px 13px;margin-bottom:12px;box-shadow:var(--sh-sm);font-size:.78rem;line-height:1.7;">
+      <div style="font-weight:600;color:var(--navy);margin-bottom:5px;">Comment lire le tableau</div>
+      <div><span style="color:#1a6632;">✅</span> Pas de visa requis &nbsp;·&nbsp; <span style="color:#c0392b;font-weight:700;">🔴</span> Visa requis</div>
+      <div style="color:var(--muted);margin-top:4px;">
+        <strong>PP normaux</strong> : passeports ordinaires &nbsp;·&nbsp; <strong>SV</strong> : passeports de service et spéciaux &nbsp;·&nbsp;
+        <strong>Dip</strong> : passeports diplomatiques &nbsp;·&nbsp; <strong>Transit</strong> : visa de transit aéroportuaire (VTA)
+      </div>
+      <div style="color:#856404;margin-top:4px;">🪪 PP biométrique requis : l'exemption ne vaut que pour les passeports biométriques.</div>
+    </div>
+
     <!-- Tableau -->
     <div class="table-wrap" id="visa-table-wrap">
       <table id="visa-table">

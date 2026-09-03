@@ -2,7 +2,7 @@
    Précache du shell + polices ; audio mis en cache à la première écoute. */
 "use strict";
 
-const VERSION = "apptrad-v1";
+const VERSION = "apptrad-v2";
 const STATIC_CACHE = VERSION + "-static";
 const AUDIO_CACHE  = VERSION + "-audio";
 
